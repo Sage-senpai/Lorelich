@@ -1,0 +1,16 @@
+{
+  "name": "lorelich-vault",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": ["apps/*"],
+  "scripts": {
+    "dev": "bun run --cwd apps/web dev",
+    "build": "bun run --cwd apps/web build",
+    "start": "bun run --cwd apps/web start",
+    "test": "bun run --cwd contracts forge test -vv",
+    "lint": "bun run --cwd apps/web lint"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0"
+  }
+}

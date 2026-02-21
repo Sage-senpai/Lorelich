@@ -1,0 +1,71 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: #0D0B0E;
+    color: #E8D5B0;
+    font-family: 'Inter', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    min-height: 100dvh;
+  }
+
+  /* Custom scrollbar — brass tinted */
+  ::-webkit-scrollbar        { width: 6px; }
+  ::-webkit-scrollbar-track  { background: #1A1520; }
+  ::-webkit-scrollbar-thumb  { background: #B8860B40; border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: #B8860B80; }
+
+  /* Selection color */
+  ::selection {
+    background-color: rgba(184, 134, 11, 0.3);
+    color: #E8D5B0;
+  }
+}
+
+@layer components {
+  /* Frosted glass vault card */
+  .vault-glass {
+    @apply backdrop-blur-sm bg-shadow/60 border border-brass/20;
+  }
+
+  /* Brass button */
+  .btn-brass {
+    @apply px-4 py-2 rounded-sm font-mono text-sm
+           border border-brass/40 hover:border-brass
+           bg-dusk hover:bg-brass/10 text-brass
+           transition-all duration-200
+           disabled:opacity-30 disabled:cursor-not-allowed;
+  }
+
+  /* Input dark academia */
+  .input-dark {
+    @apply w-full bg-crypt/80 border border-brass/20 rounded-sm
+           px-3 py-2 text-sm text-parchment placeholder-smoke
+           font-mono focus:outline-none focus:border-brass/50
+           transition-colors duration-200;
+  }
+
+  /* Section heading */
+  .heading-vault {
+    @apply font-serif text-parchment;
+  }
+}
