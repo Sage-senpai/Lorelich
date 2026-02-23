@@ -8,6 +8,13 @@ import type { EncryptedBlob } from "@/types";
 const PBKDF2_ITERATIONS = 310_000;
 const KEY_LENGTH        = 256;
 
+/** Copy a Uint8Array into a new ArrayBuffer (satisfies TS 5.7+ strict BufferSource) */
+function toArrayBuffer(src: Uint8Array): ArrayBuffer {
+  const buf = new ArrayBuffer(src.byteLength);
+  new Uint8Array(buf).set(src);
+  return buf;
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Key Derivation
 // ─────────────────────────────────────────────────────────────────────────────
@@ -24,7 +31,7 @@ async function deriveKey(password: string, salt: Uint8Array): Promise<CryptoKey>
   return crypto.subtle.deriveKey(
     {
       name:       "PBKDF2",
-      salt,
+      salt:       toArrayBuffer(salt),
       iterations: PBKDF2_ITERATIONS,
       hash:       "SHA-256",
     },
@@ -43,15 +50,17 @@ export async function encryptBlob(
   data: ArrayBuffer,
   walletAddress: string
 ): Promise<EncryptedBlob> {
-  const salt = crypto.getRandomValues(new Uint8Array(16));
-  const iv   = crypto.getRandomValues(new Uint8Array(12));
+  const salt = new Uint8Array(16);
+  const iv   = new Uint8Array(12);
+  crypto.getRandomValues(salt);
+  crypto.getRandomValues(iv);
 
   // Derive key from wallet address + global salt
   const password = `${walletAddress}:${process.env.NEXT_PUBLIC_APP_URL ?? "lorelich"}`;
   const key = await deriveKey(password, salt);
 
   const ciphertext = await crypto.subtle.encrypt(
-    { name: "AES-GCM", iv },
+    { name: "AES-GCM", iv: toArrayBuffer(iv) },
     key,
     data
   );
@@ -71,7 +80,7 @@ export async function decryptBlob(
   const key = await deriveKey(password, encrypted.salt);
 
   return crypto.subtle.decrypt(
-    { name: "AES-GCM", iv: encrypted.iv },
+    { name: "AES-GCM", iv: toArrayBuffer(encrypted.iv) },
     key,
     encrypted.ciphertext
   );
@@ -96,7 +105,7 @@ export function unpackEncryptedBlob(packed: Uint8Array): EncryptedBlob {
   return {
     salt:       packed.slice(0, 16),
     iv:         packed.slice(16, 28),
-    ciphertext: packed.slice(28).buffer,
+    ciphertext: toArrayBuffer(packed.slice(28)),
   };
 }
 

@@ -40,6 +40,17 @@ contract LoreVault is ReentrancyGuard, Ownable {
         string    encryptedKeyHash; // hash of encrypted AES key (empty if public)
     }
 
+    /// @notice Input struct for uploadStory — avoids stack-too-deep on 7+ params
+    struct UploadParams {
+        uint256 vaultId;
+        string  zgRootHash;
+        string  title;
+        string  mediaType;
+        uint256 duration;
+        string  encryptedKeyHash;
+        string  tokenURI;
+    }
+
     // ─────────────────────────────────────────────────────────
     // Storage
     // ─────────────────────────────────────────────────────────
@@ -158,54 +169,40 @@ contract LoreVault is ReentrancyGuard, Ownable {
     // ─────────────────────────────────────────────────────────
 
     /// @notice Record a story upload. Caller must have uploaded the blob to 0G first.
-    /// @param vaultId          The vault to attach this story to
-    /// @param zgRootHash       0G merkle root hash returned after upload
-    /// @param title            Story title
-    /// @param mediaTypeStr     "audio" | "video" | "text" | "image"
-    /// @param duration         Duration in seconds (0 for text/image)
-    /// @param encryptedKeyHash Hash of encrypted AES key (empty string if public)
-    /// @param tokenURI         Metadata URI for the soulbound NFT
-    function uploadStory(
-        uint256 vaultId,
-        string calldata zgRootHash,
-        string calldata title,
-        string calldata mediaTypeStr,
-        uint256 duration,
-        string calldata encryptedKeyHash,
-        string calldata tokenURI
-    )
+    /// @param p  UploadParams struct — avoids stack-too-deep with many string params
+    function uploadStory(UploadParams calldata p)
         external
         nonReentrant
-        onlyVaultOwner(vaultId)
+        onlyVaultOwner(p.vaultId)
         returns (uint256 storyId)
     {
-        if (bytes(zgRootHash).length == 0) revert EmptyString("zgRootHash");
-        if (bytes(title).length == 0)      revert EmptyString("title");
-        if (_vaultStories[vaultId].length >= MAX_STORIES_PER_VAULT) {
-            revert MaxStoriesReached(vaultId);
+        if (bytes(p.zgRootHash).length == 0) revert EmptyString("zgRootHash");
+        if (bytes(p.title).length == 0)      revert EmptyString("title");
+        if (_vaultStories[p.vaultId].length >= MAX_STORIES_PER_VAULT) {
+            revert MaxStoriesReached(p.vaultId);
         }
 
         storyId = _nextStoryId++;
 
         stories[storyId] = StoryMetadata({
             uploader:         msg.sender,
-            vaultId:          vaultId,
-            zgRootHash:       zgRootHash,
-            mediaType:        mediaTypeStr,
-            duration:         duration,
-            isPrivate:        vaults[vaultId].isPrivate,
+            vaultId:          p.vaultId,
+            zgRootHash:       p.zgRootHash,
+            mediaType:        p.mediaType,
+            duration:         p.duration,
+            isPrivate:        vaults[p.vaultId].isPrivate,
             timestamp:        block.timestamp,
-            title:            title,
-            encryptedKeyHash: encryptedKeyHash
+            title:            p.title,
+            encryptedKeyHash: p.encryptedKeyHash
         });
 
-        _vaultStories[vaultId].push(storyId);
-        vaults[vaultId].storyCount++;
+        _vaultStories[p.vaultId].push(storyId);
+        vaults[p.vaultId].storyCount++;
 
-        // Mint soulbound token — state changes done, safe to call external
-        soulboundToken.mint(msg.sender, storyId, tokenURI);
+        // Mint soulbound token — all state changes done, safe to call external (CEI)
+        soulboundToken.mint(msg.sender, storyId, p.tokenURI);
 
-        emit StoryUploaded(storyId, vaultId, msg.sender, zgRootHash);
+        emit StoryUploaded(storyId, p.vaultId, msg.sender, p.zgRootHash);
     }
 
     // ─────────────────────────────────────────────────────────

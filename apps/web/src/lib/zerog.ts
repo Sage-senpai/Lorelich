@@ -1,12 +1,10 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// 0G Storage integration
-// Wraps @0glabs/0g-ts-sdk for LoreLich story upload / download
+// 0G Storage — client-side wrapper
+// Calls /api/upload (server-side) which uses @0glabs/0g-ts-sdk.
+// The SDK is Node-only (uses fs, node:crypto), so it cannot run in-browser.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import type { ZeroGUploadResult } from "@/types";
-
-const INDEXER_URL = process.env.NEXT_PUBLIC_0G_INDEXER_URL!;
-const RPC_URL     = process.env.NEXT_PUBLIC_0G_RPC!;
 
 // File size limits (bytes)
 const MAX_SIZE: Record<string, number> = {
@@ -24,7 +22,7 @@ const ALLOWED_MIME_TYPES: Record<string, string[]> = {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Validation
+// Validation (client-side, before upload)
 // ─────────────────────────────────────────────────────────────────────────────
 
 export function validateFile(file: File, mediaType: string): void {
@@ -43,63 +41,39 @@ export function validateFile(file: File, mediaType: string): void {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Upload
+// Upload — POSTs file to /api/upload (server handles 0G SDK)
 // ─────────────────────────────────────────────────────────────────────────────
 
 export async function uploadToZeroG(
   fileData: Uint8Array,
   fileName: string,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  walletClient: any,
   onProgress?: (pct: number) => void
 ): Promise<ZeroGUploadResult> {
-  // Dynamic import to avoid SSR issues with the 0G SDK
-  const { ZgFile, Indexer } = await import("@0glabs/0g-ts-sdk");
-
   onProgress?.(10);
 
-  const blob = new Blob([fileData]);
-  const file = new File([blob], fileName);
+  // Copy to fresh ArrayBuffer to satisfy TS 5.7+ strict BlobPart types
+  const buf = new ArrayBuffer(fileData.byteLength);
+  new Uint8Array(buf).set(fileData);
+  const blob     = new Blob([buf]);
+  const formData = new FormData();
+  formData.append("file", blob, fileName);
 
-  const zgFile = await ZgFile.fromFile(file);
   onProgress?.(25);
 
-  const [tree, treeErr] = await zgFile.merkleTree();
-  if (treeErr) throw new Error(`0G merkle tree error: ${treeErr}`);
-  onProgress?.(40);
+  const res = await fetch("/api/upload", {
+    method: "POST",
+    body:   formData,
+  });
 
-  const indexer = new Indexer(INDEXER_URL);
-  const [txHash, uploadErr] = await indexer.upload(zgFile, RPC_URL, walletClient);
-  if (uploadErr) throw new Error(`0G upload error: ${uploadErr}`);
-  onProgress?.(90);
+  onProgress?.(80);
 
-  const rootHash = tree!.rootHash()!;
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw new Error(data.error ?? "0G upload failed.");
+  }
+
+  const { rootHash, txHash } = await res.json();
   onProgress?.(100);
 
-  return { rootHash, txHash: txHash! };
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Download
-// ─────────────────────────────────────────────────────────────────────────────
-
-export async function downloadFromZeroG(rootHash: string): Promise<Uint8Array> {
-  const { Indexer } = await import("@0glabs/0g-ts-sdk");
-
-  const indexer = new Indexer(INDEXER_URL);
-  const [data, err] = await indexer.download(rootHash, true);
-  if (err) throw new Error(`0G download error: ${err}`);
-  return data!;
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Verify (DA Proof)
-// ─────────────────────────────────────────────────────────────────────────────
-
-export async function verifyOnZeroG(rootHash: string): Promise<boolean> {
-  const { Indexer } = await import("@0glabs/0g-ts-sdk");
-
-  const indexer = new Indexer(INDEXER_URL);
-  const [exists] = await indexer.fileExists(rootHash);
-  return !!exists;
+  return { rootHash, txHash };
 }

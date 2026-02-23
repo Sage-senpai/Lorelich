@@ -4,7 +4,7 @@
 
 | Variable | Required | Description | Example |
 |---|---|---|---|
-| `NEXT_PUBLIC_CHAIN_ID` | ✅ | Target chain ID | `16600` (0G Newton Testnet) |
+| `NEXT_PUBLIC_CHAIN_ID` | ✅ | Target chain ID | `16602` (0G Newton Testnet) |
 | `NEXT_PUBLIC_RPC_URL` | ✅ | EVM RPC endpoint | `https://evmrpc-testnet.0g.ai` |
 | `NEXT_PUBLIC_LORE_VAULT_ADDRESS` | ✅ | Deployed LoreVault contract | `0x...` |
 | `NEXT_PUBLIC_SOULBOUND_ADDRESS` | ✅ | Deployed SoulboundStory contract | `0x...` |

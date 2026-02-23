@@ -5,7 +5,7 @@
 0G (Zero Gravity) is a modular decentralized AI operating system with:
 - **0G Storage**: Decentralized object storage with on-chain merkle proofs
 - **0G DA**: Data Availability layer with verifiable proofs
-- **0G Chain**: EVM-compatible L1 (Newton Testnet: chain ID 16600)
+- **0G Chain**: EVM-compatible L1 (Newton Testnet: chain ID 16602)
 
 LoreLich uses 0G Storage for story blobs (audio, video, text) and 0G DA for verifiable upload proofs.
 

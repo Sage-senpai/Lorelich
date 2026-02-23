@@ -1,8 +1,8 @@
 {
   "version": "1.0.0",
-  "lastUpdated": "2026-02-21",
-  "phase": "V1 Scaffold — Complete. Integration next.",
-  "overall": 40,
+  "lastUpdated": "2026-02-22",
+  "phase": "V1 Scaffold — Build passing. Deploy + integration next.",
+  "overall": 55,
   "milestones": {
     "documentation": {
       "status": "complete",
@@ -18,24 +18,24 @@
       ]
     },
     "contracts": {
-      "status": "scaffolded",
-      "completion": 50,
+      "status": "tested",
+      "completion": 65,
       "items": [
         { "name": "src/interfaces/IERC5192.sol", "status": "complete" },
         { "name": "src/SoulboundStory.sol",      "status": "complete" },
         { "name": "src/LoreVault.sol",           "status": "complete" },
         { "name": "script/Deploy.s.sol",         "status": "complete" },
         { "name": "test/LoreVault.t.sol",        "status": "complete" },
-        { "name": "forge install dependencies",  "status": "pending" },
-        { "name": "forge test passing",          "status": "pending" },
+        { "name": "forge install dependencies",  "status": "complete" },
+        { "name": "forge test passing (13/13)",  "status": "complete" },
         { "name": "slither + mythril audit",     "status": "pending" },
         { "name": "Testnet deployment",          "status": "pending" },
         { "name": "External security audit",     "status": "pending" }
       ]
     },
     "frontend": {
-      "status": "scaffolded",
-      "completion": 70,
+      "status": "building",
+      "completion": 85,
       "items": [
         { "name": "Dark academia theme (Tailwind palette)", "status": "complete" },
         { "name": "Smoky animated background (3 layers)",   "status": "complete" },
@@ -48,8 +48,10 @@
         { "name": "Waveform preview (WaveSurfer.js)",       "status": "complete" },
         { "name": "Homepage landing",                       "status": "complete" },
         { "name": "API route /api/lorelich (Claude)",       "status": "complete" },
+        { "name": "API route /api/upload (0G server-side)", "status": "complete" },
         { "name": "VaultCard frosted glass",                "status": "complete" },
-        { "name": "bun install + bun dev verified",         "status": "pending" },
+        { "name": "npm install + build verified",           "status": "complete" },
+        { "name": "npm run dev verified",                   "status": "complete" },
         { "name": "Real 0G testnet upload E2E",             "status": "pending" },
         { "name": "Soulbound mint on deployed contract",    "status": "pending" }
       ]
@@ -77,14 +79,12 @@
     ".gitignore":       "Excludes secrets and build artifacts"
   },
   "nextActions": [
-    "1. cd contracts && forge install OpenZeppelin/openzeppelin-contracts && forge install foundry-rs/forge-std",
-    "2. forge test -vv  — all tests should pass",
-    "3. cd apps/web && bun install",
-    "4. cp .env.example apps/web/.env.local — fill ALL values (see docs/environment.md)",
-    "5. Get 0G testnet tokens: https://faucet.0g.ai",
-    "6. forge script script/Deploy.s.sol --rpc-url $RPC_URL --private-key $DEPLOYER_PRIVATE_KEY --broadcast",
-    "7. Update NEXT_PUBLIC_LORE_VAULT_ADDRESS + NEXT_PUBLIC_SOULBOUND_ADDRESS in .env.local",
-    "8. bun dev — open http://localhost:3000",
-    "9. Connect wallet → create vault → upload test audio → query LoreLich AI"
+    "1. Get 0G testnet tokens from faucet: https://faucet.0g.ai",
+    "2. cd contracts && forge script script/Deploy.s.sol --rpc-url $RPC_URL --private-key $DEPLOYER_PRIVATE_KEY --broadcast",
+    "3. Copy deployed contract addresses to apps/web/.env.local (NEXT_PUBLIC_LORE_VAULT_ADDRESS + NEXT_PUBLIC_SOULBOUND_ADDRESS)",
+    "4. npm run dev — open http://localhost:3000",
+    "5. Connect wallet → create vault → upload test audio → query LoreLich AI",
+    "6. Run slither/mythril for contract security audit",
+    "7. Deploy frontend to Vercel"
   ]
 }

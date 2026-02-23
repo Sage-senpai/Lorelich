@@ -4,14 +4,45 @@ const nextConfig: NextConfig = {
   // Strict mode for better dev experience
   reactStrictMode: true,
 
-  // Required for wagmi / viem
-  webpack: (config) => {
-    config.resolve.fallback = {
-      ...config.resolve.fallback,
-      fs: false,
-      net: false,
-      tls: false,
+  // Required for wagmi / viem / 0G SDK (node modules stubbed in browser)
+  webpack: (config, { isServer }) => {
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        net: false,
+        tls: false,
+        crypto: false,
+        path: false,
+        os: false,
+        stream: false,
+        http: false,
+        https: false,
+        zlib: false,
+      };
+    }
+
+    // Stub missing optional deps to suppress "module not found" warnings.
+    // These are optional runtime deps that are never needed in this app:
+    // - @react-native-async-storage/async-storage  (from @metamask/sdk → wagmi → connectkit)
+    // - pino-pretty                                 (from pino → @walletconnect → wagmi → connectkit)
+    // NOTE: warnings still appear in dev HMR output (cosmetic only) — production build is clean.
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      "@react-native-async-storage/async-storage": false,
+      "pino-pretty": false,
+      // Stub `node:` prefixed imports used by @0glabs/0g-ts-sdk (browser builds only)
+      ...(!isServer && {
+        "node:crypto": false,
+        "node:fs": false,
+        "node:fs/promises": false,
+        "node:path": false,
+        "node:os": false,
+        "node:stream": false,
+        "node:buffer": false,
+      }),
     };
+
     return config;
   },
 

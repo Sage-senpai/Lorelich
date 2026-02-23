@@ -7,7 +7,7 @@ import { getDefaultConfig } from "connectkit";
 // ─────────────────────────────────────────────────────────────────────────────
 
 export const zeroGNewton = defineChain({
-  id: 16600,
+  id: 16602,
   name: "0G Newton Testnet",
   nativeCurrency: {
     name: "0G",

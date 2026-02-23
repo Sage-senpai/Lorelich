@@ -2,7 +2,7 @@
 
 import { useState, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useWalletClient, useWriteContract, useAccount } from "wagmi";
+import { useWriteContract, useAccount } from "wagmi";
 import { useUploadStore } from "@/store";
 import { validateFile, uploadToZeroG } from "@/lib/zerog";
 import { encryptBlob, packEncryptedBlob, sha256Hex } from "@/lib/encryption";
@@ -38,7 +38,6 @@ function detectMediaType(file: File): MediaType {
 
 export function StoryUpload({ vaultId, isPrivate, onComplete }: StoryUploadProps) {
   const { address } = useAccount();
-  const { data: walletClient } = useWalletClient();
   const { writeContractAsync } = useWriteContract();
   const { uploadState, setUploadState, resetUpload } = useUploadStore();
 
@@ -55,20 +54,20 @@ export function StoryUpload({ vaultId, isPrivate, onComplete }: StoryUploadProps
   }, []);
 
   const handleUpload = async () => {
-    if (!file || !title.trim() || !walletClient || !address) return;
+    if (!file || !title.trim() || !address) return;
     resetUpload();
 
     try {
       const mediaType = detectMediaType(file);
       validateFile(file, mediaType);
 
-      let fileBytes = new Uint8Array(await file.arrayBuffer());
+      let fileBytes: Uint8Array = new Uint8Array(await file.arrayBuffer());
       let encryptedKeyHash = "";
 
       // Step 1: Encrypt if private vault
       if (isPrivate) {
         setUploadState({ step: "encrypting", progress: 10 });
-        const encrypted = await encryptBlob(fileBytes.buffer, address);
+        const encrypted = await encryptBlob(fileBytes.buffer as ArrayBuffer, address);
         const packed     = packEncryptedBlob(encrypted);
         encryptedKeyHash = await sha256Hex(`${address}:${vaultId}:${title}`);
         fileBytes        = packed;
@@ -79,28 +78,27 @@ export function StoryUpload({ vaultId, isPrivate, onComplete }: StoryUploadProps
       const { rootHash } = await uploadToZeroG(
         fileBytes,
         file.name,
-        walletClient,
         (pct) => setUploadState({ progress: 20 + Math.floor(pct * 0.5) })
       );
 
       // Step 3: Write to contract
       setUploadState({ step: "confirming_tx", progress: 75, zgRootHash: rootHash });
-      const duration = mediaType === "text" || mediaType === "image" ? 0 : 0; // TODO: detect audio duration
+      const duration = mediaType === "text" || mediaType === "image" ? 0 : 0;
 
       setUploadState({ step: "minting", progress: 85 });
       await writeContractAsync({
         address: LORE_VAULT_ADDRESS,
         abi:     LORE_VAULT_ABI,
         functionName: "uploadStory",
-        args: [
+        args: [{
           vaultId,
-          rootHash,
-          title.trim(),
+          zgRootHash:       rootHash,
+          title:            title.trim(),
           mediaType,
-          BigInt(duration),
+          duration:         BigInt(duration),
           encryptedKeyHash,
-          `ipfs://pending-${rootHash.slice(0, 8)}`, // tokenURI — update to real IPFS pin
-        ],
+          tokenURI:         `ipfs://pending-${rootHash.slice(0, 8)}`,
+        }],
       });
 
       setUploadState({ step: "complete", progress: 100 });

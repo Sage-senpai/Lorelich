@@ -93,7 +93,7 @@ contract DeployScript is Script {
 ## Network Configs
 
 ### 0G Newton Testnet
-- **Chain ID**: `16600`
+- **Chain ID**: `16602`
 - **RPC**: `https://evmrpc-testnet.0g.ai`
 - **Explorer**: `https://chainscan-newton.0g.ai`
 - **Faucet**: `https://faucet.0g.ai`
@@ -112,7 +112,7 @@ forge verify-contract \
   src/LoreVault.sol:LoreVault \
   --verifier blockscout \
   --verifier-url https://chainscan-newton.0g.ai/api \
-  --chain-id 16600
+  --chain-id 16602
 ```
 
 ---

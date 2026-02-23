@@ -6,17 +6,35 @@ import {LoreVault} from "../src/LoreVault.sol";
 import {SoulboundStory} from "../src/SoulboundStory.sol";
 
 contract LoreVaultTest is Test {
-    LoreVault    internal vault;
+    LoreVault      internal vault;
     SoulboundStory internal soul;
 
-    address internal owner  = address(0xA1);
-    address internal alice  = address(0xA2);
-    address internal bob    = address(0xB1);
+    address internal owner = address(0xA1);
+    address internal alice = address(0xA2);
+    address internal bob   = address(0xB1);
 
     function setUp() public {
         soul  = new SoulboundStory();
         vault = new LoreVault(address(soul));
         soul.grantMinterRole(address(vault));
+    }
+
+    // ─── helpers ─────────────────────────────────────────────
+
+    function _params(
+        uint256 vaultId,
+        string memory rootHash,
+        string memory title
+    ) internal pure returns (LoreVault.UploadParams memory) {
+        return LoreVault.UploadParams({
+            vaultId:          vaultId,
+            zgRootHash:       rootHash,
+            title:            title,
+            mediaType:        "audio",
+            duration:         60,
+            encryptedKeyHash: "",
+            tokenURI:         "ipfs://QmTest"
+        });
     }
 
     // ─────────────────────────────────────────────────────────
@@ -55,18 +73,19 @@ contract LoreVaultTest is Test {
         vm.startPrank(owner);
         uint256 vaultId = vault.createVault("Test Vault", false);
 
-        uint256 storyId = vault.uploadStory(
-            vaultId,
-            "0xabc123rootHash",
-            "Grandma's Story",
-            "audio",
-            180,
-            "",
-            "ipfs://QmTest"
-        );
+        uint256 storyId = vault.uploadStory(LoreVault.UploadParams({
+            vaultId:          vaultId,
+            zgRootHash:       "0xabc123rootHash",
+            title:            "Grandma's Story",
+            mediaType:        "audio",
+            duration:         180,
+            encryptedKeyHash: "",
+            tokenURI:         "ipfs://QmTest"
+        }));
         vm.stopPrank();
 
-        (address uploader, uint256 vid, string memory zgHash,,,,, string memory title,) = vault.stories(storyId);
+        (address uploader, uint256 vid, string memory zgHash,,,,, string memory title,) =
+            vault.stories(storyId);
         assertEq(uploader, owner);
         assertEq(vid, vaultId);
         assertEq(zgHash, "0xabc123rootHash");
@@ -76,12 +95,9 @@ contract LoreVaultTest is Test {
     function test_uploadStory_mintsSoulbound() public {
         vm.startPrank(owner);
         uint256 vaultId = vault.createVault("Test Vault", false);
-        uint256 storyId = vault.uploadStory(
-            vaultId, "0xhash", "Story", "audio", 60, "", "ipfs://QmToken"
-        );
+        uint256 storyId = vault.uploadStory(_params(vaultId, "0xhash", "Story"));
         vm.stopPrank();
 
-        // Owner should hold soulbound token with id 0
         assertEq(soul.ownerOf(0), owner);
         assertEq(soul.tokenToStory(0), storyId);
     }
@@ -92,14 +108,22 @@ contract LoreVaultTest is Test {
 
         vm.prank(alice);
         vm.expectRevert(abi.encodeWithSelector(LoreVault.NotVaultOwner.selector, vaultId, alice));
-        vault.uploadStory(vaultId, "0xhash", "Story", "audio", 60, "", "ipfs://QmToken");
+        vault.uploadStory(_params(vaultId, "0xhash", "Story"));
     }
 
     function test_revert_uploadStory_emptyRootHash() public {
         vm.startPrank(owner);
         uint256 vaultId = vault.createVault("Test Vault", false);
         vm.expectRevert(abi.encodeWithSelector(LoreVault.EmptyString.selector, "zgRootHash"));
-        vault.uploadStory(vaultId, "", "Story", "audio", 60, "", "ipfs://QmToken");
+        vault.uploadStory(_params(vaultId, "", "Story"));
+        vm.stopPrank();
+    }
+
+    function test_revert_uploadStory_emptyTitle() public {
+        vm.startPrank(owner);
+        uint256 vaultId = vault.createVault("Test Vault", false);
+        vm.expectRevert(abi.encodeWithSelector(LoreVault.EmptyString.selector, "title"));
+        vault.uploadStory(_params(vaultId, "0xhash", ""));
         vm.stopPrank();
     }
 
@@ -135,15 +159,14 @@ contract LoreVaultTest is Test {
         uint256 vaultId = vault.createVault("Public", false);
 
         assertTrue(vault.hasAccess(vaultId, bob));
-        // Should not revert
         vm.prank(bob);
-        vault.getVaultStories(vaultId);
+        vault.getVaultStories(vaultId); // should not revert
     }
 
     function test_revert_cannotTransferSoulbound() public {
         vm.startPrank(owner);
         uint256 vaultId = vault.createVault("Test", false);
-        vault.uploadStory(vaultId, "0xhash", "Story", "audio", 60, "", "ipfs://QmToken");
+        vault.uploadStory(_params(vaultId, "0xhash", "Story"));
         vm.stopPrank();
 
         vm.prank(owner);
@@ -161,8 +184,8 @@ contract LoreVaultTest is Test {
 
         vm.startPrank(owner);
         uint256 vaultId = vault.createVault("Vault", false);
-        vault.uploadStory(vaultId, "0xhash1", "S1", "audio", 60, "", "ipfs://1");
-        vault.uploadStory(vaultId, "0xhash2", "S2", "text", 0, "", "ipfs://2");
+        vault.uploadStory(_params(vaultId, "0xhash1", "S1"));
+        vault.uploadStory(_params(vaultId, "0xhash2", "S2"));
         vm.stopPrank();
 
         assertEq(vault.totalVaults(), 1);
