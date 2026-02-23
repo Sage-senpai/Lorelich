@@ -1,6 +1,5 @@
-import type { NextConfig } from "next";
-
-const nextConfig: NextConfig = {
+/** @type {import('next').NextConfig} */
+const nextConfig = {
   // Strict mode for better dev experience
   reactStrictMode: true,
 
@@ -26,7 +25,6 @@ const nextConfig: NextConfig = {
     // These are optional runtime deps that are never needed in this app:
     // - @react-native-async-storage/async-storage  (from @metamask/sdk → wagmi → connectkit)
     // - pino-pretty                                 (from pino → @walletconnect → wagmi → connectkit)
-    // NOTE: warnings still appear in dev HMR output (cosmetic only) — production build is clean.
     config.resolve.alias = {
       ...config.resolve.alias,
       "@react-native-async-storage/async-storage": false,
