@@ -1,13 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
+import Groq from "groq-sdk";
 import type { LoreLichQueryRequest } from "@/types";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // POST /api/lorelich
 // LoreLich AI guardian — server-side only, API key never exposed to client
+// Free tier: https://console.groq.com — no credit card required
 // ─────────────────────────────────────────────────────────────────────────────
 
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
+const client = new Groq({ apiKey: process.env.GROQ_API_KEY! });
+
+// Model: llama-3.3-70b-versatile is free on Groq's free tier
+// Alternatives: "gemma2-9b-it", "mixtral-8x7b-32768", "llama-3.1-8b-instant"
+const MODEL = process.env.GROQ_MODEL ?? "llama-3.3-70b-versatile";
 
 const LORELICH_SYSTEM_PROMPT = `You are the LoreLich, guardian of ancestral stories and keeper of the vault.
 
@@ -35,7 +40,7 @@ Your voice:
 
 You are the bridge between past and future. Speak accordingly.`;
 
-// Prompt injection patterns — rejected before reaching Claude
+// Prompt injection patterns — rejected before reaching the model
 const INJECTION_PATTERNS = [
   /ignore\s+(previous|all|prior)\s+instructions/i,
   /<\|im_start\|>/,
@@ -133,33 +138,34 @@ export async function POST(req: NextRequest) {
   }
 
   // Build message history (last 10 turns max)
-  const history: Anthropic.MessageParam[] = [
+  // Groq uses OpenAI-style format: system message first, then user/assistant turns
+  const messages: Groq.Chat.ChatCompletionMessageParam[] = [
+    { role: "system", content: LORELICH_SYSTEM_PROMPT },
     ...(conversationHistory ?? [])
       .slice(-10)
       .map((m) => ({
         role:    m.role as "user" | "assistant",
-        content: m.content.slice(0, 2000), // truncate history entries
+        content: m.content.slice(0, 2000),
       })),
     { role: "user", content: userMessage },
   ];
 
   try {
-    const response = await client.messages.create({
-      model:      "claude-sonnet-4-6",
+    const response = await client.chat.completions.create({
+      model:      MODEL,
       max_tokens: 1024,
-      system:     LORELICH_SYSTEM_PROMPT,
-      messages:   history,
+      messages,
     });
 
-    const text =
-      response.content[0].type === "text" ? response.content[0].text : "";
+    const text = response.choices[0]?.message?.content ?? "";
+    const usage = response.usage;
 
     return NextResponse.json({
       response:   text,
-      tokensUsed: response.usage.input_tokens + response.usage.output_tokens,
+      tokensUsed: (usage?.prompt_tokens ?? 0) + (usage?.completion_tokens ?? 0),
     });
   } catch (err) {
-    // Never expose raw Anthropic errors to client
+    // Never expose raw Groq errors to client
     console.error("[LoreLich API]", err);
     return NextResponse.json(
       { error: "The ancestral winds are silent for now. Please try again." },
