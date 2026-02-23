@@ -10,14 +10,17 @@ import { LORE_VAULT_ADDRESS, LORE_VAULT_ABI } from "@/lib/contracts";
 import type { MediaType, UploadStep } from "@/types";
 
 // ─────────────────────────────────────────────────────────────────────────────
-// StoryUpload — Full upload flow: select → (encrypt) → 0G → contract → mint
+// StoryUpload — Full upload flow: select/write → (encrypt) → 0G → contract → mint
+// Two modes: "file" (import a file) and "write" (compose text in-browser)
 // ─────────────────────────────────────────────────────────────────────────────
 
 interface StoryUploadProps {
-  vaultId:   bigint;
-  isPrivate: boolean;
+  vaultId:    bigint;
+  isPrivate:  boolean;
   onComplete?: (storyId: bigint) => void;
 }
+
+type UploadMode = "file" | "write";
 
 const STEP_LABELS: Record<UploadStep, string> = {
   idle:          "Ready to upload",
@@ -36,13 +39,55 @@ function detectMediaType(file: File): MediaType {
   return "text";
 }
 
+/** Get audio/video duration in seconds using an HTMLMediaElement. */
+function getMediaDuration(file: File): Promise<number> {
+  return new Promise((resolve) => {
+    const el = document.createElement(
+      file.type.startsWith("video/") ? "video" : "audio"
+    );
+    const url = URL.createObjectURL(file);
+    el.preload = "metadata";
+    el.onloadedmetadata = () => {
+      URL.revokeObjectURL(url);
+      resolve(isFinite(el.duration) ? Math.round(el.duration) : 0);
+    };
+    el.onerror = () => { URL.revokeObjectURL(url); resolve(0); };
+    el.src = url;
+  });
+}
+
+/** Build a minimal token metadata JSON as a data URI — stable, no IPFS needed. */
+function buildTokenURI(params: {
+  title: string;
+  mediaType: string;
+  vaultId: string;
+  zgRootHash: string;
+  uploader: string;
+  timestamp: number;
+}): string {
+  const metadata = {
+    name:        params.title,
+    description: `Ancestral story preserved on LoreLich Vault. Media: ${params.mediaType}.`,
+    attributes: [
+      { trait_type: "Media Type",  value: params.mediaType },
+      { trait_type: "Vault ID",    value: params.vaultId   },
+      { trait_type: "Uploader",    value: params.uploader  },
+      { trait_type: "0G Root",     value: params.zgRootHash },
+      { trait_type: "Preserved At", value: new Date(params.timestamp).toISOString() },
+    ],
+  };
+  return `data:application/json;base64,${btoa(JSON.stringify(metadata))}`;
+}
+
 export function StoryUpload({ vaultId, isPrivate, onComplete }: StoryUploadProps) {
   const { address } = useAccount();
   const { writeContractAsync } = useWriteContract();
   const { uploadState, setUploadState, resetUpload } = useUploadStore();
 
-  const [file,  setFile]  = useState<File | null>(null);
-  const [title, setTitle] = useState("");
+  const [mode,     setMode]     = useState<UploadMode>("file");
+  const [file,     setFile]     = useState<File | null>(null);
+  const [storyText, setStoryText] = useState("");
+  const [title,    setTitle]    = useState("");
   const [dragging, setDragging] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -50,18 +95,44 @@ export function StoryUpload({ vaultId, isPrivate, onComplete }: StoryUploadProps
     e.preventDefault();
     setDragging(false);
     const dropped = e.dataTransfer.files[0];
-    if (dropped) setFile(dropped);
+    if (dropped) { setFile(dropped); setMode("file"); }
   }, []);
 
+  const switchMode = (next: UploadMode) => {
+    setMode(next);
+    resetUpload();
+    setFile(null);
+    setStoryText("");
+  };
+
   const handleUpload = async () => {
-    if (!file || !title.trim() || !address) return;
+    if (!title.trim() || !address) return;
+    if (mode === "file" && !file) return;
+    if (mode === "write" && !storyText.trim()) return;
     resetUpload();
 
     try {
-      const mediaType = detectMediaType(file);
-      validateFile(file, mediaType);
+      let uploadFile: File;
+      let mediaType: MediaType;
 
-      let fileBytes: Uint8Array = new Uint8Array(await file.arrayBuffer());
+      if (mode === "write") {
+        // Convert written text to a plain-text File
+        const blob = new Blob([storyText.trim()], { type: "text/plain" });
+        uploadFile = new File([blob], `${title.trim().slice(0, 60)}.txt`, { type: "text/plain" });
+        mediaType = "text";
+      } else {
+        uploadFile = file!;
+        mediaType  = detectMediaType(uploadFile);
+        validateFile(uploadFile, mediaType);
+      }
+
+      // Detect duration for audio/video
+      let duration = 0;
+      if (mediaType === "audio" || mediaType === "video") {
+        duration = await getMediaDuration(uploadFile);
+      }
+
+      let fileBytes: Uint8Array = new Uint8Array(await uploadFile.arrayBuffer());
       let encryptedKeyHash = "";
 
       // Step 1: Encrypt if private vault
@@ -69,7 +140,8 @@ export function StoryUpload({ vaultId, isPrivate, onComplete }: StoryUploadProps
         setUploadState({ step: "encrypting", progress: 10 });
         const encrypted = await encryptBlob(fileBytes.buffer as ArrayBuffer, address);
         const packed     = packEncryptedBlob(encrypted);
-        encryptedKeyHash = await sha256Hex(`${address}:${vaultId}:${title}`);
+        // Hash of (address + vaultId) — stable identifier for key verification
+        encryptedKeyHash = await sha256Hex(`${address.toLowerCase()}:${vaultId.toString()}`);
         fileBytes        = packed;
       }
 
@@ -77,18 +149,27 @@ export function StoryUpload({ vaultId, isPrivate, onComplete }: StoryUploadProps
       setUploadState({ step: "uploading_0g", progress: 20 });
       const { rootHash } = await uploadToZeroG(
         fileBytes,
-        file.name,
+        uploadFile.name,
         (pct) => setUploadState({ progress: 20 + Math.floor(pct * 0.5) })
       );
 
-      // Step 3: Write to contract
-      setUploadState({ step: "confirming_tx", progress: 75, zgRootHash: rootHash });
-      const duration = mediaType === "text" || mediaType === "image" ? 0 : 0;
+      // Step 3: Build token metadata URI (data URI — no IPFS dependency)
+      const tokenURI = buildTokenURI({
+        title:       title.trim(),
+        mediaType,
+        vaultId:     vaultId.toString(),
+        zgRootHash:  rootHash,
+        uploader:    address,
+        timestamp:   Date.now(),
+      });
 
+      // Step 4: Write to contract (uploadStory triggers soulbound mint internally)
+      setUploadState({ step: "confirming_tx", progress: 75, zgRootHash: rootHash });
       setUploadState({ step: "minting", progress: 85 });
+
       await writeContractAsync({
-        address: LORE_VAULT_ADDRESS,
-        abi:     LORE_VAULT_ABI,
+        address:      LORE_VAULT_ADDRESS,
+        abi:          LORE_VAULT_ABI,
         functionName: "uploadStory",
         args: [{
           vaultId,
@@ -97,68 +178,136 @@ export function StoryUpload({ vaultId, isPrivate, onComplete }: StoryUploadProps
           mediaType,
           duration:         BigInt(duration),
           encryptedKeyHash,
-          tokenURI:         `ipfs://pending-${rootHash.slice(0, 8)}`,
+          tokenURI,
         }],
       });
 
       setUploadState({ step: "complete", progress: 100 });
+      onComplete?.(0n); // storyId not returned from writeContract
     } catch (err) {
       setUploadState({
-        step:     "error",
+        step:  "error",
         progress: 0,
-        error:    (err as Error).message,
+        error: (err as Error).message,
       });
     }
   };
 
   const isUploading = !["idle", "complete", "error"].includes(uploadState.step);
+  const wordCount   = storyText.trim() ? storyText.trim().split(/\s+/).length : 0;
 
   return (
     <div className="space-y-4">
-      {/* Drop zone */}
-      <div
-        onDrop={handleDrop}
-        onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
-        onDragLeave={() => setDragging(false)}
-        onClick={() => !isUploading && inputRef.current?.click()}
-        className={[
-          "rounded-sm border-2 border-dashed transition-all duration-300 cursor-pointer",
-          "flex flex-col items-center justify-center py-12 px-4 text-center",
-          dragging
-            ? "border-brass bg-brass/5 scale-[1.01]"
-            : file
-            ? "border-brass/40 bg-dusk/40"
-            : "border-brass/20 bg-shadow/40 hover:border-brass/40",
-          isUploading ? "pointer-events-none opacity-60" : "",
-        ].join(" ")}
-        role="button"
-        aria-label="Upload story file"
-        tabIndex={0}
-      >
-        <input
-          ref={inputRef}
-          type="file"
-          accept="audio/*,video/*,text/*,image/*,.md,.json"
-          onChange={(e) => e.target.files?.[0] && setFile(e.target.files[0])}
-          className="sr-only"
-        />
-        {file ? (
-          <>
-            <p className="font-serif text-parchment">{file.name}</p>
-            <p className="text-xs text-smoke font-mono mt-1">
-              {(file.size / (1024 * 1024)).toFixed(2)} MB
-            </p>
-          </>
-        ) : (
-          <>
-            <div className="text-3xl mb-2 opacity-40">📜</div>
-            <p className="text-aged font-serif">Drop your story here</p>
-            <p className="text-smoke text-xs font-mono mt-1">
-              Audio, video, text, or image
-            </p>
-          </>
-        )}
+
+      {/* Mode tabs */}
+      <div className="flex rounded-sm border border-brass/20 overflow-hidden">
+        {(["file", "write"] as UploadMode[]).map((m) => (
+          <button
+            key={m}
+            onClick={() => !isUploading && switchMode(m)}
+            disabled={isUploading}
+            className={[
+              "flex-1 py-2 text-xs font-mono transition-all duration-200",
+              mode === m
+                ? "bg-brass/10 text-brass border-b-2 border-brass"
+                : "text-smoke hover:text-aged bg-transparent",
+            ].join(" ")}
+          >
+            {m === "file" ? "📎 Import File" : "✍ Write Story"}
+          </button>
+        ))}
       </div>
+
+      {/* File mode — drop zone */}
+      <AnimatePresence mode="wait">
+        {mode === "file" ? (
+          <motion.div
+            key="file-mode"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <div
+              onDrop={handleDrop}
+              onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
+              onDragLeave={() => setDragging(false)}
+              onClick={() => !isUploading && inputRef.current?.click()}
+              className={[
+                "rounded-sm border-2 border-dashed transition-all duration-300 cursor-pointer",
+                "flex flex-col items-center justify-center py-12 px-4 text-center",
+                dragging
+                  ? "border-brass bg-brass/5 scale-[1.01]"
+                  : file
+                  ? "border-brass/40 bg-dusk/40"
+                  : "border-brass/20 bg-shadow/40 hover:border-brass/40",
+                isUploading ? "pointer-events-none opacity-60" : "",
+              ].join(" ")}
+              role="button"
+              aria-label="Upload story file"
+              tabIndex={0}
+            >
+              <input
+                ref={inputRef}
+                type="file"
+                accept="audio/*,video/*,text/*,image/*,.md,.json"
+                onChange={(e) => e.target.files?.[0] && setFile(e.target.files[0])}
+                className="sr-only"
+              />
+              {file ? (
+                <>
+                  <p className="font-serif text-parchment">{file.name}</p>
+                  <p className="text-xs text-smoke font-mono mt-1">
+                    {(file.size / (1024 * 1024)).toFixed(2)} MB
+                  </p>
+                </>
+              ) : (
+                <>
+                  <div className="text-3xl mb-2 opacity-40">📜</div>
+                  <p className="text-aged font-serif">Drop your story here</p>
+                  <p className="text-smoke text-xs font-mono mt-1">
+                    Audio · Video · Text · Image
+                  </p>
+                </>
+              )}
+            </div>
+          </motion.div>
+        ) : (
+          /* Write mode — textarea */
+          <motion.div
+            key="write-mode"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="space-y-2"
+          >
+            <textarea
+              value={storyText}
+              onChange={(e) => setStoryText(e.target.value)}
+              placeholder={`Write your ancestral story here…\n\nShare a memory, a family proverb, a tradition — in your own words. This text will be preserved exactly as you write it.`}
+              disabled={isUploading}
+              rows={10}
+              maxLength={50_000}
+              className={[
+                "w-full bg-crypt/80 border border-brass/20 rounded-sm",
+                "px-4 py-3 text-sm text-parchment placeholder-smoke/50",
+                "font-serif leading-relaxed resize-y min-h-[200px]",
+                "focus:outline-none focus:border-brass/50",
+                "disabled:opacity-50 transition-colors duration-200",
+              ].join(" ")}
+            />
+            <div className="flex justify-between items-center">
+              <p className="text-xs text-smoke/50 font-mono">
+                {wordCount} {wordCount === 1 ? "word" : "words"}
+              </p>
+              <p className="text-xs text-smoke/40 font-mono">
+                {storyText.length.toLocaleString()} / 50,000 chars
+              </p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Title input */}
       <input
@@ -210,7 +359,12 @@ export function StoryUpload({ vaultId, isPrivate, onComplete }: StoryUploadProps
       <div className="flex gap-2">
         <button
           onClick={handleUpload}
-          disabled={!file || !title.trim() || isUploading}
+          disabled={
+            !title.trim() ||
+            isUploading ||
+            (mode === "file"  && !file) ||
+            (mode === "write" && !storyText.trim())
+          }
           className={[
             "flex-1 py-2 px-4 rounded-sm text-sm font-mono",
             "border border-brass/40 hover:border-brass",
@@ -223,7 +377,7 @@ export function StoryUpload({ vaultId, isPrivate, onComplete }: StoryUploadProps
         </button>
         {(uploadState.step === "error" || uploadState.step === "complete") && (
           <button
-            onClick={() => { resetUpload(); setFile(null); setTitle(""); }}
+            onClick={() => { resetUpload(); setFile(null); setStoryText(""); setTitle(""); }}
             className="px-3 py-2 rounded-sm text-xs font-mono text-smoke hover:text-aged border border-smoke/20 hover:border-smoke/40 transition-colors"
           >
             Reset

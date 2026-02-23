@@ -15,8 +15,10 @@
 - Frosted glass card UI
 
 ### 3. Story Upload
-- Supported: MP3, WAV, M4A (audio) | MP4, WebM (video) | TXT, MD, JSON (text)
+- **Import File**: MP3, WAV, M4A (audio) | MP4, WebM (video) | TXT, MD, JSON (text) | JPEG, PNG, WebP (image)
+- **Write Story**: Compose text directly in-browser (up to 50,000 chars) — no file needed
 - File size limits enforced client-side
+- Audio/video duration auto-detected via HTML5 media API
 - Progress indicator during 0G upload
 - Private vault: client-side AES-GCM encryption before upload
 
@@ -37,11 +39,11 @@
 - Emits `Locked` event — permanently locked at mint
 
 ### 7. AI Query / Remix Engine (LoreLich)
-- Claude `claude-sonnet-4-6` with cultural system prompt
-- System prompt: "You are the LoreLich, guardian of ancestral stories. Speak with wisdom and reverence..."
+- Groq `llama-3.3-70b-versatile` (free tier — no credit card required)
+- Cultural system prompt: "You are the LoreLich, guardian of ancestral stories. Speak with wisdom and reverence..."
 - Users can ask questions about a story, request summaries, generate proverbs
-- Input sanitized against prompt injection
-- Rate limited: 10 requests/minute per IP
+- Input sanitized against prompt injection (client + server side)
+- Rate limited: 10 requests/minute per IP (in-memory; upgrade to Redis for production)
 
 ### 8. Private vs Public Vaults
 - Public: story metadata + blob accessible to anyone with the rootHash

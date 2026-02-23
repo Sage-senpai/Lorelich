@@ -55,8 +55,10 @@ export async function encryptBlob(
   crypto.getRandomValues(salt);
   crypto.getRandomValues(iv);
 
-  // Derive key from wallet address + global salt
-  const password = `${walletAddress}:${process.env.NEXT_PUBLIC_APP_URL ?? "lorelich"}`;
+  // Derive key from wallet address + fixed domain string.
+  // IMPORTANT: "lorelich-vault-v1" must never change — it is part of the key
+  // derivation and any change will permanently break decryption of existing files.
+  const password = `${walletAddress}:lorelich-vault-v1`;
   const key = await deriveKey(password, salt);
 
   const ciphertext = await crypto.subtle.encrypt(
@@ -76,7 +78,7 @@ export async function decryptBlob(
   encrypted: EncryptedBlob,
   walletAddress: string
 ): Promise<ArrayBuffer> {
-  const password = `${walletAddress}:${process.env.NEXT_PUBLIC_APP_URL ?? "lorelich"}`;
+  const password = `${walletAddress}:lorelich-vault-v1`;
   const key = await deriveKey(password, encrypted.salt);
 
   return crypto.subtle.decrypt(

@@ -36,7 +36,8 @@ bun dev
 - **Story Upload** — Audio, video, and text with client-side AES-GCM encryption
 - **0G Storage** — Decentralized, verifiable file storage with DA proofs
 - **Soulbound Ownership** — ERC5192 non-transferable token minted per story
-- **LoreLich AI** — Claude-powered cultural guardian for story querying and remixing
+- **LoreLich AI** — AI cultural guardian (Groq / llama-3.3-70b) for story querying and remixing
+- **Write Stories** — Compose stories directly in-browser; no file import required
 - **Waveform Playback** — WaveSurfer.js audio visualization
 - **Verifiable Proofs** — On-chain 0G merkle roots for every story
 
@@ -48,7 +49,7 @@ bun dev
 | Wallet | wagmi v2, ConnectKit |
 | Storage | 0G Storage (`@0glabs/0g-ts-sdk`) |
 | Contracts | Solidity 0.8.24, Foundry, OpenZeppelin |
-| AI | Anthropic Claude (`claude-sonnet-4-6`) |
+| AI | Groq (`llama-3.3-70b-versatile` — free tier) |
 | Waveform | WaveSurfer.js |
 | State | Zustand |
 | Encryption | Web Crypto API (AES-GCM 256) |

@@ -1,10 +1,11 @@
 "use client";
 
-import { WagmiProvider } from "wagmi";
+import { WagmiProvider, useAccount } from "wagmi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ConnectKitProvider } from "connectkit";
 import { wagmiConfig } from "@/lib/wagmi";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useVaultStore, useLoreLichStore, useUploadStore } from "@/store";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Providers — wagmi + ConnectKit + React Query
@@ -27,6 +28,27 @@ const connectKitTheme = {
   "--ck-focus-color":        "#B8860B",
 };
 
+// ─────────────────────────────────────────────────────────────────────────────
+// DisconnectGuard — clears all in-memory state when wallet disconnects
+// ─────────────────────────────────────────────────────────────────────────────
+
+function DisconnectGuard() {
+  const { isConnected } = useAccount();
+  const clearVaultData  = useVaultStore((s) => s.clearVaultData);
+  const clearMessages   = useLoreLichStore((s) => s.clearMessages);
+  const resetUpload     = useUploadStore((s) => s.resetUpload);
+
+  useEffect(() => {
+    if (!isConnected) {
+      clearVaultData();
+      clearMessages();
+      resetUpload();
+    }
+  }, [isConnected, clearVaultData, clearMessages, resetUpload]);
+
+  return null;
+}
+
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(
     () => new QueryClient({ defaultOptions: { queries: { staleTime: 30_000 } } })
@@ -38,11 +60,12 @@ export function Providers({ children }: { children: React.ReactNode }) {
         <ConnectKitProvider
           customTheme={connectKitTheme}
           options={{
-            hideNoWalletCTA:    false,
-            walletConnectName:  "WalletConnect",
+            hideNoWalletCTA:     false,
+            walletConnectName:   "WalletConnect",
             hideQuestionMarkCTA: true,
           }}
         >
+          <DisconnectGuard />
           {children}
         </ConnectKitProvider>
       </QueryClientProvider>
