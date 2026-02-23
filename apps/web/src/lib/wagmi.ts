@@ -3,15 +3,16 @@ import { defineChain } from "viem";
 import { getDefaultConfig } from "connectkit";
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 0G Newton Testnet
+// 0G Galileo Testnet (V3)
+// Chain ID 16602 — same endpoint as Newton, rebranded to Galileo
 // ─────────────────────────────────────────────────────────────────────────────
 
-export const zeroGNewton = defineChain({
+export const zeroGGalileo = defineChain({
   id: 16602,
-  name: "0G Newton Testnet",
+  name: "0G Galileo Testnet",
   nativeCurrency: {
     name: "0G",
-    symbol: "A0GI",
+    symbol: "OG",
     decimals: 18,
   },
   rpcUrls: {
@@ -21,8 +22,8 @@ export const zeroGNewton = defineChain({
   },
   blockExplorers: {
     default: {
-      name: "0G Newton Explorer",
-      url: "https://chainscan-newton.0g.ai",
+      name: "0G Galileo Explorer",
+      url: "https://chainscan-galileo.0g.ai",
     },
   },
   testnet: true,
@@ -34,9 +35,9 @@ export const zeroGNewton = defineChain({
 
 export const wagmiConfig = createConfig(
   getDefaultConfig({
-    chains: [zeroGNewton],
+    chains: [zeroGGalileo],
     transports: {
-      [zeroGNewton.id]: http(
+      [zeroGGalileo.id]: http(
         process.env.NEXT_PUBLIC_RPC_URL ?? "https://evmrpc-testnet.0g.ai"
       ),
     },
