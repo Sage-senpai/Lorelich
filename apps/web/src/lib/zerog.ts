@@ -15,10 +15,20 @@ const MAX_SIZE: Record<string, number> = {
 };
 
 const ALLOWED_MIME_TYPES: Record<string, string[]> = {
-  audio: ["audio/mpeg", "audio/wav", "audio/x-wav", "audio/mp4", "audio/aac"],
-  video: ["video/mp4", "video/webm"],
-  text:  ["text/plain", "text/markdown", "application/json"],
-  image: ["image/jpeg", "image/png", "image/webp"],
+  audio: ["audio/mpeg", "audio/wav", "audio/x-wav", "audio/mp4", "audio/aac", "audio/ogg", "audio/flac"],
+  video: ["video/mp4", "video/webm", "video/quicktime"],
+  text:  [
+    "text/plain",
+    "text/markdown",
+    "text/html",
+    "application/json",
+    "application/pdf",
+    "application/msword",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "application/rtf",
+    "text/rtf",
+  ],
+  image: ["image/jpeg", "image/png", "image/webp", "image/gif"],
 };
 
 // ─────────────────────────────────────────────────────────────────────────────

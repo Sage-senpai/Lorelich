@@ -13,13 +13,22 @@ import Link from "next/link";
 // ─────────────────────────────────────────────────────────────────────────────
 
 export default function UploadPage() {
-  const { isConnected } = useAccount();
-  const vaults          = useVaultStore((s) => s.vaults);
+  const { isConnected, status } = useAccount();
+  const vaults                  = useVaultStore((s) => s.vaults);
   const [selectedId, setSelectedId] = useState<bigint | null>(null);
 
   const { isLoading } = useOwnerVaults();
 
   const selectedVault = vaults.find((v) => v.id === selectedId) ?? null;
+
+  // Wagmi rehydrates from localStorage on page load — wait before showing gate
+  if (status === "reconnecting" || status === "connecting") {
+    return (
+      <div className="max-w-4xl mx-auto px-4 py-32 text-center">
+        <p className="font-serif text-aged/60 text-sm animate-pulse">Restoring connection…</p>
+      </div>
+    );
+  }
 
   if (!isConnected) {
     return (

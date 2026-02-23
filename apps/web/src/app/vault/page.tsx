@@ -17,7 +17,7 @@ import type { Vault } from "@/types";
 // ─────────────────────────────────────────────────────────────────────────────
 
 export default function VaultPage() {
-  const { isConnected, address } = useAccount();
+  const { isConnected, address, status } = useAccount();
   const { vaultIds, isLoading }  = useOwnerVaults();
   const vaults                   = useVaultStore((s) => s.vaults);
   const selectedVaultId          = useVaultStore((s) => s.selectedVaultId);
@@ -34,6 +34,15 @@ export default function VaultPage() {
   const selectedStories = selectedVaultId !== null
     ? (stories[selectedVaultId.toString()] ?? [])
     : [];
+
+  // Wagmi rehydrates from localStorage on page load — wait before showing gate
+  if (status === "reconnecting" || status === "connecting") {
+    return (
+      <div className="max-w-4xl mx-auto px-4 py-32 text-center">
+        <p className="font-serif text-aged/60 text-sm animate-pulse">Restoring connection…</p>
+      </div>
+    );
+  }
 
   if (!isConnected) {
     return (
