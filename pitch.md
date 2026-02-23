@@ -40,8 +40,7 @@ LoreLich is the infrastructure layer for cultural memory.
 
 ## Team
 
-[Your team here]
+[Dvyne]
 
-## Ask
-
-[Investment ask / grant ask here]
+## Pitch link
+[https://docs.google.com/document/d/1X_Od56I1Hff_3LNhS-fuqly1vjlYA_e8-gLzZ_ic8a4/edit?usp=sharing]

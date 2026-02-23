@@ -1,17 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
 import { MemData, Indexer } from "@0glabs/0g-ts-sdk";
+import { ethers } from "ethers";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // POST /api/upload
 // Server-side 0G Storage upload. Receives file from client, uploads to 0G.
 // Returns { rootHash, txHash } for on-chain recording.
 //
-// NOTE: In production, this should use a session-based wallet or
-// account abstraction. For the MVP, the server holds a funded relay wallet.
+// Requires RELAY_PRIVATE_KEY env var — a funded wallet on the 0G Galileo
+// testnet that pays the gas for storage submissions.
 // ─────────────────────────────────────────────────────────────────────────────
 
-const INDEXER_URL = process.env.NEXT_PUBLIC_0G_INDEXER_URL ?? "";
-const RPC_URL     = process.env.NEXT_PUBLIC_0G_RPC ?? "";
+const INDEXER_URL       = process.env.NEXT_PUBLIC_0G_INDEXER_URL ?? "";
+const RPC_URL           = process.env.NEXT_PUBLIC_0G_RPC ?? "";
+const RELAY_PRIVATE_KEY = process.env.RELAY_PRIVATE_KEY ?? "";
 
 export async function POST(req: NextRequest) {
   try {
@@ -53,8 +55,16 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ rootHash, txHash: "" });
     }
 
+    if (!RELAY_PRIVATE_KEY) {
+      console.warn("[Upload API] RELAY_PRIVATE_KEY not set — returning rootHash only");
+      return NextResponse.json({ rootHash, txHash: "" });
+    }
+
+    const provider = new ethers.JsonRpcProvider(RPC_URL);
+    const wallet   = new ethers.Wallet(RELAY_PRIVATE_KEY, provider);
+
     const indexer = new Indexer(INDEXER_URL);
-    const [txHash, uploadErr] = await (indexer as any).upload(zgFile, RPC_URL, undefined);
+    const [txHash, uploadErr] = await (indexer as any).upload(zgFile, RPC_URL, wallet);
     if (uploadErr) {
       return NextResponse.json(
         { error: `0G upload error: ${uploadErr}` },
