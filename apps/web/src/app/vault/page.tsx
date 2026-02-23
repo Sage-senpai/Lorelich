@@ -1,16 +1,19 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAccount, useWriteContract } from "wagmi";
 import { useVaultStore } from "@/store";
 import { useOwnerVaults, useVaultStories } from "@/hooks/useVault";
+import { useVaultIncomingRequests } from "@/hooks/useIPLicense";
 import { VaultCard, VaultCardEmpty } from "@/components/VaultCard";
 import { StoryUpload } from "@/components/StoryUpload";
 import { WaveformPreview } from "@/components/WaveformPreview";
 import { LoreLichChat } from "@/components/LoreLichChat";
+import { LicenseTermsForm } from "@/components/LicenseTermsForm";
+import { LicenseRequestCard } from "@/components/LicenseRequestCard";
 import { LORE_VAULT_ADDRESS, LORE_VAULT_ABI } from "@/lib/contracts";
-import type { Vault } from "@/types";
+import type { Vault, StoryMetadata } from "@/types";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Vault Dashboard — lists vaults, shows stories, upload + LoreLich AI
@@ -29,11 +32,27 @@ export default function VaultPage() {
   const [showCreateModal,  setShowCreateModal]  = useState(false);
   const [showUploadModal,  setShowUploadModal]  = useState(false);
   const [showChatPanel,    setShowChatPanel]    = useState(false);
+  const [licenseStory,     setLicenseStory]     = useState<StoryMetadata | null>(null);
+  const [showIncoming,     setShowIncoming]     = useState(true);
 
   const selectedVault = vaults.find((v) => v.id === selectedVaultId) ?? null;
   const selectedStories = selectedVaultId !== null
     ? (stories[selectedVaultId.toString()] ?? [])
     : [];
+
+  // Incoming license requests for selected vault's stories
+  const selectedStoryIds = useMemo(
+    () => selectedStories.map((s) => s.id),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [selectedStories.map((s) => s.id.toString()).join(",")],
+  );
+  const { requests: incomingReqs } = useVaultIncomingRequests(selectedStoryIds);
+  const pendingReqs = incomingReqs.filter((r) => r.status === "PENDING");
+
+  const storyTitleMap = useMemo(
+    () => Object.fromEntries(selectedStories.map((s) => [s.id.toString(), s.title])),
+    [selectedStories],
+  );
 
   // Wagmi rehydrates from localStorage on page load — wait before showing gate
   if (status === "reconnecting" || status === "connecting") {
@@ -136,6 +155,50 @@ export default function VaultPage() {
                 </div>
               </div>
 
+              {/* Incoming License Requests — only shown when pending exist */}
+              <AnimatePresence>
+                {pendingReqs.length > 0 && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="mb-5 overflow-hidden"
+                  >
+                    <button
+                      onClick={() => setShowIncoming((p) => !p)}
+                      className="flex items-center gap-2 text-xs font-mono text-aged hover:text-brass transition-colors mb-3 w-full"
+                    >
+                      <span className="text-brass">●</span>
+                      Incoming Requests
+                      <span className="border border-brass/30 text-brass bg-brass/10 px-1.5 py-0.5 rounded-sm">
+                        {pendingReqs.length} pending
+                      </span>
+                      <span className="ml-auto opacity-50">{showIncoming ? "▲" : "▼"}</span>
+                    </button>
+                    <AnimatePresence>
+                      {showIncoming && (
+                        <motion.div
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
+                          className="space-y-2"
+                        >
+                          {incomingReqs.map((req, i) => (
+                            <LicenseRequestCard
+                              key={req.requestId.toString()}
+                              request={req}
+                              mode="incoming"
+                              storyTitle={storyTitleMap[req.storyId.toString()]}
+                              index={i}
+                            />
+                          ))}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
               <div className="flex gap-4">
                 {/* Stories */}
                 <div className={showChatPanel ? "flex-1 min-w-0" : "w-full"}>
@@ -165,10 +228,20 @@ export default function VaultPage() {
                                 {new Date(Number(story.timestamp) * 1000).toLocaleDateString()}
                               </p>
                             </div>
-                            {/* DA Proof badge */}
-                            <span className="text-xs font-mono text-moss border border-moss/30 px-2 py-0.5 rounded-sm shrink-0">
-                              ✓ 0G
-                            </span>
+                            <div className="flex items-center gap-2 shrink-0">
+                              {/* License terms button */}
+                              <button
+                                onClick={() => setLicenseStory(story)}
+                                className="text-xs font-mono px-2 py-0.5 rounded-sm border border-brass/25 text-aged/80
+                                  hover:border-brass/60 hover:text-brass transition-colors"
+                              >
+                                🔑 License
+                              </button>
+                              {/* DA Proof badge */}
+                              <span className="text-xs font-mono text-moss border border-moss/30 px-2 py-0.5 rounded-sm">
+                                ✓ 0G
+                              </span>
+                            </div>
                           </div>
 
                           {story.mediaType === "audio" && (
@@ -229,6 +302,18 @@ export default function VaultPage() {
               vaultId={selectedVault.id}
               isPrivate={selectedVault.isPrivate}
               onComplete={() => setShowUploadModal(false)}
+            />
+          </Modal>
+        )}
+      </AnimatePresence>
+
+      {/* License Terms Modal */}
+      <AnimatePresence>
+        {licenseStory && (
+          <Modal onClose={() => setLicenseStory(null)} title="License Terms">
+            <LicenseTermsForm
+              story={licenseStory}
+              onSuccess={() => setLicenseStory(null)}
             />
           </Modal>
         )}
