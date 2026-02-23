@@ -63,6 +63,8 @@ const nextConfig = {
               "font-src 'self' https://fonts.gstatic.com",
               "img-src 'self' data: https:",
               "connect-src 'self' https: wss:",
+              // WalletConnect verification iframe
+              "frame-src 'self' https://verify.walletconnect.org https://verify.walletconnect.com",
             ].join("; "),
           },
         ],
