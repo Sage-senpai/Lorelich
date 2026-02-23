@@ -56,27 +56,18 @@ function getMediaDuration(file: File): Promise<number> {
   });
 }
 
-/** Build a minimal token metadata JSON as a data URI — stable, no IPFS needed. */
+/**
+ * Build the soulbound token URI.
+ * Kept intentionally short (just the 0G root hash) to minimise calldata and
+ * avoid WalletConnect relay size limits. Full metadata is derived from
+ * on-chain story data by the front-end.
+ */
 function buildTokenURI(params: {
-  title: string;
-  mediaType: string;
-  vaultId: string;
   zgRootHash: string;
-  uploader: string;
-  timestamp: number;
 }): string {
-  const metadata = {
-    name:        params.title,
-    description: `Ancestral story preserved on LoreLich Vault. Media: ${params.mediaType}.`,
-    attributes: [
-      { trait_type: "Media Type",  value: params.mediaType },
-      { trait_type: "Vault ID",    value: params.vaultId   },
-      { trait_type: "Uploader",    value: params.uploader  },
-      { trait_type: "0G Root",     value: params.zgRootHash },
-      { trait_type: "Preserved At", value: new Date(params.timestamp).toISOString() },
-    ],
-  };
-  return `data:application/json;base64,${btoa(JSON.stringify(metadata))}`;
+  // Compact URI: just the verifiable 0G merkle root — unique per story,
+  // no large base64 blob in the transaction.
+  return `lorelich:${params.zgRootHash}`;
 }
 
 export function StoryUpload({ vaultId, isPrivate, onComplete }: StoryUploadProps) {
@@ -154,14 +145,7 @@ export function StoryUpload({ vaultId, isPrivate, onComplete }: StoryUploadProps
       );
 
       // Step 3: Build token metadata URI (data URI — no IPFS dependency)
-      const tokenURI = buildTokenURI({
-        title:       title.trim(),
-        mediaType,
-        vaultId:     vaultId.toString(),
-        zgRootHash:  rootHash,
-        uploader:    address,
-        timestamp:   Date.now(),
-      });
+      const tokenURI = buildTokenURI({ zgRootHash: rootHash });
 
       // Step 4: Write to contract (uploadStory triggers soulbound mint internally)
       setUploadState({ step: "confirming_tx", progress: 75, zgRootHash: rootHash });
@@ -187,10 +171,19 @@ export function StoryUpload({ vaultId, isPrivate, onComplete }: StoryUploadProps
       setUploadState({ step: "complete", progress: 100 });
       onComplete?.(0n); // storyId not returned from writeContract
     } catch (err) {
+      const msg = (err as Error).message ?? "";
+      // WalletConnect relay failures surface as "Transaction failed" or "Failed to publish"
+      const isRelayError =
+        msg.includes("Transaction failed") ||
+        msg.includes("Failed to publish") ||
+        msg.includes("Connection timeout") ||
+        msg.includes("WebSocket");
       setUploadState({
         step:  "error",
         progress: 0,
-        error: (err as Error).message,
+        error: isRelayError
+          ? "WalletConnect relay failed. Open this site inside the MetaMask mobile browser, or connect MetaMask extension on desktop."
+          : msg,
       });
     }
   };
