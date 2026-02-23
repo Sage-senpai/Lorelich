@@ -182,7 +182,7 @@ export function StoryUpload({ vaultId, isPrivate, onComplete }: StoryUploadProps
         step:  "error",
         progress: 0,
         error: isRelayError
-          ? "WalletConnect relay failed. Open this site inside the MetaMask mobile browser, or connect MetaMask extension on desktop."
+          ? "WalletConnect relay failed. Open this site inside your wallet's built-in browser (OKX Wallet → Browser tab), or use a desktop browser extension."
           : msg,
       });
     }
