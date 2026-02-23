@@ -9,6 +9,9 @@ import { ethers } from "ethers";
 //
 // Requires RELAY_PRIVATE_KEY env var — a funded wallet on the 0G Galileo
 // testnet that pays the gas for storage submissions.
+//
+// Falls back to { rootHash, txHash: "" } if 0G is unavailable — the rootHash
+// is still valid for on-chain recording; the DA proof just won't be live.
 // ─────────────────────────────────────────────────────────────────────────────
 
 const INDEXER_URL       = process.env.NEXT_PUBLIC_0G_INDEXER_URL ?? "";
@@ -16,71 +19,69 @@ const RPC_URL           = process.env.NEXT_PUBLIC_0G_RPC ?? "";
 const RELAY_PRIVATE_KEY = process.env.RELAY_PRIVATE_KEY ?? "";
 
 export async function POST(req: NextRequest) {
+  // ── 1. Parse form data ──────────────────────────────────────────────────────
+  let file: File | null;
   try {
     const formData = await req.formData();
-    const file     = formData.get("file") as File | null;
+    file = formData.get("file") as File | null;
+  } catch (err) {
+    return NextResponse.json({ error: "Invalid form data." }, { status: 400 });
+  }
 
-    if (!file) {
-      return NextResponse.json({ error: "No file provided." }, { status: 400 });
-    }
+  if (!file) {
+    return NextResponse.json({ error: "No file provided." }, { status: 400 });
+  }
 
-    // Size limits
-    const MAX_SIZE = 500 * 1024 * 1024; // 500MB
-    if (file.size > MAX_SIZE) {
-      return NextResponse.json(
-        { error: `File too large. Max ${MAX_SIZE / (1024 * 1024)}MB.` },
-        { status: 400 }
-      );
-    }
+  const MAX_SIZE = 500 * 1024 * 1024; // 500 MB
+  if (file.size > MAX_SIZE) {
+    return NextResponse.json(
+      { error: `File too large. Max ${MAX_SIZE / (1024 * 1024)}MB.` },
+      { status: 400 }
+    );
+  }
 
-    // Convert web File to Uint8Array, then create 0G MemData (in-memory file)
-    const bytes  = new Uint8Array(await file.arrayBuffer());
+  // ── 2. Build merkle tree to get rootHash ────────────────────────────────────
+  let rootHash: string;
+  try {
+    // Buffer is required by 0G SDK (Uint8Array causes issues in some versions)
+    const bytes  = Buffer.from(await file.arrayBuffer());
     const zgFile = new MemData(bytes);
 
     const [tree, treeErr] = await zgFile.merkleTree();
-    if (treeErr) {
-      return NextResponse.json(
-        { error: `Merkle tree error: ${treeErr}` },
-        { status: 500 }
-      );
-    }
+    if (treeErr) throw new Error(String(treeErr));
+    rootHash = tree!.rootHash()!;
+  } catch (err) {
+    console.error("[Upload API] merkle tree error:", err);
+    return NextResponse.json(
+      { error: `Merkle tree failed: ${(err as Error).message}` },
+      { status: 500 }
+    );
+  }
 
-    const rootHash = tree!.rootHash()!;
+  // ── 3. Attempt 0G storage upload ────────────────────────────────────────────
+  // If anything fails here, we return rootHash with empty txHash so the
+  // contract call can still proceed (ownership is recorded on-chain).
+  if (!INDEXER_URL || !RPC_URL || !RELAY_PRIVATE_KEY) {
+    console.warn("[Upload API] 0G not fully configured — rootHash only");
+    return NextResponse.json({ rootHash, txHash: "" });
+  }
 
-    // Upload to 0G storage via Indexer
-    // NOTE: For the MVP, we use the server's funded relay wallet.
-    // In production, use EIP-4337 account abstraction or session keys.
-    if (!INDEXER_URL || !RPC_URL) {
-      // 0G not configured — return rootHash so the contract call still works
-      return NextResponse.json({ rootHash, txHash: "" });
-    }
-
-    if (!RELAY_PRIVATE_KEY) {
-      console.warn("[Upload API] RELAY_PRIVATE_KEY not set — returning rootHash only");
-      return NextResponse.json({ rootHash, txHash: "" });
-    }
+  try {
+    // Re-create MemData for upload (merkle tree step consumed it)
+    const bytes2  = Buffer.from(await file.arrayBuffer());
+    const zgFile2 = new MemData(bytes2);
 
     const provider = new ethers.JsonRpcProvider(RPC_URL);
     const wallet   = new ethers.Wallet(RELAY_PRIVATE_KEY, provider);
+    const indexer  = new Indexer(INDEXER_URL);
 
-    const indexer = new Indexer(INDEXER_URL);
-    const [txHash, uploadErr] = await (indexer as any).upload(zgFile, RPC_URL, wallet);
-    if (uploadErr) {
-      return NextResponse.json(
-        { error: `0G upload error: ${uploadErr}` },
-        { status: 500 }
-      );
-    }
+    const [txHash, uploadErr] = await (indexer as any).upload(zgFile2, RPC_URL, wallet);
+    if (uploadErr) throw new Error(String(uploadErr));
 
-    return NextResponse.json({
-      rootHash,
-      txHash: txHash ?? "",
-    });
+    return NextResponse.json({ rootHash, txHash: txHash ?? "" });
   } catch (err) {
-    console.error("[Upload API]", err);
-    return NextResponse.json(
-      { error: "Upload failed. Please try again." },
-      { status: 500 }
-    );
+    // 0G upload failed — still return rootHash so the flow can complete
+    console.error("[Upload API] 0G upload failed (rootHash returned):", err);
+    return NextResponse.json({ rootHash, txHash: "" });
   }
 }
