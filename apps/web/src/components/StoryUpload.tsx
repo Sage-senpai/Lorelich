@@ -171,6 +171,8 @@ export function StoryUpload({ vaultId, isPrivate, onComplete }: StoryUploadProps
         address:      LORE_VAULT_ADDRESS,
         abi:          LORE_VAULT_ABI,
         functionName: "uploadStory",
+        // Manual gas limit bypasses eth_estimateGas which is unreliable on 0G testnet
+        gas:          BigInt(600_000),
         args: [{
           vaultId,
           zgRootHash:       rootHash,

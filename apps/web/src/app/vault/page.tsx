@@ -252,6 +252,8 @@ function CreateVaultModal({ onClose }: { onClose: () => void }) {
       address:      LORE_VAULT_ADDRESS,
       abi:          LORE_VAULT_ABI,
       functionName: "createVault",
+      // Manual gas limit bypasses eth_estimateGas which is unreliable on 0G testnet
+      gas:          BigInt(200_000),
       args:         [name.trim(), isPrivate],
     });
     onClose();
