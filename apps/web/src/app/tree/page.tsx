@@ -23,8 +23,16 @@ import type { Ancestor } from "@/types";
 // Tree Page — interactive genealogy constellation graph
 // ─────────────────────────────────────────────────────────────────────────────
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const NODE_TYPES: Record<string, any> = { ancestor: AncestorNode };
+// Workaround: @xyflow/react ships types against a different @types/react
+// version than this project, causing ReactPortal mismatch errors. Cast to any.
+/* eslint-disable @typescript-eslint/no-explicit-any */
+const RF   = ReactFlow  as any;
+const BG   = Background as any;
+const Ctrl = Controls   as any;
+const MM   = MiniMap    as any;
+/* eslint-enable @typescript-eslint/no-explicit-any */
+
+const NODE_TYPES: Record<string, any> = { ancestor: AncestorNode }; // eslint-disable-line @typescript-eslint/no-explicit-any
 
 export default function TreePage() {
   const {
@@ -46,7 +54,7 @@ export default function TreePage() {
     const suggestSet   = new Set(suggestedLinks.map((l) => l.ancestorId));
     const positions    = layoutAncestors(tree.ancestors);
 
-    return tree.ancestors.map((a) => ({
+    return tree.ancestors.map((a): Node => ({
       id:       a.id,
       type:     "ancestor",
       position: positions.get(a.id) ?? { x: 0, y: 0 },
@@ -58,7 +66,7 @@ export default function TreePage() {
         linkedCount: a.linkedStoryIds.filter((sid) => confirmedSet.has(`${a.id}:${sid}`)).length
           + a.linkedStoryIds.length,
         suggested:   suggestSet.has(a.id),
-      } as AncestorNodeData,
+      },
     }));
   }, [tree, confirmedLinks, suggestedLinks]);
 
@@ -174,35 +182,29 @@ export default function TreePage() {
 
       {/* React Flow canvas */}
       <div className="flex-1 relative" style={{ background: "#0d0b0e" }}>
-        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-        <ReactFlow
+        <RF
           nodes={nodes}
           edges={edges}
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           nodeTypes={NODE_TYPES}
-          onNodeClick={onNodeClick as any}
+          onNodeClick={onNodeClick}
           fitView
           fitViewOptions={{ padding: 0.2 }}
           minZoom={0.1}
           maxZoom={2}
           attributionPosition="bottom-left"
         >
-          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-          <Background color="rgba(184,134,11,0.04)" gap={32} size={1} />
-          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-          <Controls
-            style={{ background: "rgba(13,11,14,0.8)", border: "1px solid rgba(184,134,11,0.2)" }}
-          />
-          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-          <MiniMap
-            nodeColor={(n) => {
-              const d = n.data as AncestorNodeData;
+          <BG color="rgba(184,134,11,0.04)" gap={32} size={1} />
+          <Ctrl style={{ background: "rgba(13,11,14,0.8)", border: "1px solid rgba(184,134,11,0.2)" }} />
+          <MM
+            nodeColor={(n: Node) => {
+              const d = n.data as unknown as AncestorNodeData;
               return d.linkedCount > 0 ? "#b8860b" : "rgba(100,90,80,0.6)";
             }}
             style={{ background: "rgba(13,11,14,0.8)", border: "1px solid rgba(184,134,11,0.15)" }}
           />
-        </ReactFlow>
+        </RF>
 
         {/* Legend */}
         <div

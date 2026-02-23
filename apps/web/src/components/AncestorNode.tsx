@@ -7,7 +7,7 @@ import { Handle, Position, type NodeProps } from "@xyflow/react";
 // AncestorNode — React Flow custom node for the genealogy constellation
 // ─────────────────────────────────────────────────────────────────────────────
 
-export interface AncestorNodeData {
+export interface AncestorNodeData extends Record<string, unknown> {
   givenName:   string;
   surname:     string;
   birthYear?:  number;
