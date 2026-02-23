@@ -13,7 +13,7 @@ remappings = [
   "forge-std/=lib/forge-std/src/"
 ]
 
-# 0G Newton testnet: use --legacy --gas-price 10000000000 when deploying
+# 0G Galileo testnet: use --legacy --gas-price 10000000000 when deploying
 # Example: forge script script/Deploy.s.sol --rpc-url $RPC_URL --broadcast --legacy --gas-price 10000000000
 
 [profile.default.fuzz]
@@ -23,5 +23,6 @@ runs = 256
 fuzz = { runs = 1000 }
 
 [rpc_endpoints]
-zerog_newton = "${RPC_URL}"
-sepolia      = "https://rpc.sepolia.org"
+zerog_galileo = "${RPC_URL}"
+zerog_newton  = "${RPC_URL}"
+sepolia       = "https://rpc.sepolia.org"
