@@ -245,7 +245,7 @@ export function StoryUpload({ vaultId, isPrivate, onComplete }: StoryUploadProps
               <input
                 ref={inputRef}
                 type="file"
-                accept="audio/*,video/*,text/*,image/*,.md,.json"
+                accept="audio/*,video/*,text/*,image/*,.md,.json,.pdf,.docx,.rtf"
                 onChange={(e) => e.target.files?.[0] && setFile(e.target.files[0])}
                 className="sr-only"
               />

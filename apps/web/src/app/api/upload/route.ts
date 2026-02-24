@@ -75,10 +75,10 @@ export async function POST(req: NextRequest) {
     const wallet   = new ethers.Wallet(RELAY_PRIVATE_KEY, provider);
     const indexer  = new Indexer(INDEXER_URL);
 
-    const [txHash, uploadErr] = await (indexer as any).upload(zgFile2, RPC_URL, wallet);
+    const [result, uploadErr] = await (indexer as any).upload(zgFile2, RPC_URL, wallet);
     if (uploadErr) throw new Error(String(uploadErr));
 
-    return NextResponse.json({ rootHash, txHash: txHash ?? "" });
+    return NextResponse.json({ rootHash, txHash: result?.txHash ?? "" });
   } catch (err) {
     // 0G upload failed — still return rootHash so the flow can complete
     console.error("[Upload API] 0G upload failed (rootHash returned):", err);

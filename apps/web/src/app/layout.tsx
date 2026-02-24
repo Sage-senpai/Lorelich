@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Background } from "@/components/Background";
 import { WalletConnect } from "@/components/WalletConnect";
+import { MobileNav } from "@/components/MobileNav";
 import { Providers } from "./providers";
 import "./globals.css";
 
@@ -44,7 +45,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <a href="/proverbs"    className="hover:text-aged transition-colors">Proverbs</a>
               </nav>
 
-              <WalletConnect />
+              <div className="flex items-center gap-3">
+                <WalletConnect />
+                <MobileNav />
+              </div>
             </div>
           </header>
 

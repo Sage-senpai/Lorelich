@@ -63,8 +63,7 @@ export default function TreePage() {
         surname:     a.surname,
         birthYear:   a.birthYear,
         deathYear:   a.deathYear,
-        linkedCount: a.linkedStoryIds.filter((sid) => confirmedSet.has(`${a.id}:${sid}`)).length
-          + a.linkedStoryIds.length,
+        linkedCount: a.linkedStoryIds.length,
         suggested:   suggestSet.has(a.id),
       },
     }));

@@ -12,6 +12,7 @@ import { WaveformPreview } from "@/components/WaveformPreview";
 import { LoreLichChat } from "@/components/LoreLichChat";
 import { LicenseTermsForm } from "@/components/LicenseTermsForm";
 import { LicenseRequestCard } from "@/components/LicenseRequestCard";
+import { StoryViewer } from "@/components/StoryViewer";
 import { LORE_VAULT_ADDRESS, LORE_VAULT_ABI } from "@/lib/contracts";
 import type { Vault, StoryMetadata } from "@/types";
 
@@ -33,6 +34,7 @@ export default function VaultPage() {
   const [showUploadModal,  setShowUploadModal]  = useState(false);
   const [showChatPanel,    setShowChatPanel]    = useState(false);
   const [licenseStory,     setLicenseStory]     = useState<StoryMetadata | null>(null);
+  const [viewStory,        setViewStory]        = useState<StoryMetadata | null>(null);
   const [showIncoming,     setShowIncoming]     = useState(true);
 
   const selectedVault = vaults.find((v) => v.id === selectedVaultId) ?? null;
@@ -229,6 +231,14 @@ export default function VaultPage() {
                               </p>
                             </div>
                             <div className="flex items-center gap-2 shrink-0">
+                              {/* View story from 0G */}
+                              <button
+                                onClick={() => setViewStory(story)}
+                                className="text-xs font-mono px-2 py-0.5 rounded-sm border border-smoke/25 text-smoke/70
+                                  hover:border-aged/60 hover:text-aged transition-colors"
+                              >
+                                View
+                              </button>
                               {/* License terms button */}
                               <button
                                 onClick={() => setLicenseStory(story)}
@@ -316,6 +326,16 @@ export default function VaultPage() {
               onSuccess={() => setLicenseStory(null)}
             />
           </Modal>
+        )}
+      </AnimatePresence>
+
+      {/* Story Viewer — fetches from 0G, decrypts private stories in-browser */}
+      <AnimatePresence>
+        {viewStory && (
+          <StoryViewer
+            story={viewStory}
+            onClose={() => setViewStory(null)}
+          />
         )}
       </AnimatePresence>
     </div>
