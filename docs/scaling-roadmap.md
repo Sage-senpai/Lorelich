@@ -1,13 +1,19 @@
 # LoreLich Vault — Scaling Roadmap
 
-## Current Architecture (V1 Baseline)
+## Current Architecture (V1.5 Baseline)
 
 ```
 User → Next.js (Vercel) → 0G Storage + EVM (0G Chain)
-                        → Anthropic Claude API (server-side)
+                        → Groq API (server-side: lorelich, pitch/generate, genealogy/suggest)
+                        → LoreIPModule.sol (on-chain IP licensing + royalties)
 ```
 
 Single-region, serverless, stateless. Sufficient for 0–10K MAU.
+
+**AI API Routes (all rate-limited + injection-guarded):**
+- `POST /api/lorelich` — story query and remix (10 req/min/IP)
+- `POST /api/pitch/generate` — film treatment brief generation (10 req/min/IP)
+- `POST /api/genealogy/suggest` — ancestor-to-story link suggestions (10 req/min/IP)
 
 ---
 
@@ -18,11 +24,12 @@ Single-region, serverless, stateless. Sufficient for 0–10K MAU.
 | Area | Action | Priority |
 |---|---|---|
 | Caching | Cache 0G download responses at edge (Vercel KV) | High |
-| Rate limiting | Upstash Redis rate limiter on `/api/lorelich` | High |
+| Rate limiting | Upstash Redis rate limiter on all `/api/*` AI routes | High |
 | Error tracking | Sentry for frontend + API errors | High |
 | Monitoring | Datadog or Grafana Cloud on contract events | Medium |
 | CDN | Vercel Edge Network for static assets | Low (default) |
 | DB | PlanetScale or Supabase for off-chain metadata index | Medium |
+| IP Module | Index `LicenseRequested` / `LicenseApproved` events via The Graph | Medium |
 
 ---
 
@@ -32,13 +39,14 @@ Single-region, serverless, stateless. Sufficient for 0–10K MAU.
 
 | Area | Action |
 |---|---|
-| AI | Move to Claude Batches API for non-realtime remixes |
 | AI | Streaming responses on LoreLich chat (`stream: true`) |
+| AI | Move pitch generation to async queue (long-running Groq calls) |
 | Storage | Multi-region 0G node pinning for faster downloads |
-| Indexing | The Graph subgraph for contract event indexing |
+| Indexing | The Graph subgraph for contract event indexing (vault + IP module) |
 | Search | Pinecone or Weaviate for semantic story search (V2) |
 | Queue | Upstash QStash for async upload processing |
 | Auth | JWT session tokens to reduce RPC calls per page load |
+| Tree | Migrate genealogy tree from localStorage → user-owned 0G storage |
 
 ---
 
@@ -54,16 +62,16 @@ Single-region, serverless, stateless. Sufficient for 0–10K MAU.
 | Governance | DAO multi-sig for contract upgrades (Gnosis Safe) |
 | Storage | Filecoin backup mirroring of all 0G blobs |
 | Identity | ENS / Lens Protocol profile integration |
-| Revenue | Protocol fee (0.5%) on vault monetization |
+| Revenue | Protocol fee governance via $LORE token |
 
 ---
 
 ## Bottleneck Analysis
 
 ### AI (Most Likely Bottleneck)
-- Claude API has rate limits (tokens/min per key)
-- Mitigation: Multiple API keys, request queue, caching frequent prompts
-- Long-term: Local model for common queries, Claude for complex remixes
+- Groq free tier has rate limits (tokens/min per key) — now shared across 3 routes
+- Mitigation: Per-route rate limiting, request queue, caching frequent prompts
+- Long-term: Local model for common queries, Groq/Claude for complex remixes
 
 ### 0G Storage Upload
 - Upload speed depends on user connection and 0G node availability
@@ -72,12 +80,14 @@ Single-region, serverless, stateless. Sufficient for 0–10K MAU.
 
 ### Smart Contract Gas
 - Story upload triggers 2 transactions (0G + contract)
+- IP licensing adds 1–2 transactions per license flow
 - Mitigation: Batch multiple operations where possible
-- Future: zkProof of upload without on-chain call per story
+- `eth_estimateGas` is unreliable on 0G testnet — all write calls hardcode gas limits
 
 ### Vercel Serverless
-- Cold start latency on AI route (~200ms)
+- Cold start latency on AI routes (~200ms)
 - Mitigation: Edge runtime for non-AI routes, keep-warm pings
+- Genealogy suggest route processes up to 200 ancestors × 500 stories — consider token budget cap
 
 ---
 
@@ -88,7 +98,8 @@ Single-region, serverless, stateless. Sufficient for 0–10K MAU.
 | Page load (LCP) | <3s | <2s | <1.5s |
 | Story upload (10MB) | <30s | <15s | <10s |
 | AI response (first token) | <3s | <2s | <1s |
-| Waveform render | <500ms | <200ms | <100ms |
+| Pitch brief generation | <8s | <5s | <3s |
+| Tree render (100 ancestors) | <500ms | <300ms | <200ms |
 | MAU supported | 10K | 100K | 1M+ |
 
 ---
@@ -102,4 +113,5 @@ Single-region, serverless, stateless. Sufficient for 0–10K MAU.
 | 100K | ~$3,000–$5,000 |
 | 1M | Custom enterprise pricing |
 
-Primary costs: Anthropic API tokens, Vercel bandwidth, 0G storage fees.
+Primary costs: Groq API tokens (3 routes), Vercel bandwidth, 0G storage fees.
+IP module royalties and platform fees are self-funded by protocol revenue.

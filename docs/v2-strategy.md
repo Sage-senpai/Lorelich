@@ -1,5 +1,17 @@
 # LoreLich Vault — Version 2 Expansion Strategy
 
+## Current State (V1.5 — Shipped)
+
+The following features were originally planned for V2 but have been shipped ahead of schedule:
+
+| Feature | Status | Notes |
+|---|---|---|
+| IP Licensing Layer | ✅ Shipped | `LoreIPModule.sol` deployed; `/marketplace` live |
+| Documentary Pitch Portal | ✅ Shipped | `/pitch` and `/pitch/[storyId]` live |
+| Genealogy Tree Builder | ✅ Shipped | `/tree` with React Flow + GEDCOM + AI linking |
+
+---
+
 ## V1 → V2 Trigger Conditions
 
 V2 development begins when ALL of the following are true:
@@ -80,26 +92,12 @@ Use cases: Diaspora family vaults, tribe/clan archives, oral history projects.
 
 ---
 
-### 5. Genealogy Builder
-
-Visual family tree linked to vault stories.
-
-**Implementation**:
-- Off-chain graph DB (Neo4j or Supabase tables with recursive CTEs)
-- Nodes: individuals
-- Edges: relationships (parent, sibling, spouse, mentor)
-- Each node can link to N stories
-- Visualized via D3.js force graph or React Flow
-- Exportable to GEDCOM format (standard genealogy format)
-
----
-
-### 6. Proverb-of-the-Day Engine
+### 5. Proverb-of-the-Day Engine
 
 Daily proverb surfaced from public vault stories, with context.
 
 **Implementation**:
-- Claude extracts proverbs from uploaded text/audio transcriptions
+- Groq extracts proverbs from uploaded text/audio transcriptions
 - Stored in curated pool (approved by vault owner)
 - Daily cron selects one, generates cultural context
 - Shareable as image (OG:image, Twitter card)
@@ -114,9 +112,10 @@ Daily proverb surfaced from public vault stories, with context.
 | Elevenlabs API | Voice synthesis |
 | Snapshot.js | DAO governance |
 | Gnosis Safe SDK | Multi-sig treasury |
-| Neo4j (or Supabase) | Genealogy graph |
-| D3.js / React Flow | Family tree visualization |
 | Bull / QStash | Background job queue |
+| Upstash Redis | Production rate limiting (replaces in-memory) |
+
+> Note: React Flow and GEDCOM parsing (originally listed as V2 tech) were shipped in V1.5.
 
 ---
 
@@ -127,13 +126,18 @@ Extends `LoreVault` with multi-custodian logic and quorum-based access grants.
 
 ### Modified: `LoreVault.sol`
 - Add `Pausable` (emergency stop)
-- Add protocol fee (0.5% on premium features)
+- Add protocol fee hook (governance-controlled)
 - Add governance hook interface
 
 ### New: `LoreToken.sol`
 - ERC20 governance token
 - Earned via contribution (not purchasable at launch)
 - Non-transferable for first 6 months (soulbound contribution proof)
+
+### Extended: `LoreIPModule.sol`
+- Add dispute resolution window (72h challenge period on approvals)
+- Add `SUBLICENSE` license type
+- Governance control of `PLATFORM_FEE_BPS`
 
 ---
 
@@ -154,7 +158,6 @@ Extends `LoreVault` with multi-custodian logic and quorum-based access grants.
 | Semantic search | 6 weeks |
 | Voice synthesis | 8 weeks |
 | Collaborative vaults | 6 weeks |
-| Genealogy builder | 10 weeks |
 | Governance (DAO) | 12 weeks |
 | Proverb engine | 3 weeks |
-| **Total (parallel)** | ~16 weeks (4 months) |
+| **Total (parallel)** | ~14 weeks (3.5 months) |

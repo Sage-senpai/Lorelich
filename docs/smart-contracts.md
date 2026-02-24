@@ -2,10 +2,11 @@
 
 ## Contracts Overview
 
-| Contract | Purpose |
-|---|---|
-| `LoreVault.sol` | Manages vaults, story metadata, access control, 0G storage refs |
-| `SoulboundStory.sol` | ERC5192 soulbound token minted on story upload |
+| Contract | Purpose | Status |
+|---|---|---|
+| `LoreVault.sol` | Manages vaults, story metadata, access control, 0G storage refs | Deployed |
+| `SoulboundStory.sol` | ERC5192 soulbound token minted on story upload | Deployed |
+| `LoreIPModule.sol` | IP licensing, on-chain royalties, license requests | Deployed |
 
 ---
 
@@ -55,9 +56,47 @@ SoulboundStory (ERC721 + ERC5192)
 └── tokenURI(tokenId) → IPFS/Arweave metadata URI
 ```
 
+### LoreIPModule.sol
+
+```
+LoreIPModule
+├── setTerms(storyId, isLicensable, commercialUse, exclusiveAvailable,
+│            royaltyWei, exclusiveRoyaltyWei, maxLicenses, jurisdictionNote)
+│   — onlyStoryUploader; locked after first approval
+├── requestLicense(storyId, licenseType, purposeNote) payable → requestId
+│   — validates isLicensable, commercialUse, maxLicenses, exact msg.value
+├── approveRequest(requestId, expirySeconds) nonReentrant
+│   — only uploader; CEI: sets state → distributes royalty minus PLATFORM_FEE_BPS
+│   — EXCLUSIVE approval: sets isLicensable = false
+├── rejectRequest(requestId) nonReentrant
+│   — only uploader; refunds licensee via _pendingWithdrawals
+├── revokeRequest(requestId) nonReentrant
+│   — only uploader; sets REVOKED, clears _hasActiveLicense
+├── withdraw() nonReentrant
+│   — pull pattern: zeroes balance before .call{value}()
+├── getTerms(storyId) → LicenseTerms
+├── getRequest(requestId) → LicenseRequest
+├── getStoryRequests(storyId) → requestId[]
+├── hasActiveLicense(storyId, licensee) → bool
+└── pendingWithdrawal(account) → uint256
+```
+
+**Security Properties:**
+- `ReentrancyGuard` on all payable and ETH-transfer functions
+- Pull-pattern ETH distribution — no push transfers
+- CEI (Checks-Effects-Interactions) throughout
+- Terms lock after first approval — no retroactive changes to approved licenses
+- `onlyStoryUploader` reads from `ILoreVault.stories()` — zero LoreVault state modification
+- Platform fee: `PLATFORM_FEE_BPS = 250` (2.5%), immutable
+
+**License Types**: `PERSONAL | DOCUMENTARY | COMMERCIAL | EXCLUSIVE`
+**License Statuses**: `PENDING | APPROVED | REJECTED | EXPIRED | REVOKED`
+
 ---
 
-## Deployment Script
+## Deployment Scripts
+
+### Core (LoreVault + SoulboundStory)
 
 `contracts/script/Deploy.s.sol`:
 
@@ -88,19 +127,62 @@ contract DeployScript is Script {
 }
 ```
 
+### IP Module
+
+`contracts/script/DeployIPModule.s.sol`:
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.24;
+
+import {Script, console} from "forge-std/Script.sol";
+import {LoreIPModule} from "../src/LoreIPModule.sol";
+
+contract DeployIPModule is Script {
+    function run() external {
+        address loreVault    = vm.envAddress("LORE_VAULT_ADDRESS");
+        address feeRecipient = vm.envAddress("FEE_RECIPIENT");
+        uint256 deployerKey  = vm.envUint("DEPLOYER_PRIVATE_KEY");
+
+        vm.startBroadcast(deployerKey);
+        LoreIPModule ipModule = new LoreIPModule(loreVault, feeRecipient);
+        console.log("LoreIPModule:", address(ipModule));
+        vm.stopBroadcast();
+    }
+}
+```
+
 ---
 
 ## Network Configs
 
-### 0G Newton Testnet
+### 0G Galileo Testnet (current)
+- **Chain ID**: `16601`
+- **RPC**: `https://evmrpc-testnet.0g.ai`
+- **Explorer**: `https://chainscan-galileo.0g.ai`
+- **Faucet**: `https://faucet.0g.ai`
+
+### 0G Newton Testnet (legacy)
 - **Chain ID**: `16602`
 - **RPC**: `https://evmrpc-testnet.0g.ai`
 - **Explorer**: `https://chainscan-newton.0g.ai`
-- **Faucet**: `https://faucet.0g.ai`
 
 ### Ethereum Sepolia (fallback testing)
 - **Chain ID**: `11155111`
 - **RPC**: `https://rpc.sepolia.org`
+
+---
+
+## Deployed Addresses (0G Galileo Testnet)
+
+| Contract | Address |
+|---|---|
+| `LoreIPModule` | `0x036eACE959adb91BdD35b7c1cf607B0133545968` |
+
+Set in frontend environment:
+```
+NEXT_PUBLIC_LORE_IP_MODULE_ADDRESS=0x036eACE959adb91BdD35b7c1cf607B0133545968
+```
 
 ---
 
@@ -111,8 +193,23 @@ forge verify-contract \
   <DEPLOYED_ADDRESS> \
   src/LoreVault.sol:LoreVault \
   --verifier blockscout \
-  --verifier-url https://chainscan-newton.0g.ai/api \
-  --chain-id 16602
+  --verifier-url https://chainscan-galileo.0g.ai/api \
+  --chain-id 16601
+```
+
+---
+
+## Testing
+
+```bash
+# Run all contract tests
+forge test
+
+# Run IP module tests only
+forge test --match-path contracts/test/LoreIPModule.t.sol -vvv
+
+# Simulate setTerms → requestLicense → approveRequest → withdraw
+cast call $IP_MODULE "getTerms(uint256)" 0 --rpc-url $RPC_URL
 ```
 
 ---
@@ -128,9 +225,11 @@ Contracts are **non-upgradeable** in V1 for simplicity and auditability. If a bu
 
 Do **not** use transparent proxies in V1 — they increase attack surface before audit.
 
+`LoreIPModule` reads from `LoreVault` via the `ILoreVault` interface — any future vault upgrade can have a new module deployed pointing to the new vault, without touching the old module.
+
 ---
 
-## Gas Estimates (0G Newton)
+## Gas Estimates (0G Galileo)
 
 | Operation | Est. Gas |
 |---|---|
@@ -138,15 +237,24 @@ Do **not** use transparent proxies in V1 — they increase attack surface before
 | `uploadStory` | ~120,000 |
 | `mint` (soulbound) | ~95,000 |
 | `grantAccess` | ~45,000 |
+| `setTerms` | ~75,000 |
+| `requestLicense` | ~90,000 |
+| `approveRequest` | ~65,000 |
+| `withdraw` | ~35,000 |
+
+> Note: `eth_estimateGas` is unreliable on 0G testnet. All frontend write calls hardcode gas limits to bypass this.
 
 ---
 
 ## Emergency Procedures
 
 ```bash
-# Pause vault (if Pausable added in V2)
-cast send $LORE_VAULT_ADDRESS "pause()" --private-key $ADMIN_KEY --rpc-url $RPC_URL
-
 # Check owner
 cast call $LORE_VAULT_ADDRESS "owner()(address)" --rpc-url $RPC_URL
+
+# Check pending withdrawal for an address
+cast call $IP_MODULE "pendingWithdrawal(address)(uint256)" $ADDRESS --rpc-url $RPC_URL
+
+# Check if story is licensable
+cast call $IP_MODULE "getTerms(uint256)(bool,bool,bool,uint256,uint256,uint256,string,uint256)" $STORY_ID --rpc-url $RPC_URL
 ```

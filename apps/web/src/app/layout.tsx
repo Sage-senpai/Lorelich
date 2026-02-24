@@ -34,12 +34,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               </a>
 
               {/* Nav links */}
-              <nav className="hidden md:flex items-center gap-6 font-mono text-sm text-smoke">
+              <nav className="hidden md:flex items-center gap-5 font-mono text-sm text-smoke">
                 <a href="/vault"       className="hover:text-aged transition-colors">Vaults</a>
                 <a href="/upload"      className="hover:text-aged transition-colors">Upload</a>
                 <a href="/marketplace" className="hover:text-aged transition-colors">Marketplace</a>
                 <a href="/pitch"       className="hover:text-aged transition-colors">Pitch</a>
                 <a href="/tree"        className="hover:text-aged transition-colors">Tree</a>
+                <a href="/search"      className="hover:text-aged transition-colors">Search</a>
+                <a href="/proverbs"    className="hover:text-aged transition-colors">Proverbs</a>
               </nav>
 
               <WalletConnect />
@@ -55,7 +57,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <footer className="border-t border-brass/10 py-6 mt-20">
             <div className="max-w-6xl mx-auto px-4 flex items-center justify-between text-xs text-smoke font-mono">
               <span>LoreLich Vault — Immortal. Verifiable. Decentralized.</span>
-              <span>0G Storage · Claude AI · ERC5192 · IP Licensing · Pitch Portal · Genealogy</span>
+              <span>0G Storage · Groq AI · ERC5192 · IP Licensing · Pitch Portal · Genealogy · Search · Proverbs</span>
             </div>
           </footer>
         </Providers>

@@ -212,3 +212,60 @@ export interface GenealogySuggestResponse {
   links:      AncestorLink[];
   tokensUsed: number;
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// V2: Proverb Engine
+// ─────────────────────────────────────────────────────────────────────────────
+
+export interface StoryProverb {
+  id:              string;   // crypto.randomUUID()
+  storyId:         string;
+  storyTitle:      string;
+  vaultName:       string;
+  proverb:         string;
+  culturalContext: string;
+  culture?:        string;
+  extractedAt:     number;
+}
+
+export interface ProverbExtractRequest {
+  storyId:   string;
+  storyText: string;  // plaintext passage (max 2000 chars)
+  title:     string;
+  vaultName: string;
+}
+
+export interface ProverbExtractResponse {
+  proverb:         string;
+  culturalContext: string;
+  culture?:        string;
+  tokensUsed:      number;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// V2: Semantic Search
+// ─────────────────────────────────────────────────────────────────────────────
+
+export interface SearchStoryInput {
+  id:         string;
+  title:      string;
+  mediaType:  string;
+  vaultName:  string;
+  timestamp?: number;
+}
+
+export interface SearchRequest {
+  query:   string;
+  stories: SearchStoryInput[];
+}
+
+export interface SearchResult {
+  storyId:        string;
+  relevanceScore: number; // 0–100
+  reason:         string;
+}
+
+export interface SearchResponse {
+  results:    SearchResult[];
+  tokensUsed: number;
+}
