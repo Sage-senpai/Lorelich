@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { formatEther, parseEther } from "viem";
 import { useSetTerms, useStoryTerms } from "@/hooks/useIPLicense";
@@ -19,21 +19,30 @@ export function LicenseTermsForm({ story, onSuccess }: LicenseTermsFormProps) {
   const { terms: existing } = useStoryTerms(story.id);
   const { setTerms, isPending } = useSetTerms();
 
-  const [isLicensable,       setIsLicensable]       = useState(existing?.isLicensable       ?? false);
-  const [commercialUse,      setCommercialUse]       = useState(existing?.commercialUse      ?? false);
-  const [exclusiveAvailable, setExclusiveAvailable]  = useState(existing?.exclusiveAvailable ?? false);
-  const [royaltyOG,          setRoyaltyOG]           = useState(
-    existing?.royaltyWei ? formatEther(existing.royaltyWei) : "0"
-  );
-  const [exclusiveRoyaltyOG, setExclusiveRoyaltyOG] = useState(
-    existing?.exclusiveRoyaltyWei ? formatEther(existing.exclusiveRoyaltyWei) : "0"
-  );
-  const [maxLicenses,        setMaxLicenses]         = useState(
-    existing?.maxLicenses ? Number(existing.maxLicenses) : 0
-  );
-  const [jurisdictionNote,   setJurisdictionNote]    = useState(existing?.jurisdictionNote ?? "");
+  const [isLicensable,       setIsLicensable]       = useState(false);
+  const [commercialUse,      setCommercialUse]       = useState(false);
+  const [exclusiveAvailable, setExclusiveAvailable]  = useState(false);
+  const [royaltyOG,          setRoyaltyOG]           = useState("0");
+  const [exclusiveRoyaltyOG, setExclusiveRoyaltyOG] = useState("0");
+  const [maxLicenses,        setMaxLicenses]         = useState(0);
+  const [jurisdictionNote,   setJurisdictionNote]    = useState("");
   const [error,              setError]               = useState("");
   const [success,            setSuccess]             = useState(false);
+
+  // Hydrate form from on-chain data once it loads (useState initial value only
+  // runs once, so existing=undefined on first render is safe to ignore)
+  const hydratedRef = useRef(false);
+  useEffect(() => {
+    if (!existing || hydratedRef.current) return;
+    hydratedRef.current = true;
+    setIsLicensable(existing.isLicensable);
+    setCommercialUse(existing.commercialUse);
+    setExclusiveAvailable(existing.exclusiveAvailable);
+    setRoyaltyOG(formatEther(existing.royaltyWei));
+    setExclusiveRoyaltyOG(formatEther(existing.exclusiveRoyaltyWei));
+    setMaxLicenses(Number(existing.maxLicenses));
+    setJurisdictionNote(existing.jurisdictionNote);
+  }, [existing]);
 
   const handleSubmit = async () => {
     setError("");

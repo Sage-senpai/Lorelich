@@ -25,7 +25,7 @@ export function AncestorStoryLinker({ ancestor, onClose }: AncestorStoryLinkerPr
   const {
     tree, suggestedLinks, confirmedLinks,
     isSuggesting, suggestLinks,
-    confirmLink, dismissLink,
+    confirmLink, dismissLink, removeConfirmedLink,
   } = useGenealogyTree();
 
   const allStories = useVaultStore((s) => {
@@ -72,9 +72,13 @@ export function AncestorStoryLinker({ ancestor, onClose }: AncestorStoryLinkerPr
     });
   };
 
-  const handleUnlink = (storyId: string) => {
+  const handleUnlink = (storyId: string, isConfirmed: boolean) => {
     if (!ancestor) return;
-    dismissLink(ancestor.id, storyId);
+    if (isConfirmed) {
+      removeConfirmedLink(ancestor.id, storyId);
+    } else {
+      dismissLink(ancestor.id, storyId);
+    }
   };
 
   return (
@@ -85,7 +89,7 @@ export function AncestorStoryLinker({ ancestor, onClose }: AncestorStoryLinkerPr
           animate={{ x: 0, opacity: 1 }}
           exit={{ x: "100%", opacity: 0 }}
           transition={{ duration: 0.3, ease: "easeInOut" }}
-          className="fixed right-0 top-0 bottom-0 z-30 w-80 flex flex-col
+          className="fixed right-0 top-14 bottom-0 z-30 w-80 flex flex-col
             border-l border-brass/15 overflow-hidden"
           style={{ background: "rgba(13,11,14,0.95)", backdropFilter: "blur(8px)" }}
         >
@@ -134,7 +138,7 @@ export function AncestorStoryLinker({ ancestor, onClose }: AncestorStoryLinkerPr
                           )}
                         </div>
                         <button
-                          onClick={() => handleUnlink(link.storyId)}
+                          onClick={() => handleUnlink(link.storyId, true)}
                           className="text-xs font-mono text-smoke/50 hover:text-red-400 transition-colors shrink-0"
                         >
                           Unlink
@@ -180,7 +184,7 @@ export function AncestorStoryLinker({ ancestor, onClose }: AncestorStoryLinkerPr
                             Confirm
                           </button>
                           <button
-                            onClick={() => handleUnlink(link.storyId)}
+                            onClick={() => handleUnlink(link.storyId, false)}
                             className="flex-1 text-xs font-mono py-1 rounded-sm border border-smoke/30 text-smoke hover:bg-smoke/10 transition-colors"
                           >
                             Dismiss
@@ -216,7 +220,7 @@ export function AncestorStoryLinker({ ancestor, onClose }: AncestorStoryLinkerPr
                           <p className="text-xs text-smoke/60 font-mono">{story.mediaType}</p>
                         </div>
                         <button
-                          onClick={() => isLinked ? handleUnlink(story.id.toString()) : handleLink(story.id.toString())}
+                          onClick={() => isLinked ? handleUnlink(story.id.toString(), true) : handleLink(story.id.toString())}
                           className={[
                             "text-xs font-mono shrink-0 transition-colors",
                             isLinked

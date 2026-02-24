@@ -17,7 +17,10 @@ import type { FilmPitchBrief, StoryMetadata, LicenseTerms } from "@/types";
 
 export default function PitchDetailPage() {
   const params  = useParams<{ storyId: string }>();
-  const storyId = params?.storyId ? BigInt(params.storyId) : null;
+  const storyId = (() => {
+    try { return params?.storyId ? BigInt(params.storyId) : null; }
+    catch { return null; }
+  })();
 
   const [brief,      setBrief]      = useState<FilmPitchBrief | null>(null);
   const [showModal,  setShowModal]  = useState(false);

@@ -122,14 +122,15 @@ interface TreeStore {
   isImporting:    boolean;
   isSuggesting:   boolean;
 
-  setTree:           (tree: GenealogyTree | null) => void;
-  setSuggestedLinks: (links: AncestorLink[]) => void;
-  confirmLink:       (link: AncestorLink) => void;
-  dismissLink:       (ancestorId: string, storyId: string) => void;
-  setImporting:      (v: boolean) => void;
-  setSuggesting:     (v: boolean) => void;
-  persistToStorage:  () => void;
-  loadFromStorage:   () => void;
+  setTree:             (tree: GenealogyTree | null) => void;
+  setSuggestedLinks:   (links: AncestorLink[]) => void;
+  confirmLink:         (link: AncestorLink) => void;
+  removeConfirmedLink: (ancestorId: string, storyId: string) => void;
+  dismissLink:         (ancestorId: string, storyId: string) => void;
+  setImporting:        (v: boolean) => void;
+  setSuggesting:       (v: boolean) => void;
+  persistToStorage:    () => void;
+  loadFromStorage:     () => void;
 }
 
 export const useTreeStore = create<TreeStore>((set, get) => ({
@@ -147,6 +148,23 @@ export const useTreeStore = create<TreeStore>((set, get) => ({
       suggestedLinks: s.suggestedLinks.filter(
         (l) => !(l.ancestorId === link.ancestorId && l.storyId === link.storyId)
       ),
+    })),
+  removeConfirmedLink: (ancestorId, storyId) =>
+    set((s) => ({
+      confirmedLinks: s.confirmedLinks.filter(
+        (l) => !(l.ancestorId === ancestorId && l.storyId === storyId)
+      ),
+      // Also remove storyId from tree ancestor's linkedStoryIds
+      tree: s.tree
+        ? {
+            ...s.tree,
+            ancestors: s.tree.ancestors.map((a) =>
+              a.id === ancestorId
+                ? { ...a, linkedStoryIds: a.linkedStoryIds.filter((id) => id !== storyId) }
+                : a
+            ),
+          }
+        : null,
     })),
   dismissLink: (ancestorId, storyId) =>
     set((s) => ({

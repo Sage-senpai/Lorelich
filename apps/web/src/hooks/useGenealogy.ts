@@ -141,7 +141,7 @@ export function useGenealogyTree() {
   const {
     tree, suggestedLinks, confirmedLinks,
     isImporting, isSuggesting,
-    setTree, setSuggestedLinks, confirmLink, dismissLink,
+    setTree, setSuggestedLinks, confirmLink, removeConfirmedLink, dismissLink,
     setImporting, setSuggesting,
     persistToStorage, loadFromStorage,
   } = useTreeStore();
@@ -212,6 +212,13 @@ export function useGenealogyTree() {
     persistToStorage();
   }, [confirmLink, persistToStorage]);
 
+  // removeConfirmedLink also persists — store action already updates tree.linkedStoryIds
+  const removeConfirmedLinkAndPersist = useCallback((ancestorId: string, storyId: string) => {
+    removeConfirmedLink(ancestorId, storyId);
+    // persistToStorage reads store state after the synchronous set() above
+    setTimeout(() => persistToStorage(), 0);
+  }, [removeConfirmedLink, persistToStorage]);
+
   return {
     tree,
     suggestedLinks,
@@ -220,7 +227,8 @@ export function useGenealogyTree() {
     isSuggesting,
     importGedcom,
     suggestLinks,
-    confirmLink: confirmLinkAndPersist,
+    confirmLink:         confirmLinkAndPersist,
+    removeConfirmedLink: removeConfirmedLinkAndPersist,
     dismissLink,
     loadFromStorage,
   };
