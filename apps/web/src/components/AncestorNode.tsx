@@ -72,14 +72,14 @@ export const AncestorNode = memo(function AncestorNode({ data, selected }: Ances
         />
       )}
 
-      {/* React Flow connection handles — @ts-expect-error suppresses React type version mismatch */}
-      {/* @ts-expect-error */}
+      {/* React Flow connection handles — @ts-ignore avoids cross-env React type mismatch noise */}
+      {/* @ts-ignore */}
       <Handle type="target" position={Position.Top}    className="!opacity-0 !w-1 !h-1" />
-      {/* @ts-expect-error */}
+      {/* @ts-ignore */}
       <Handle type="source" position={Position.Bottom} className="!opacity-0 !w-1 !h-1" />
-      {/* @ts-expect-error */}
+      {/* @ts-ignore */}
       <Handle type="source" position={Position.Left}   id="left"  className="!opacity-0 !w-1 !h-1" />
-      {/* @ts-expect-error */}
+      {/* @ts-ignore */}
       <Handle type="target" position={Position.Right}  id="right" className="!opacity-0 !w-1 !h-1" />
     </div>
   );
