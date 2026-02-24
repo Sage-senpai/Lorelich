@@ -134,15 +134,85 @@ GEDCOM-powered family tree linked to vault stories via AI.
 
 ---
 
-## V2 Features
+## V2 Features (Shipped)
 
-- Semantic search across public vaults
-- AI voice synthesis (consent-based, revocable)
-- Community governance ($LORE token)
+### 15. Proverb Extraction Engine
+
+Extract timeless wisdom proverbs from story text using LoreLich AI.
+
+**API** (`/api/proverb/extract`):
+- Groq with cultural scholar system prompt
+- Input: `{ storyId, storyText (max 2000 chars), title, vaultName }`
+- Returns: `{ proverb, culturalContext, culture? }`
+
+**UI** (`/proverbs`):
+- Vault → story selector to choose source story
+- Textarea pre-fills from story text; user can trim to 2000 chars
+- Proverb cards with copy-to-clipboard and delete
+- localStorage persistence (`lorelich_proverbs`)
+
+### 16. Semantic Story Search
+
+Natural language search across all public vault stories.
+
+**API** (`/api/search`):
+- Groq AI semantic ranking of stories against query
+- Input: `{ query, stories: SearchStoryInput[] }` — max 300 stories
+- Returns: `[{ storyId, relevanceScore: 0-100, reason }]` sorted by score
+
+**UI** (`/search`):
+- Fetches all public stories on load (via contract batch reads)
+- Score bar visualization per result
+- Shows corpus count when idle, result count after search
+
+---
+
+## V2.1 Features (Shipped)
+
+### 17. 0G Storage Retrieval (Complete Read/Write Round-Trip)
+
+Stories can now be fetched back from 0G Storage and viewed in-browser.
+
+**API** (`GET /api/download?rootHash=0x...`):
+- `Indexer.download(rootHash, tmpFile, false)` — writes to temp file, streams bytes to client
+- `Cache-Control: immutable` (content-addressed: same hash = same bytes forever)
+- Returns `application/octet-stream`
+
+**StoryViewer component**:
+- Fetches from `/api/download`, optionally decrypts (private vaults) via Web Crypto
+- Renders: scrollable text | `<img>` | `<audio controls>` | download-only fallback
+- "↓ Download" link always present in footer
+
+**Vault integration**: "View" button on every story card opens StoryViewer modal.
+
+### 18. Mobile Navigation
+
+Hamburger menu (`MobileNav.tsx`) for viewports below `md` breakpoint.
+- Animated slide-down with all 7 nav links
+- CSS-only animated three-line → X transition on toggle
+
+### Bug Fixes Applied (V2.1)
+- `linkedCount` double-count in tree constellation (was filter result + full array length)
+- `pitch/[storyId]` — BigInt crash on non-numeric URL segment (wrapped in try-catch IIFE)
+- `LicenseTermsForm` stale initial state (useState with async hook value; fixed with `useEffect` + `useRef`)
+- `AncestorStoryLinker` unlink on confirmed stories was no-op (called `dismissLink` not `removeConfirmedLink`)
+- `AncestorStoryLinker` panel overlapped by nav bar (`top-0` → `top-14`)
+- Upload route: txHash destructuring extracted entire result object (fixed: `result?.txHash`)
+- File input `accept` missing `.pdf,.docx,.rtf`
+
+---
+
+## V3 Features
+
+- AI voice synthesis (consent-based, revocable on-chain)
+- Community governance ($LORE token, Snapshot DAO)
 - Collaborative multi-custodian vaults
-- Proverb-of-the-day engine
+- 0G KV Store for story tags and cultural annotations
+- Story transcript generation (Groq Whisper for audio)
+- Public story share page (`/story/[storyId]`) — sharable URL per story
+- Certificate of Preservation — PDF certificate with root hash + timestamp
 
-## V3+ Features
+## V4+ Features
 
 - Indigenous language expansion
 - Premium storage tiers

@@ -1,21 +1,37 @@
 # LoreLich Vault — Version 2 Expansion Strategy
 
-## Current State (V1.5 — Shipped)
+## Current State
 
-The following features were originally planned for V2 but have been shipped ahead of schedule:
+### V1.5 — Shipped
 
-| Feature | Status | Notes |
-|---|---|---|
-| IP Licensing Layer | ✅ Shipped | `LoreIPModule.sol` deployed; `/marketplace` live |
-| Documentary Pitch Portal | ✅ Shipped | `/pitch` and `/pitch/[storyId]` live |
-| Genealogy Tree Builder | ✅ Shipped | `/tree` with React Flow + GEDCOM + AI linking |
+| Feature | Notes |
+|---|---|
+| IP Licensing Layer | `LoreIPModule.sol` deployed; `/marketplace` live |
+| Documentary Pitch Portal | `/pitch` and `/pitch/[storyId]` live |
+| Genealogy Tree Builder | `/tree` with React Flow + GEDCOM + AI linking |
+
+### V2 — Shipped
+
+| Feature | Notes |
+|---|---|
+| Proverb Extraction Engine | `/proverbs` + `/api/proverb/extract` (Groq cultural scholar) |
+| Semantic Story Search | `/search` + `/api/search` (Groq AI relevance ranking 0–100) |
+
+### V2.1 — Shipped
+
+| Feature | Notes |
+|---|---|
+| 0G Storage Retrieval | `GET /api/download` — complete read/write round-trip via `Indexer.download()` |
+| StoryViewer | In-browser text/image/audio viewer; private vaults decrypted client-side |
+| Mobile Navigation | Hamburger menu for sub-`md` viewports |
+| 7 Bug Fixes | linkedCount, BigInt crash, form hydration, unlink, nav overlap, txHash, accept |
 
 ---
 
-## V1 → V2 Trigger Conditions
+## V2 → V3 Trigger Conditions
 
-V2 development begins when ALL of the following are true:
-- V1 has been live for ≥ 3 months
+V3 development begins when ALL of the following are true:
+- V2 has been live for ≥ 3 months
 - 1,000+ stories uploaded
 - Security audit complete with no critical findings
 - Community feedback collected (min 50 user interviews)
@@ -92,15 +108,11 @@ Use cases: Diaspora family vaults, tribe/clan archives, oral history projects.
 
 ---
 
-### 5. Proverb-of-the-Day Engine
+### 5. Proverb-of-the-Day Engine *(Shipped as V2 — manual extraction)*
 
-Daily proverb surfaced from public vault stories, with context.
+Shipped: `/proverbs` lets users manually extract proverbs from any story text via Groq AI.
 
-**Implementation**:
-- Groq extracts proverbs from uploaded text/audio transcriptions
-- Stored in curated pool (approved by vault owner)
-- Daily cron selects one, generates cultural context
-- Shareable as image (OG:image, Twitter card)
+Remaining for V3: automated daily cron, curated public pool, shareable OG image card.
 
 ---
 

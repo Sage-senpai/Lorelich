@@ -2,7 +2,7 @@
 
 > *A sacred digital archive. Ancient stories awakening through AI. Immortal. Verifiable. Decentralized.*
 
-LoreLich Vault is a decentralized platform for preserving ancestral stories — audio, video, and text — with client-side encryption, 0G decentralized storage, soulbound on-chain ownership, an AI guardian that speaks with wisdom and reverence, on-chain IP licensing, AI-generated documentary pitch briefs, and an interactive genealogy constellation builder.
+LoreLich Vault is a decentralized platform for preserving ancestral stories — audio, video, and text — with client-side encryption, 0G decentralized storage (upload **and** retrieval), soulbound on-chain ownership, an AI guardian that speaks with wisdom and reverence, on-chain IP licensing, AI-generated documentary pitch briefs, an interactive genealogy constellation builder, a proverb extraction engine, and semantic story search.
 
 ---
 
@@ -32,15 +32,17 @@ bun dev
 ## Feature Highlights
 
 ### Core Archive
-- **Wallet Login** — Connect with any EVM wallet via WalletConnect
+- **Wallet Login** — Connect with any EVM wallet via WalletConnect; mobile hamburger nav
 - **Vault Dashboard** — Private and public vault management
-- **Story Upload** — Audio, video, text, and images with client-side AES-GCM encryption
-- **0G Storage** — Decentralized, verifiable file storage with DA proofs
+- **Story Upload** — Audio, video, text, images (MP3/MP4/PDF/DOCX/RTF/…) with client-side AES-GCM encryption
+- **0G Storage Upload** — Decentralized file storage; relay wallet pays storage gas
+- **0G Storage Download** — `GET /api/download` retrieves any story by root hash; immutable cache
+- **Story Viewer** — View text, images, and play audio directly in-browser; private stories decrypted client-side
 - **Soulbound Ownership** — ERC5192 non-transferable token minted per story
 - **LoreLich AI** — AI cultural guardian (Groq / llama-3.3-70b) for story querying and remixing
 - **Write Stories** — Compose stories directly in-browser; no file import required
 - **Waveform Playback** — WaveSurfer.js audio visualization
-- **Verifiable Proofs** — On-chain 0G merkle roots for every story
+- **Verifiable Proofs** — On-chain 0G merkle roots; `✓ 0G` badge + live retrieval confirms DA
 
 ### IP Licensing Layer
 - **License Terms** — Story owners set programmable on-chain license terms (royaltyWei, license types, exclusive availability)
@@ -59,6 +61,14 @@ bun dev
 - **Constellation Graph** — React Flow interactive star map at `/tree` with brass-colored edges
 - **AI Story Linking** — LoreLich AI suggests which vault stories belong to which ancestor
 - **Persistent Tree** — localStorage-backed with optional 0G backup
+
+### Proverb Engine
+- **Extract Proverbs** — LoreLich AI extracts wisdom proverbs from story text with cultural context
+- **Proverb Library** — Personal collection at `/proverbs`; copy, share, delete
+
+### Semantic Search
+- **Natural Language Search** — Query across all public stories at `/search`; AI relevance scoring 0–100
+- **Story Corpus** — Auto-indexes all public vault stories for each search
 
 ## Tech Stack
 
