@@ -269,3 +269,34 @@ export interface SearchResponse {
   results:    SearchResult[];
   tokensUsed: number;
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// V2.2: Story Tags (0G KV Store / localStorage)
+// ─────────────────────────────────────────────────────────────────────────────
+
+export interface StoryTagsEntry {
+  rootHash: string;
+  tags:     string[];  // e.g. ["oral history", "1940s", "Nigeria"]
+  updatedAt: number;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// V2.2: Transcript (Groq Whisper)
+// ─────────────────────────────────────────────────────────────────────────────
+
+export interface TranscriptEntry {
+  rootHash:      string;
+  text:          string;
+  language?:     string;
+  generatedAt:   number;
+}
+
+export interface TranscriptRequest {
+  rootHash: string;
+  language?: string;
+}
+
+export interface TranscriptResponse {
+  text:     string;
+  language?: string;
+}

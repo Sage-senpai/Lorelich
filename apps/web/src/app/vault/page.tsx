@@ -13,6 +13,10 @@ import { LoreLichChat } from "@/components/LoreLichChat";
 import { LicenseTermsForm } from "@/components/LicenseTermsForm";
 import { LicenseRequestCard } from "@/components/LicenseRequestCard";
 import { StoryViewer } from "@/components/StoryViewer";
+import { StoryTags } from "@/components/StoryTags";
+import { TranscriptButton } from "@/components/TranscriptButton";
+import { AccessGrantModal } from "@/components/AccessGrantModal";
+import { CertificateModal } from "@/components/CertificateModal";
 import { LORE_VAULT_ADDRESS, LORE_VAULT_ABI } from "@/lib/contracts";
 import type { Vault, StoryMetadata } from "@/types";
 
@@ -35,6 +39,8 @@ export default function VaultPage() {
   const [showChatPanel,    setShowChatPanel]    = useState(false);
   const [licenseStory,     setLicenseStory]     = useState<StoryMetadata | null>(null);
   const [viewStory,        setViewStory]        = useState<StoryMetadata | null>(null);
+  const [certStory,        setCertStory]        = useState<StoryMetadata | null>(null);
+  const [showAccessModal,  setShowAccessModal]  = useState(false);
   const [showIncoming,     setShowIncoming]     = useState(true);
 
   const selectedVault = vaults.find((v) => v.id === selectedVaultId) ?? null;
@@ -137,6 +143,16 @@ export default function VaultPage() {
                   </p>
                 </div>
                 <div className="flex gap-2">
+                  {/* Access grants — only for private vault owner */}
+                  {selectedVault.isPrivate && selectedVault.owner.toLowerCase() === address?.toLowerCase() && (
+                    <button
+                      onClick={() => setShowAccessModal(true)}
+                      className="px-3 py-1.5 rounded-sm text-xs font-mono border border-smoke/20
+                        text-smoke/60 hover:border-smoke/40 hover:text-aged transition-all duration-200"
+                    >
+                      🔑 Access
+                    </button>
+                  )}
                   <button
                     onClick={() => setShowChatPanel((p) => !p)}
                     className={[
@@ -230,7 +246,7 @@ export default function VaultPage() {
                                 {new Date(Number(story.timestamp) * 1000).toLocaleDateString()}
                               </p>
                             </div>
-                            <div className="flex items-center gap-2 shrink-0">
+                            <div className="flex items-center gap-1.5 shrink-0 flex-wrap justify-end">
                               {/* View story from 0G */}
                               <button
                                 onClick={() => setViewStory(story)}
@@ -239,6 +255,14 @@ export default function VaultPage() {
                               >
                                 View
                               </button>
+                              {/* Share link */}
+                              <a
+                                href={`/story/${story.id}`}
+                                className="text-xs font-mono px-2 py-0.5 rounded-sm border border-smoke/20 text-smoke/50
+                                  hover:border-smoke/40 hover:text-aged transition-colors"
+                              >
+                                Share
+                              </a>
                               {/* License terms button */}
                               <button
                                 onClick={() => setLicenseStory(story)}
@@ -246,6 +270,14 @@ export default function VaultPage() {
                                   hover:border-brass/60 hover:text-brass transition-colors"
                               >
                                 🔑 License
+                              </button>
+                              {/* Certificate of Preservation */}
+                              <button
+                                onClick={() => setCertStory(story)}
+                                className="text-xs font-mono px-2 py-0.5 rounded-sm border border-smoke/20 text-smoke/40
+                                  hover:border-aged/40 hover:text-aged transition-colors"
+                              >
+                                📜 Cert
                               </button>
                               {/* DA Proof badge */}
                               <span className="text-xs font-mono text-moss border border-moss/30 px-2 py-0.5 rounded-sm">
@@ -259,6 +291,14 @@ export default function VaultPage() {
                               duration={Number(story.duration)}
                               title={story.title}
                             />
+                          )}
+
+                          {/* Tags — localStorage + 0G KV read */}
+                          <StoryTags rootHash={story.zgRootHash} />
+
+                          {/* Transcript — audio only */}
+                          {story.mediaType === "audio" && (
+                            <TranscriptButton rootHash={story.zgRootHash} />
                           )}
 
                           <p className="text-xs text-smoke/60 font-mono truncate">
@@ -335,6 +375,27 @@ export default function VaultPage() {
           <StoryViewer
             story={viewStory}
             onClose={() => setViewStory(null)}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Certificate of Preservation */}
+      <AnimatePresence>
+        {certStory && selectedVault && (
+          <CertificateModal
+            story={certStory}
+            vault={selectedVault}
+            onClose={() => setCertStory(null)}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Access Grant Modal — private vault owner only */}
+      <AnimatePresence>
+        {showAccessModal && selectedVault && (
+          <AccessGrantModal
+            vault={selectedVault}
+            onClose={() => setShowAccessModal(false)}
           />
         )}
       </AnimatePresence>

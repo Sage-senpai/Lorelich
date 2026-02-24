@@ -2,7 +2,7 @@
 
 > *A sacred digital archive. Ancient stories awakening through AI. Immortal. Verifiable. Decentralized.*
 
-LoreLich Vault is a decentralized platform for preserving ancestral stories — audio, video, and text — with client-side encryption, 0G decentralized storage (upload **and** retrieval), soulbound on-chain ownership, an AI guardian that speaks with wisdom and reverence, on-chain IP licensing, AI-generated documentary pitch briefs, an interactive genealogy constellation builder, a proverb extraction engine, and semantic story search.
+LoreLich Vault is a decentralized platform for preserving ancestral stories — audio, video, and text — with client-side encryption, 0G decentralized storage (upload **and** retrieval), soulbound on-chain ownership, an AI guardian that speaks with wisdom and reverence, on-chain IP licensing, AI-generated documentary pitch briefs, an interactive genealogy constellation builder, a proverb extraction engine, semantic story search, audio transcription via Groq Whisper, story tags backed by the 0G KV Store, shareable story URLs, access grant management, and printable certificates of preservation.
 
 ---
 
@@ -69,6 +69,13 @@ bun dev
 ### Semantic Search
 - **Natural Language Search** — Query across all public stories at `/search`; AI relevance scoring 0–100
 - **Story Corpus** — Auto-indexes all public vault stories for each search
+
+### Story Utilities (V2.2)
+- **Public Share Page** — `/story/[storyId]` is a shareable URL for any story; shows IP terms and DA badge; locked view for private vaults
+- **Story Tags** — Inline tag editor on every vault story card; localStorage-first with 0G KV Store read sync (`KvClient`)
+- **Audio Transcription** — "Transcribe Audio" button on audio stories; Groq Whisper large v3; cached in localStorage per root hash
+- **Access Grants UI** — Private vault owners can grant/revoke read access to specific addresses with on-chain `grantAccess`/`revokeAccess`
+- **Certificate of Preservation** — Printable PDF certificate with story title, root hash, uploader, timestamp, and verification instructions; `window.print()` export
 
 ## Tech Stack
 

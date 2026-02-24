@@ -202,15 +202,94 @@ Hamburger menu (`MobileNav.tsx`) for viewports below `md` breakpoint.
 
 ---
 
+## V2.2 Features (Shipped)
+
+### 19. Public Story Share Page
+
+Shareable URL for any story at `/story/[storyId]`.
+
+- Fetches story + vault metadata from contract (no wallet required)
+- Shows: title, vault, media type, duration, timestamp, 0G root hash
+- IP terms badges if story is licensable (commercialUse, royalty price)
+- "View Story" button opens StoryViewer modal for public stories
+- Private stories show locked state with access request instructions
+- "Film Pitch →" link if story is commercially licensable
+- Detail rows: uploader address, full root hash, vault ID
+- "Copy Link" button for sharing
+
+### 20. Story Tags (0G KV Store + localStorage)
+
+Inline tag editor on every story card in the vault dashboard.
+
+**Storage**: localStorage primary (`lorelich_tags_{rootHash}`); 0G KV read
+on mount via `GET /api/kv/tag?rootHash=0x...` (merged into local state).
+
+**API** (`/api/kv/tag`):
+- `KvClient(NEXT_PUBLIC_0G_KV_URL)` reads from the 0G decentralized KV store
+- Stream key = LoreLich fixed stream ID; KV key = rootHash bytes
+- Tags stored as comma-separated UTF-8 string
+- Graceful degradation: returns `{ tags: [] }` if KV unconfigured or unavailable
+
+**UI** (`StoryTags.tsx`):
+- Pill chips per tag with ×-on-hover remove
+- Inline `<input>` activated by "+ tag" button; Enter or comma commits tag
+- Max 8 tags, max 30 chars per tag; Backspace removes last tag
+- No page reload; persists instantly to localStorage
+
+### 21. Story Transcript (Groq Whisper)
+
+One-click transcription of audio stories using Groq's Whisper large v3.
+
+**API** (`POST /api/transcript`):
+- Downloads audio from 0G Storage via `Indexer.download()` to temp file
+- Wraps file in `toFile()` uploadable for multipart upload
+- Calls `client.audio.transcriptions.create({ file, model: "whisper-large-v3" })`
+- 25 MB size cap (Groq free tier limit); rate limited (shared 10 RPM/IP)
+- Returns `{ text, language }`
+
+**UI** (`TranscriptButton.tsx`):
+- Shows only for `mediaType === "audio"` stories
+- "📝 Transcribe Audio" button → animated "Transcribing…" loading state
+- Transcript displayed in collapsible vault-glass panel below the button
+- Cached in localStorage (`lorelich_transcript_{rootHash}`) — survives reload
+- ✕ button clears cached transcript; timestamp + language shown in footer
+
+### 22. Private Vault Access Grants UI
+
+Vault owners can grant/revoke read access from the vault header.
+
+**Contract**: `grantAccess(vaultId, grantee)` and `revokeAccess(vaultId, grantee)` (already in ABI).
+
+**UI** (`AccessGrantModal.tsx`):
+- "🔑 Access" button shown only when connected wallet owns a private vault
+- Address input → `grantAccess` call with `gas: BigInt(200_000)`
+- Active grants list with "Revoke" button per entry
+- LocalStorage persistence of grant history (`lorelich_access_{vaultId}`)
+- `isAddress()` validation from viem before any contract call
+
+### 23. Certificate of Preservation
+
+Printable, verifiable proof-of-preservation document for any story.
+
+**UI** (`CertificateModal.tsx`):
+- "📜 Cert" button on every story card in vault dashboard
+- Client-side only — no server round-trip, no PDF library
+- `@media print` CSS hides overlay, shows only white-background certificate
+- "🖨 Print / Save as PDF" → `window.print()`
+- Certificate contains: title, vault name, media type, uploader address,
+  date + Unix timestamp, 0G Merkle Root Hash, soulbound token ID,
+  LoreVault contract address, verification instructions
+- Verification section explains how to use `indexer.download(rootHash, ...)` to
+  independently verify the content
+
+---
+
 ## V3 Features
 
 - AI voice synthesis (consent-based, revocable on-chain)
 - Community governance ($LORE token, Snapshot DAO)
 - Collaborative multi-custodian vaults
-- 0G KV Store for story tags and cultural annotations
-- Story transcript generation (Groq Whisper for audio)
-- Public story share page (`/story/[storyId]`) — sharable URL per story
-- Certificate of Preservation — PDF certificate with root hash + timestamp
+- 0G KV Store write path (Batcher + StreamDataBuilder for tags sync across devices)
 
 ## V4+ Features
 

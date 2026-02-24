@@ -26,6 +26,16 @@
 | Mobile Navigation | Hamburger menu for sub-`md` viewports |
 | 7 Bug Fixes | linkedCount, BigInt crash, form hydration, unlink, nav overlap, txHash, accept |
 
+### V2.2 — Shipped
+
+| Feature | Notes |
+|---|---|
+| Public Story Share Page | `/story/[storyId]` — shareable URL; no wallet required; IP terms, DA badge, locked private |
+| Story Tags (0G KV) | `StoryTags.tsx`; localStorage primary + `GET /api/kv/tag` reads from `KvClient`; 8 tags max |
+| Story Transcript | `POST /api/transcript` — Groq Whisper large v3 via `client.audio.transcriptions.create()` |
+| Private Vault Access Grants | `AccessGrantModal.tsx` — grant/revoke with localStorage history; `gas: BigInt(200_000)` |
+| Certificate of Preservation | `CertificateModal.tsx` — client-side, `window.print()` → PDF; no server round-trip |
+
 ---
 
 ## V2 → V3 Trigger Conditions

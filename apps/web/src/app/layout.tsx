@@ -61,7 +61,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <footer className="border-t border-brass/10 py-6 mt-20">
             <div className="max-w-6xl mx-auto px-4 flex items-center justify-between text-xs text-smoke font-mono">
               <span>LoreLich Vault — Immortal. Verifiable. Decentralized.</span>
-              <span>0G Storage · Groq AI · ERC5192 · IP Licensing · Pitch Portal · Genealogy · Search · Proverbs</span>
+              <span>0G Storage · Groq AI · ERC5192 · IP Licensing · Pitch Portal · Genealogy · Search · Proverbs · Transcripts · Certificates</span>
             </div>
           </footer>
         </Providers>
