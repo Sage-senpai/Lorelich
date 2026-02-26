@@ -259,10 +259,11 @@ export function useMarketplaceStories() {
     functionName: "totalStories",
   });
 
-  // IDs 1..total, capped at 200 for testnet
+  // IDs 0..total-1, capped at 200 for testnet
+  // Note: _nextStoryId starts at 0, so first story has ID 0
   const storyIds = useMemo(
     () => total
-      ? Array.from({ length: Math.min(Number(total), 200) }, (_, i) => BigInt(i + 1))
+      ? Array.from({ length: Math.min(Number(total), 200) }, (_, i) => BigInt(i))
       : [],
     [total],
   );

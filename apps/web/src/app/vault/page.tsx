@@ -26,13 +26,13 @@ import type { Vault, StoryMetadata } from "@/types";
 
 export default function VaultPage() {
   const { isConnected, address, status } = useAccount();
-  const { vaultIds, isLoading }  = useOwnerVaults();
+  const { vaultIds, isLoading, refetch: refetchVaults } = useOwnerVaults();
   const vaults                   = useVaultStore((s) => s.vaults);
   const selectedVaultId          = useVaultStore((s) => s.selectedVaultId);
   const stories                  = useVaultStore((s) => s.stories);
   const selectVault              = useVaultStore((s) => s.selectVault);
 
-  const { isLoading: storiesLoading } = useVaultStories(selectedVaultId);
+  const { isLoading: storiesLoading, refetch: refetchStories } = useVaultStories(selectedVaultId);
 
   const [showCreateModal,  setShowCreateModal]  = useState(false);
   const [showUploadModal,  setShowUploadModal]  = useState(false);
@@ -340,7 +340,10 @@ export default function VaultPage() {
       {/* Create Vault Modal */}
       <AnimatePresence>
         {showCreateModal && (
-          <CreateVaultModal onClose={() => setShowCreateModal(false)} />
+          <CreateVaultModal
+            onClose={() => setShowCreateModal(false)}
+            onCreated={() => setTimeout(() => refetchVaults(), 3000)}
+          />
         )}
       </AnimatePresence>
 
@@ -351,7 +354,11 @@ export default function VaultPage() {
             <StoryUpload
               vaultId={selectedVault.id}
               isPrivate={selectedVault.isPrivate}
-              onComplete={() => setShowUploadModal(false)}
+              onComplete={() => {
+                setShowUploadModal(false);
+                // Refetch story list after the tx lands on-chain (~3s buffer)
+                setTimeout(() => refetchStories(), 3000);
+              }}
             />
           </Modal>
         )}
@@ -407,22 +414,42 @@ export default function VaultPage() {
 // Create Vault Modal
 // ─────────────────────────────────────────────────────────────────────────────
 
-function CreateVaultModal({ onClose }: { onClose: () => void }) {
+function CreateVaultModal({
+  onClose,
+  onCreated,
+}: {
+  onClose: () => void;
+  onCreated?: () => void;
+}) {
   const [name,      setName]      = useState("");
   const [isPrivate, setIsPrivate] = useState(false);
+  const [txError,   setTxError]   = useState<string | null>(null);
   const { writeContractAsync, isPending } = useWriteContract();
 
   const handleCreate = async () => {
     if (!name.trim()) return;
-    await writeContractAsync({
-      address:      LORE_VAULT_ADDRESS,
-      abi:          LORE_VAULT_ABI,
-      functionName: "createVault",
-      // Manual gas limit bypasses eth_estimateGas which is unreliable on 0G testnet
-      gas:          BigInt(200_000),
-      args:         [name.trim(), isPrivate],
-    });
-    onClose();
+    setTxError(null);
+    try {
+      await writeContractAsync({
+        address:      LORE_VAULT_ADDRESS,
+        abi:          LORE_VAULT_ABI,
+        functionName: "createVault",
+        // Manual gas limit bypasses eth_estimateGas which is unreliable on 0G testnet
+        gas:          BigInt(200_000),
+        args:         [name.trim(), isPrivate],
+      });
+      onCreated?.();
+      onClose();
+    } catch (err) {
+      const msg = (err as Error).message ?? "";
+      setTxError(
+        msg.includes("User rejected") || msg.includes("user rejected")
+          ? "Transaction rejected in wallet."
+          : msg.length > 120
+          ? msg.slice(0, 120) + "…"
+          : msg,
+      );
+    }
   };
 
   return (
@@ -466,6 +493,12 @@ function CreateVaultModal({ onClose }: { onClose: () => void }) {
             ))}
           </div>
         </div>
+
+        {txError && (
+          <p className="text-xs font-mono text-burgundy/80 border border-burgundy/30 rounded-sm px-3 py-2">
+            {txError}
+          </p>
+        )}
 
         <button
           onClick={handleCreate}

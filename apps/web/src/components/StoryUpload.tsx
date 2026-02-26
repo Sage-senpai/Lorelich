@@ -169,7 +169,8 @@ export function StoryUpload({ vaultId, isPrivate, onComplete }: StoryUploadProps
       });
 
       setUploadState({ step: "complete", progress: 100 });
-      onComplete?.(0n); // storyId not returned from writeContract
+      // Delay closing so the user sees "Story preserved forever" before the modal closes
+      setTimeout(() => onComplete?.(0n), 2000);
     } catch (err) {
       const msg = (err as Error).message ?? "";
       // WalletConnect relay failures surface as "Transaction failed" or "Failed to publish"

@@ -12,7 +12,7 @@ export function useOwnerVaults() {
   const { address } = useAccount();
   const setVaults   = useVaultStore((s) => s.setVaults);
 
-  const { data: vaultIds, isLoading, error } = useReadContract({
+  const { data: vaultIds, isLoading, error, refetch } = useReadContract({
     address:      LORE_VAULT_ADDRESS,
     abi:          LORE_VAULT_ABI,
     functionName: "getOwnerVaults",
@@ -50,7 +50,7 @@ export function useOwnerVaults() {
     setVaults(vaults);
   }, [vaultIds, vaultData, setVaults]);
 
-  return { vaultIds: vaultIds ?? [], isLoading, error };
+  return { vaultIds: vaultIds ?? [], isLoading, error, refetch };
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -60,7 +60,7 @@ export function useOwnerVaults() {
 export function useVaultStories(vaultId: bigint | null) {
   const setVaultStories = useVaultStore((s) => s.setVaultStories);
 
-  const { data: storyIds, isLoading } = useReadContract({
+  const { data: storyIds, isLoading, refetch } = useReadContract({
     address:      LORE_VAULT_ADDRESS,
     abi:          LORE_VAULT_ABI,
     functionName: "getVaultStories",
@@ -104,7 +104,7 @@ export function useVaultStories(vaultId: bigint | null) {
     setVaultStories(vaultId, stories);
   }, [storyIds, storyData, vaultId, setVaultStories]);
 
-  return { storyIds: storyIds ?? [], isLoading };
+  return { storyIds: storyIds ?? [], isLoading, refetch };
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

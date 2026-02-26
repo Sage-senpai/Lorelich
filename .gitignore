@@ -4,6 +4,7 @@
 .env.*.local
 contracts/.env
 
+
 # ─── Node / Bun ──────────────────────────────────────────────────────────────
 node_modules/
 .pnp
