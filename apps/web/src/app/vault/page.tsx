@@ -19,6 +19,8 @@ import { AccessGrantModal } from "@/components/AccessGrantModal";
 import { CertificateModal } from "@/components/CertificateModal";
 import { LORE_VAULT_ADDRESS, LORE_VAULT_ABI } from "@/lib/contracts";
 import type { Vault, StoryMetadata } from "@/types";
+import { DEMO_VAULTS, DEMO_STORY_MAP, isDemoId } from "@/lib/demoData";
+import { DemoBanner, DemoBadge } from "@/components/DemoBanner";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Vault Dashboard — lists vaults, shows stories, upload + LoreLich AI
@@ -42,11 +44,16 @@ export default function VaultPage() {
   const [certStory,        setCertStory]        = useState<StoryMetadata | null>(null);
   const [showAccessModal,  setShowAccessModal]  = useState(false);
   const [showIncoming,     setShowIncoming]     = useState(true);
+  const [demoVaultId,      setDemoVaultId]      = useState<bigint | null>(null);
 
-  const selectedVault = vaults.find((v) => v.id === selectedVaultId) ?? null;
-  const selectedStories = selectedVaultId !== null
-    ? (stories[selectedVaultId.toString()] ?? [])
-    : [];
+  // When a demo vault is active, pull data locally; otherwise use on-chain store
+  const isDemoActive    = demoVaultId !== null;
+  const selectedVault   = isDemoActive
+    ? (DEMO_VAULTS.find((v) => v.id === demoVaultId) ?? null)
+    : (vaults.find((v) => v.id === selectedVaultId) ?? null);
+  const selectedStories = isDemoActive
+    ? (DEMO_STORY_MAP[demoVaultId!.toString()] ?? [])
+    : (selectedVaultId !== null ? (stories[selectedVaultId.toString()] ?? []) : []);
 
   // Incoming license requests for selected vault's stories
   const selectedStoryIds = useMemo(
@@ -116,11 +123,44 @@ export default function VaultPage() {
                 index={i}
                 onClick={() => {
                   selectVault(v.id);
+                  setDemoVaultId(null);
                   setShowChatPanel(false);
                 }}
               />
             ))
           )}
+
+          {/* Demo vaults — always visible */}
+          <div className="pt-3 border-t border-brass/10">
+            <p className="text-[9px] font-mono text-smoke/30 uppercase tracking-widest mb-2 px-1">
+              Sample Vaults
+            </p>
+            {DEMO_VAULTS.map((dv) => (
+              <button
+                key={dv.id.toString()}
+                onClick={() => {
+                  setDemoVaultId(dv.id);
+                  selectVault(null);
+                  setShowChatPanel(false);
+                }}
+                className={[
+                  "w-full text-left px-3 py-2.5 rounded-sm border mb-2",
+                  "transition-all duration-200",
+                  demoVaultId === dv.id
+                    ? "border-brass/40 bg-brass/5 text-parchment"
+                    : "border-brass/10 bg-shadow/20 text-smoke/60 hover:border-brass/25 hover:text-smoke",
+                ].join(" ")}
+              >
+                <div className="flex items-center justify-between">
+                  <p className="text-xs font-serif truncate">{dv.name}</p>
+                  <DemoBadge />
+                </div>
+                <p className="text-[10px] font-mono text-smoke/30 mt-0.5">
+                  {DEMO_STORY_MAP[dv.id.toString()]?.length ?? 0} stories
+                </p>
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Right — story list or chat */}
@@ -132,6 +172,9 @@ export default function VaultPage() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.3 }}
             >
+              {/* Demo disclaimer */}
+              {isDemoActive && <DemoBanner />}
+
               {/* Vault header */}
               <div className="flex items-center justify-between mb-5">
                 <div>
@@ -164,12 +207,14 @@ export default function VaultPage() {
                   >
                     🕯 LoreLich
                   </button>
-                  <button
-                    onClick={() => setShowUploadModal(true)}
-                    className="btn-brass text-xs"
-                  >
-                    + Upload Story
-                  </button>
+                  {!isDemoActive && (
+                    <button
+                      onClick={() => setShowUploadModal(true)}
+                      className="btn-brass text-xs"
+                    >
+                      + Upload Story
+                    </button>
+                  )}
                 </div>
               </div>
 
@@ -247,31 +292,37 @@ export default function VaultPage() {
                               </p>
                             </div>
                             <div className="flex items-center gap-1.5 shrink-0 flex-wrap justify-end">
-                              {/* View story from 0G */}
-                              <button
-                                onClick={() => setViewStory(story)}
-                                className="text-xs font-mono px-2 py-0.5 rounded-sm border border-smoke/25 text-smoke/70
-                                  hover:border-aged/60 hover:text-aged transition-colors"
-                              >
-                                View
-                              </button>
-                              {/* Share link */}
-                              <a
-                                href={`/story/${story.id}`}
-                                className="text-xs font-mono px-2 py-0.5 rounded-sm border border-smoke/20 text-smoke/50
-                                  hover:border-smoke/40 hover:text-aged transition-colors"
-                              >
-                                Share
-                              </a>
-                              {/* License terms button */}
-                              <button
-                                onClick={() => setLicenseStory(story)}
-                                className="text-xs font-mono px-2 py-0.5 rounded-sm border border-brass/25 text-aged/80
-                                  hover:border-brass/60 hover:text-brass transition-colors"
-                              >
-                                🔑 License
-                              </button>
-                              {/* Certificate of Preservation */}
+                              {/* View story from 0G — disabled for demo */}
+                              {!isDemoActive && (
+                                <button
+                                  onClick={() => setViewStory(story)}
+                                  className="text-xs font-mono px-2 py-0.5 rounded-sm border border-smoke/25 text-smoke/70
+                                    hover:border-aged/60 hover:text-aged transition-colors"
+                                >
+                                  View
+                                </button>
+                              )}
+                              {/* Share link — disabled for demo */}
+                              {!isDemoActive && (
+                                <a
+                                  href={`/story/${story.id}`}
+                                  className="text-xs font-mono px-2 py-0.5 rounded-sm border border-smoke/20 text-smoke/50
+                                    hover:border-smoke/40 hover:text-aged transition-colors"
+                                >
+                                  Share
+                                </a>
+                              )}
+                              {/* License terms button — disabled for demo */}
+                              {!isDemoActive && (
+                                <button
+                                  onClick={() => setLicenseStory(story)}
+                                  className="text-xs font-mono px-2 py-0.5 rounded-sm border border-brass/25 text-aged/80
+                                    hover:border-brass/60 hover:text-brass transition-colors"
+                                >
+                                  🔑 License
+                                </button>
+                              )}
+                              {/* Certificate of Preservation — works for demo too */}
                               <button
                                 onClick={() => setCertStory(story)}
                                 className="text-xs font-mono px-2 py-0.5 rounded-sm border border-smoke/20 text-smoke/40
@@ -279,9 +330,14 @@ export default function VaultPage() {
                               >
                                 📜 Cert
                               </button>
-                              {/* DA Proof badge */}
-                              <span className="text-xs font-mono text-moss border border-moss/30 px-2 py-0.5 rounded-sm">
-                                ✓ 0G
+                              {/* Storage badge */}
+                              <span className={[
+                                "text-xs font-mono px-2 py-0.5 rounded-sm border",
+                                isDemoActive
+                                  ? "text-brass/40 border-brass/20"
+                                  : "text-moss border-moss/30",
+                              ].join(" ")}>
+                                {isDemoActive ? "DEMO" : "✓ 0G"}
                               </span>
                             </div>
                           </div>

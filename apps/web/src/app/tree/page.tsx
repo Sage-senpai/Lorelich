@@ -17,7 +17,10 @@ import { useGenealogyTree } from "@/hooks/useGenealogy";
 import { GedcomImporter } from "@/components/GedcomImporter";
 import { AncestorNode, type AncestorNodeData } from "@/components/AncestorNode";
 import { AncestorStoryLinker } from "@/components/AncestorStoryLinker";
+import { useTreeStore } from "@/store";
 import type { Ancestor } from "@/types";
+import { DEMO_TREE } from "@/lib/demoData";
+import { DemoBanner } from "@/components/DemoBanner";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Tree Page — interactive genealogy constellation graph
@@ -39,12 +42,22 @@ export default function TreePage() {
     tree, confirmedLinks, suggestedLinks,
     isSuggesting, loadFromStorage,
   } = useGenealogyTree();
+  const setTree = useTreeStore((s) => s.setTree);
 
   const [selectedAncestor, setSelectedAncestor] = useState<Ancestor | null>(null);
   const [showImporter,     setShowImporter]      = useState(false);
 
-  // Load from localStorage on mount
-  useEffect(() => { loadFromStorage(); }, [loadFromStorage]);
+  // Load from localStorage on mount; fall back to demo tree if nothing stored
+  useEffect(() => {
+    loadFromStorage();
+    if (typeof window !== "undefined" && !localStorage.getItem("lorelich_tree")) {
+      setTree(DEMO_TREE);
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const isDemoTree = tree === DEMO_TREE || (
+    tree !== null && tree.importedAt === DEMO_TREE.importedAt
+  );
 
   // Build nodes + edges from tree
   const initNodes = useMemo<Node[]>(() => {
@@ -154,6 +167,11 @@ export default function TreePage() {
           <span className="text-xs font-mono text-smoke/50">
             {tree.ancestors.length} ancestors
           </span>
+          {isDemoTree && (
+            <span className="text-[9px] font-mono px-1.5 py-0.5 rounded-sm border border-brass/30 bg-brass/10 text-brass/60">
+              DEMO — import your own GEDCOM to replace
+            </span>
+          )}
           {confirmedLinks.length > 0 && (
             <span className="text-xs font-mono text-brass/80">
               {confirmedLinks.length} story link{confirmedLinks.length !== 1 ? "s" : ""}

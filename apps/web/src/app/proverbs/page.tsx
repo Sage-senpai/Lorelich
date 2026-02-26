@@ -6,6 +6,8 @@ import { useAccount } from "wagmi";
 import { useVaultStore } from "@/store";
 import { useOwnerVaults, useVaultStories } from "@/hooks/useVault";
 import type { StoryProverb } from "@/types";
+import { DEMO_PROVERBS } from "@/lib/demoData";
+import { DemoBadge } from "@/components/DemoBanner";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // /proverbs — V2 Proverb-of-the-Day Engine
@@ -31,7 +33,14 @@ export default function ProverbsPage() {
   const [showExtract, setShowExtract] = useState(false);
 
   useEffect(() => {
-    setProverbs(loadProverbs());
+    const existing = loadProverbs();
+    if (existing.length > 0) {
+      setProverbs(existing);
+    } else {
+      // Seed with demo proverbs on first visit so the page isn't empty
+      saveProverbs(DEMO_PROVERBS);
+      setProverbs(DEMO_PROVERBS);
+    }
   }, []);
 
   const onExtracted = useCallback((p: StoryProverb) => {
@@ -277,9 +286,12 @@ function ProverbCard({ proverb: p, onDelete }: { proverb: StoryProverb; onDelete
       className="vault-glass rounded-sm p-5 group flex flex-col gap-3"
     >
       {/* Proverb text */}
-      <blockquote className="font-serif text-parchment text-base leading-snug italic">
-        "{p.proverb}"
-      </blockquote>
+      <div className="flex items-start justify-between gap-2">
+        <blockquote className="font-serif text-parchment text-base leading-snug italic flex-1">
+          "{p.proverb}"
+        </blockquote>
+        {p.id.startsWith("demo-") && <DemoBadge className="shrink-0 mt-1" />}
+      </div>
 
       {/* Cultural context */}
       <p className="text-xs text-smoke leading-relaxed">{p.culturalContext}</p>

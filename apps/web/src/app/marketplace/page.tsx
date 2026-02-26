@@ -4,6 +4,8 @@ import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import { useMarketplaceStories } from "@/hooks/useIPLicense";
 import { MarketplaceStoryCard } from "@/components/MarketplaceStoryCard";
+import { DemoBanner, DemoBadge } from "@/components/DemoBanner";
+import { DEMO_MARKETPLACE_ITEMS, DEMO_VAULT_NAME_MAP } from "@/lib/demoData";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Marketplace — browse all public, licensable stories
@@ -20,16 +22,23 @@ export default function MarketplacePage() {
   const [typeFilter,  setTypeFilter]  = useState<TypeFilter>("all");
   const [priceFilter, setPriceFilter] = useState<PriceFilter>("all");
 
-  const filtered = useMemo(() => items.filter(({ story, terms }) => {
-    if (mediaFilter !== "all" && story.mediaType !== mediaFilter) return false;
-    if (typeFilter  !== "all") {
-      if (typeFilter === "Commercial"  && !terms.commercialUse)      return false;
-      if (typeFilter === "Exclusive"   && !terms.exclusiveAvailable) return false;
-    }
-    if (priceFilter === "free" && terms.royaltyWei > 0n) return false;
-    if (priceFilter === "paid" && terms.royaltyWei === 0n) return false;
-    return true;
-  }), [items, mediaFilter, typeFilter, priceFilter]);
+  function applyFilters<T extends { story: { mediaType: string }; terms: { commercialUse: boolean; exclusiveAvailable: boolean; royaltyWei: bigint } }>(list: T[]): T[] {
+    return list.filter(({ story, terms }) => {
+      if (mediaFilter !== "all" && story.mediaType !== mediaFilter) return false;
+      if (typeFilter !== "all") {
+        if (typeFilter === "Commercial" && !terms.commercialUse)      return false;
+        if (typeFilter === "Exclusive"  && !terms.exclusiveAvailable) return false;
+      }
+      if (priceFilter === "free" && terms.royaltyWei > 0n)  return false;
+      if (priceFilter === "paid" && terms.royaltyWei === 0n) return false;
+      return true;
+    });
+  }
+
+  const filtered     = useMemo(() => applyFilters(items),                  [items, mediaFilter, typeFilter, priceFilter]); // eslint-disable-line react-hooks/exhaustive-deps
+  const filteredDemo = useMemo(() => applyFilters(DEMO_MARKETPLACE_ITEMS), [mediaFilter, typeFilter, priceFilter]);        // eslint-disable-line react-hooks/exhaustive-deps
+
+  const totalCount = filtered.length + filteredDemo.length;
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-10">
@@ -79,9 +88,9 @@ export default function MarketplacePage() {
           onChange={(v) => setPriceFilter(v as PriceFilter)}
         />
 
-        {filtered.length > 0 && (
+        {totalCount > 0 && (
           <span className="ml-auto self-center text-xs font-mono text-smoke/60">
-            {filtered.length} {filtered.length === 1 ? "story" : "stories"}
+            {totalCount} {totalCount === 1 ? "story" : "stories"}
           </span>
         )}
       </div>
@@ -89,19 +98,45 @@ export default function MarketplacePage() {
       {/* Grid */}
       {isLoading ? (
         <MarketplaceSkeleton />
-      ) : filtered.length === 0 ? (
-        <MarketplaceEmpty hasItems={items.length > 0} />
+      ) : totalCount === 0 ? (
+        <MarketplaceEmpty hasItems={false} />
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filtered.map((item, i) => (
-            <MarketplaceStoryCard
-              key={item.story.id.toString()}
-              item={item}
-              vaultName={vaultNameMap[item.story.vaultId.toString()] ?? "Unknown Vault"}
-              index={i}
-            />
-          ))}
-        </div>
+        <>
+          {/* Real on-chain stories */}
+          {filtered.length > 0 && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+              {filtered.map((item, i) => (
+                <MarketplaceStoryCard
+                  key={item.story.id.toString()}
+                  item={item}
+                  vaultName={vaultNameMap[item.story.vaultId.toString()] ?? "Unknown Vault"}
+                  index={i}
+                />
+              ))}
+            </div>
+          )}
+
+          {/* Demo / sample stories */}
+          {filteredDemo.length > 0 && (
+            <div>
+              <DemoBanner />
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {filteredDemo.map((item, i) => (
+                  <div key={`demo-${item.story.id}`} className="relative">
+                    <div className="absolute top-2 right-2 z-10">
+                      <DemoBadge />
+                    </div>
+                    <MarketplaceStoryCard
+                      item={item}
+                      vaultName={DEMO_VAULT_NAME_MAP[item.story.vaultId.toString()] ?? "Demo Vault"}
+                      index={filtered.length + i}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

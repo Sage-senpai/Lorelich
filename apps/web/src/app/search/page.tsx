@@ -5,6 +5,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useReadContract, useReadContracts } from "wagmi";
 import { LORE_VAULT_ADDRESS, LORE_VAULT_ABI } from "@/lib/contracts";
 import type { StoryMetadata, SearchResult } from "@/types";
+import { DEMO_SEARCH_CORPUS, DEMO_STORIES, DEMO_VAULT_NAME_MAP, isDemoId } from "@/lib/demoData";
+import { DemoBadge } from "@/components/DemoBanner";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // /search — V2 Semantic Story Search
@@ -90,23 +92,27 @@ export default function SearchPage() {
   // Focus input on mount
   useEffect(() => { inputRef.current?.focus(); }, []);
 
+  const totalCorpus = publicStories.length + DEMO_SEARCH_CORPUS.length;
+
   async function handleSearch(e?: FormEvent) {
     e?.preventDefault();
     const q = query.trim();
-    if (!q || publicStories.length === 0) return;
+    if (!q || totalCorpus === 0) return;
 
     setIsLoading(true);
     setError(null);
     setSearched(true);
 
     try {
-      const stories = publicStories.map((s) => ({
+      // Merge real stories + demo stories into one corpus
+      const realStories = publicStories.map((s) => ({
         id:        s.id.toString(),
         title:     s.title,
         mediaType: s.mediaType,
         vaultName: vaultNameMap[s.id.toString()] ?? "Unknown Vault",
         timestamp: Number(s.timestamp),
       }));
+      const stories = [...realStories, ...DEMO_SEARCH_CORPUS];
 
       const res  = await fetch("/api/search", {
         method:  "POST",
@@ -125,15 +131,22 @@ export default function SearchPage() {
     }
   }
 
-  // Build result cards from story data
+  // Build result cards — look up real stories first, then demo stories
   const resultStories = useMemo(() => {
     return results
       .map((r) => {
-        const story = publicStories.find((s) => s.id.toString() === r.storyId);
-        return story ? { story, result: r } : null;
+        const story =
+          publicStories.find((s) => s.id.toString() === r.storyId) ??
+          DEMO_STORIES.find((s) => s.id.toString() === r.storyId);
+        const vaultName =
+          vaultNameMap[r.storyId] ??
+          DEMO_VAULT_NAME_MAP[story?.vaultId?.toString() ?? ""] ??
+          "Unknown Vault";
+        const isDemo = isDemoId(r.storyId);
+        return story ? { story, result: r, vaultName, isDemo } : null;
       })
-      .filter((x): x is { story: StoryMetadata; result: SearchResult } => !!x);
-  }, [results, publicStories]);
+      .filter((x): x is { story: StoryMetadata; result: SearchResult; vaultName: string; isDemo: boolean } => !!x);
+  }, [results, publicStories, vaultNameMap]);
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-12">
@@ -164,7 +177,7 @@ export default function SearchPage() {
         />
         <button
           type="submit"
-          disabled={!query.trim() || isLoading || publicStories.length === 0}
+          disabled={!query.trim() || isLoading || totalCorpus === 0}
           className="absolute right-2 top-1/2 -translate-y-1/2 btn-brass px-4 py-1.5 text-xs
                      disabled:opacity-40"
         >
@@ -173,9 +186,12 @@ export default function SearchPage() {
       </form>
 
       {/* Corpus info */}
-      {publicStories.length > 0 && !searched && (
+      {totalCorpus > 0 && !searched && (
         <p className="text-center text-xs font-mono text-smoke/30 mb-8">
-          {publicStories.length} public {publicStories.length === 1 ? "story" : "stories"} indexed
+          {totalCorpus} {totalCorpus === 1 ? "story" : "stories"} indexed
+          {DEMO_SEARCH_CORPUS.length > 0 && publicStories.length === 0 && (
+            <span className="ml-1.5 text-brass/40">(includes demo content)</span>
+          )}
         </p>
       )}
 
@@ -224,12 +240,13 @@ export default function SearchPage() {
             <p className="text-xs font-mono text-smoke/40 mb-5">
               {resultStories.length} result{resultStories.length !== 1 ? "s" : ""} for "{query}"
             </p>
-            {resultStories.map(({ story, result }) => (
+            {resultStories.map(({ story, result, vaultName, isDemo }) => (
               <SearchResultCard
                 key={story.id.toString()}
                 story={story}
                 result={result}
-                vaultName={vaultNameMap[story.id.toString()] ?? ""}
+                vaultName={vaultName}
+                isDemo={isDemo}
               />
             ))}
           </motion.div>
@@ -254,10 +271,12 @@ function SearchResultCard({
   story,
   result,
   vaultName,
+  isDemo,
 }: {
   story:     StoryMetadata;
   result:    SearchResult;
   vaultName: string;
+  isDemo:    boolean;
 }) {
   const scoreColor =
     result.relevanceScore >= 80 ? "text-brass"
@@ -289,6 +308,7 @@ function SearchResultCard({
                          transition-colors duration-200">
             {story.title}
           </h3>
+          {isDemo && <DemoBadge className="shrink-0" />}
         </div>
         <p className="text-xs font-mono text-smoke/50 mb-2">{vaultName} Vault</p>
         <p className="text-xs text-smoke/70 leading-relaxed italic">"{result.reason}"</p>
