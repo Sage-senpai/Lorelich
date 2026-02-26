@@ -19,7 +19,7 @@ import { AccessGrantModal } from "@/components/AccessGrantModal";
 import { CertificateModal } from "@/components/CertificateModal";
 import { LORE_VAULT_ADDRESS, LORE_VAULT_ABI } from "@/lib/contracts";
 import type { Vault, StoryMetadata } from "@/types";
-import { DEMO_VAULTS, DEMO_STORY_MAP, isDemoId } from "@/lib/demoData";
+import { DEMO_VAULTS, DEMO_STORY_MAP, DEMO_STORY_CONTENT, isDemoId } from "@/lib/demoData";
 import { DemoBanner, DemoBadge } from "@/components/DemoBanner";
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -292,8 +292,8 @@ export default function VaultPage() {
                               </p>
                             </div>
                             <div className="flex items-center gap-1.5 shrink-0 flex-wrap justify-end">
-                              {/* View story from 0G — disabled for demo */}
-                              {!isDemoActive && (
+                              {/* View story — always enabled for real stories; demo only if content override exists */}
+                              {(!isDemoActive || DEMO_STORY_CONTENT[story.id.toString()]) && (
                                 <button
                                   onClick={() => setViewStory(story)}
                                   className="text-xs font-mono px-2 py-0.5 rounded-sm border border-smoke/25 text-smoke/70
@@ -432,12 +432,17 @@ export default function VaultPage() {
         )}
       </AnimatePresence>
 
-      {/* Story Viewer — fetches from 0G, decrypts private stories in-browser */}
+      {/* Story Viewer — fetches from 0G, decrypts private stories in-browser; demo stories use contentOverride */}
       <AnimatePresence>
         {viewStory && (
           <StoryViewer
             story={viewStory}
             onClose={() => setViewStory(null)}
+            contentOverride={
+              isDemoId(viewStory.id) && DEMO_STORY_CONTENT[viewStory.id.toString()]
+                ? { kind: "text", text: DEMO_STORY_CONTENT[viewStory.id.toString()] }
+                : undefined
+            }
           />
         )}
       </AnimatePresence>

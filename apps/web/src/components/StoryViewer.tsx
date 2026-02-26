@@ -16,8 +16,10 @@ import type { StoryMetadata } from "@/types";
 // ─────────────────────────────────────────────────────────────────────────────
 
 interface StoryViewerProps {
-  story:   StoryMetadata;
-  onClose: () => void;
+  story:           StoryMetadata;
+  onClose:         () => void;
+  /** Bypass 0G download and show this content directly (used for demo data). */
+  contentOverride?: { kind: "text"; text: string };
 }
 
 type ViewState =
@@ -32,12 +34,18 @@ type ContentView =
   | { kind: "audio";  url: string  }
   | { kind: "binary"; url: string; sizeKB: number };
 
-export function StoryViewer({ story, onClose }: StoryViewerProps) {
+export function StoryViewer({ story, onClose, contentOverride }: StoryViewerProps) {
   const { address } = useAccount();
   const [state, setState] = useState<ViewState>({ status: "loading" });
   const blobUrlRef = useRef<string | null>(null);
 
   useEffect(() => {
+    // If demo content is provided, skip the 0G download entirely
+    if (contentOverride) {
+      setState({ status: "ready", content: contentOverride });
+      return;
+    }
+
     let cancelled = false;
 
     async function load() {
@@ -100,7 +108,7 @@ export function StoryViewer({ story, onClose }: StoryViewerProps) {
       }
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [story.zgRootHash, story.isPrivate, story.mediaType, address]);
+  }, [story.zgRootHash, story.isPrivate, story.mediaType, address, contentOverride]);
 
   return (
     <AnimatePresence>
@@ -170,7 +178,9 @@ export function StoryViewer({ story, onClose }: StoryViewerProps) {
           {state.status === "ready" && (
             <div className="shrink-0 flex items-center justify-between px-5 py-3 border-t border-brass/10">
               <p className="text-xs font-mono text-smoke/40">
-                ✓ 0G Storage · content-addressed · immutable
+                {contentOverride
+                  ? "⚠ Demo content · fictional ancestral story"
+                  : "✓ 0G Storage · content-addressed · immutable"}
               </p>
               {"url" in state.content && (
                 <a

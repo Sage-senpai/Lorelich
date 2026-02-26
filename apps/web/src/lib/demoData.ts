@@ -310,6 +310,52 @@ export const DEMO_PROVERBS: StoryProverb[] = [
   },
 ];
 
+// ─── Demo Story Text Content ──────────────────────────────────────────────────
+// Pre-written content for text-type demo stories — shown in StoryViewer
+// when contentOverride is passed (no real 0G download needed).
+
+export const DEMO_STORY_CONTENT: Record<string, string> = {
+  // Story 9002: "Okafor Clan — The Battle of Adansi, 1943"
+  "9002": `In the dry season of 1943, when the harmattan winds blew red dust across the hills of Enugu, my grandfather Chukwuemeka Okafor gathered every elder of the clan beneath the great iroko tree that stood at the centre of the compound. He was not a man who called meetings lightly. The last time he had done so, his youngest brother had died of fever. The time before that, there had been a dispute over land that took three seasons to resolve.
+
+But this was different. A letter had arrived — not for him, for letters rarely came to our village in those days — but for the District Officer at the colonial post. Chukwuemeka had learned its contents from a kitchen servant who had overheard the reading. The British intended to conscript young men from the surrounding villages to serve in the war in Burma. Our young men, who had never left Enugu, who knew the cassava fields and the river crossings but not the oceans, were to be taken thousands of miles away.
+
+"No son of the Okafor clan will die in a white man's war," my grandfather said. His voice was not angry. It was the quiet certainty of a man who had already decided.
+
+What followed was not a battle in the way Europeans use that word. There were no weapons drawn, no blood spilled. It was a battle of stubbornness, of silence, of knowing where to place a man so that the District Officer could not find him, of making records wrong by accident, of a village that simply could not be counted. For six weeks, the colonial administrators attempted to conduct a census of able-bodied men between the ages of eighteen and thirty-five. For six weeks, the Okafor clan produced an endless succession of grandfathers, children, and men with remarkable ailments that resolved themselves the moment the census takers departed.
+
+Not a single Okafor man was conscripted.
+
+My grandfather never boasted of this. He said only: "We are not cowards. We simply had different battles to fight." He meant the fields, the families, the continuity of a people who had survived drought and flood and now this — men in uniforms who saw Africa as a resource rather than a home.
+
+He lived to ninety-two. He outlasted the colonial post. He outlasted two District Officers and the entire administrative district they served. On the morning he died, the iroko tree — which had been there longer than anyone could remember — shed a ring of leaves in a perfect circle around its base, as if the earth itself was acknowledging his passing.
+
+I do not know if that is true. My mother told me so. But in our family, we have learned that some truths are better held in story than in fact.`,
+
+  // Story 9005: "The Lost Recipe of Abuela María"
+  "9005": `The recipe was never written down. That was the first thing my grandmother told anyone who asked about it — not as a complaint, but as a matter of pride. "Writing a recipe," she would say, stirring the pot with the same wooden spoon her own mother had used, "is like writing down how to love someone. The words are never enough."
+
+Abuela María de la Concepción Rivera was born in 1921 in a village forty kilometres east of Guadalajara, in the Mexican state of Jalisco. She learned to cook by standing beside her mother in a kitchen that smelled of chilli and woodsmoke and something else — something earthy and warm that I have spent my whole adult life trying to identify in other foods and have never quite found. I believe now that it was the smell of continuity. Of the same gestures repeated across generations.
+
+The tamales were her signature. Not just any tamales — the Christmas tamales, the ones she made in the last week of December when the whole family gathered in her kitchen, which was really just a room off the main courtyard, open to the air on one side. She would begin the process three days before Christmas Eve. The chilli she used — a dried variety called pasilla negro — she would source from a specific vendor in the Mercado Corona who had been selling the same chillis, from the same farm in Oaxaca, for as long as anyone could remember. When that vendor died in 1987, Abuela María spent an entire year testing substitutes before she found a combination that satisfied her.
+
+I am telling you this because when she died in 2008, we thought the recipe died with her.
+
+My mother had watched her make the tamales every Christmas for sixty years. But watching and knowing are different things. She knew the colour the masa should be — a pale, almost golden yellow. She knew the consistency — "like damp clay, but lighter." She knew that the chilli sauce required exactly four dried chillis per kilo of pork, and that the pork should be shoulder, not leg, and that it should simmer for no less than three hours. What she did not know was the spice that gave the sauce its particular depth. There was something in there beyond cumin and oregano. Something smoky and slightly bitter that cut through the richness of the fat.
+
+For fifteen years after Abuela María's death, my mother made the tamales every Christmas. They were good. They were not the same.
+
+And then, in 2023, I was clearing out a box of my grandmother's things and I found it. Not a recipe — she would never have written a recipe. But a letter to her sister in Guadalajara, written in 1962, complaining about the price of a particular ingredient. "You cannot find cacao negro for a reasonable price anywhere in this city," she wrote. "The only way is to toast and grind it yourself, and who has time for that in December?"
+
+Dark cacao. Toasted and ground. Not as flavour, but as depth.
+
+I called my mother and read her the letter. She was silent for a long moment, and then she said: "That is what it was. I could never name it, but that is exactly what it was."
+
+The tamales we made that Christmas were the closest we had come in fifteen years. They were not identical. I do not think they ever will be. A recipe, like a memory, changes slightly every time it passes from one person to another. But they were close enough that my mother cried, standing in her kitchen on Christmas Eve with a wooden spoon in her hand.
+
+Close enough to be called the same recipe. Close enough to be called hers.`,
+};
+
 // ─── Search Corpus ─────────────────────────────────────────────────────────────
 
 export const DEMO_SEARCH_CORPUS = DEMO_STORIES.map((s) => ({
