@@ -66,10 +66,25 @@ export type UploadStep =
   | "idle"
   | "encrypting"
   | "uploading_0g"
+  | "stored_0g"      // 0G upload done — waiting for on-chain registration
   | "confirming_tx"
   | "minting"
   | "complete"
   | "error";
+
+/** A story that has been stored on 0G but not yet registered on-chain. */
+export interface PendingStory {
+  localId:          string;   // crypto.randomUUID() — local temp ID
+  vaultId:          string;   // bigint serialised as string
+  zgRootHash:       string;
+  title:            string;
+  mediaType:        string;
+  duration:         number;
+  encryptedKeyHash: string;
+  tokenURI:         string;   // pre-built, ready for contract call
+  savedAt:          number;   // Date.now()
+  uploaderAddress:  string;
+}
 
 export interface UploadState {
   step: UploadStep;

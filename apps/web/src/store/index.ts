@@ -2,8 +2,10 @@ import { create } from "zustand";
 import type {
   Vault, StoryMetadata, UploadState, LoreLichMessage,
   LicenseTerms, LicenseRequest, LicensableStory,
-  GenealogyTree, AncestorLink,
+  GenealogyTree, AncestorLink, PendingStory,
 } from "@/types";
+
+const PENDING_STORAGE_KEY = "lorelich_pending_stories";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Vault Store
@@ -13,23 +15,84 @@ interface VaultStore {
   vaults:          Vault[];
   selectedVaultId: bigint | null;
   stories:         Record<string, StoryMetadata[]>; // vaultId → stories
+  pendingStories:  Record<string, PendingStory[]>;  // vaultId → pending (0G done, not on-chain)
 
   setVaults:          (vaults: Vault[]) => void;
   selectVault:        (id: bigint | null) => void;
   setVaultStories:    (vaultId: bigint, stories: StoryMetadata[]) => void;
   clearVaultData:     () => void;
+  addPendingStory:    (story: PendingStory) => void;
+  removePendingStory: (localId: string) => void;
+  loadPendingStories: (address: string) => void;
 }
 
 export const useVaultStore = create<VaultStore>((set) => ({
   vaults:          [],
   selectedVaultId: null,
   stories:         {},
+  pendingStories:  {},
 
   setVaults:       (vaults) => set({ vaults }),
   selectVault:     (id)     => set({ selectedVaultId: id }),
   setVaultStories: (vaultId, stories) =>
     set((s) => ({ stories: { ...s.stories, [vaultId.toString()]: stories } })),
   clearVaultData:  () => set({ vaults: [], selectedVaultId: null, stories: {} }),
+
+  addPendingStory: (story) => {
+    if (typeof window !== "undefined") {
+      const raw = localStorage.getItem(PENDING_STORAGE_KEY);
+      const all: PendingStory[] = raw ? JSON.parse(raw) : [];
+      localStorage.setItem(
+        PENDING_STORAGE_KEY,
+        JSON.stringify([...all.filter((p) => p.localId !== story.localId), story]),
+      );
+    }
+    set((s) => {
+      const list = s.pendingStories[story.vaultId] ?? [];
+      return {
+        pendingStories: {
+          ...s.pendingStories,
+          [story.vaultId]: [...list.filter((p) => p.localId !== story.localId), story],
+        },
+      };
+    });
+  },
+
+  removePendingStory: (localId) => {
+    if (typeof window !== "undefined") {
+      const raw = localStorage.getItem(PENDING_STORAGE_KEY);
+      const all: PendingStory[] = raw ? JSON.parse(raw) : [];
+      localStorage.setItem(
+        PENDING_STORAGE_KEY,
+        JSON.stringify(all.filter((p) => p.localId !== localId)),
+      );
+    }
+    set((s) => {
+      const updated: Record<string, PendingStory[]> = {};
+      for (const [vid, list] of Object.entries(s.pendingStories)) {
+        const filtered = list.filter((p) => p.localId !== localId);
+        if (filtered.length > 0) updated[vid] = filtered;
+      }
+      return { pendingStories: updated };
+    });
+  },
+
+  loadPendingStories: (address) => {
+    if (typeof window === "undefined") return;
+    const raw = localStorage.getItem(PENDING_STORAGE_KEY);
+    if (!raw) return;
+    try {
+      const all: PendingStory[] = JSON.parse(raw);
+      const mine = all.filter(
+        (p) => p.uploaderAddress.toLowerCase() === address.toLowerCase(),
+      );
+      const grouped: Record<string, PendingStory[]> = {};
+      for (const p of mine) {
+        grouped[p.vaultId] = [...(grouped[p.vaultId] ?? []), p];
+      }
+      set({ pendingStories: grouped });
+    } catch { /* ignore corrupt data */ }
+  },
 }));
 
 // ─────────────────────────────────────────────────────────────────────────────

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAccount, useWriteContract } from "wagmi";
 import { useVaultStore } from "@/store";
@@ -18,7 +18,7 @@ import { TranscriptButton } from "@/components/TranscriptButton";
 import { AccessGrantModal } from "@/components/AccessGrantModal";
 import { CertificateModal } from "@/components/CertificateModal";
 import { LORE_VAULT_ADDRESS, LORE_VAULT_ABI } from "@/lib/contracts";
-import type { Vault, StoryMetadata } from "@/types";
+import type { Vault, StoryMetadata, PendingStory } from "@/types";
 import { DEMO_VAULTS, DEMO_STORY_MAP, DEMO_STORY_CONTENT, isDemoId } from "@/lib/demoData";
 import { DemoBanner, DemoBadge } from "@/components/DemoBanner";
 
@@ -33,6 +33,14 @@ export default function VaultPage() {
   const selectedVaultId          = useVaultStore((s) => s.selectedVaultId);
   const stories                  = useVaultStore((s) => s.stories);
   const selectVault              = useVaultStore((s) => s.selectVault);
+  const pendingStories           = useVaultStore((s) => s.pendingStories);
+  const loadPendingStories       = useVaultStore((s) => s.loadPendingStories);
+  const removePendingStory       = useVaultStore((s) => s.removePendingStory);
+
+  // Load pending stories from localStorage when the wallet address is known
+  useEffect(() => {
+    if (address) loadPendingStories(address);
+  }, [address, loadPendingStories]);
 
   const { isLoading: storiesLoading, refetch: refetchStories } = useVaultStories(selectedVaultId);
 
@@ -54,6 +62,11 @@ export default function VaultPage() {
   const selectedStories = isDemoActive
     ? (DEMO_STORY_MAP[demoVaultId!.toString()] ?? [])
     : (selectedVaultId !== null ? (stories[selectedVaultId.toString()] ?? []) : []);
+
+  // Pending stories: 0G-stored but not yet registered on-chain
+  const selectedPending: PendingStory[] = isDemoActive || selectedVaultId === null
+    ? []
+    : (pendingStories[selectedVaultId.toString()] ?? []);
 
   // Incoming license requests for selected vault's stories
   const selectedStoryIds = useMemo(
@@ -265,16 +278,37 @@ export default function VaultPage() {
               <div className="flex gap-4">
                 {/* Stories */}
                 <div className={showChatPanel ? "flex-1 min-w-0" : "w-full"}>
+
+                  {/* Pending stories — stored on 0G but not yet registered on-chain */}
+                  {selectedPending.length > 0 && (
+                    <div className="mb-4 space-y-2">
+                      <p className="text-[9px] font-mono text-gold/50 uppercase tracking-widest px-1">
+                        Pending On-Chain Registration
+                      </p>
+                      {selectedPending.map((p) => (
+                        <PendingStoryCard
+                          key={p.localId}
+                          pending={p}
+                          vaultId={selectedVaultId!}
+                          onRegistered={() => {
+                            removePendingStory(p.localId);
+                            setTimeout(() => refetchStories(), 3000);
+                          }}
+                        />
+                      ))}
+                    </div>
+                  )}
+
                   {storiesLoading ? (
                     <StoryListSkeleton />
-                  ) : selectedStories.length === 0 ? (
+                  ) : selectedStories.length === 0 && selectedPending.length === 0 ? (
                     <div className="py-16 text-center">
                       <p className="font-serif text-aged">No stories yet</p>
                       <p className="text-smoke text-xs font-mono mt-1">
                         Upload the first story to this vault.
                       </p>
                     </div>
-                  ) : (
+                  ) : selectedStories.length > 0 ? (
                     <div className="space-y-3">
                       {selectedStories.map((story) => (
                         <div
@@ -363,7 +397,7 @@ export default function VaultPage() {
                         </div>
                       ))}
                     </div>
-                  )}
+                  ) : null}
                 </div>
 
                 {/* LoreLich chat panel */}
@@ -467,6 +501,89 @@ export default function VaultPage() {
           />
         )}
       </AnimatePresence>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Pending Story Card — 0G-stored, awaiting on-chain registration
+// ─────────────────────────────────────────────────────────────────────────────
+
+function PendingStoryCard({
+  pending,
+  vaultId,
+  onRegistered,
+}: {
+  pending:      PendingStory;
+  vaultId:      bigint;
+  onRegistered: () => void;
+}) {
+  const { writeContractAsync } = useWriteContract();
+  const [state,    setState]    = useState<"idle" | "signing" | "error">("idle");
+  const [errMsg,   setErrMsg]   = useState<string | null>(null);
+
+  const handleRegister = async () => {
+    setState("signing");
+    setErrMsg(null);
+    try {
+      await writeContractAsync({
+        address:      LORE_VAULT_ADDRESS,
+        abi:          LORE_VAULT_ABI,
+        functionName: "uploadStory",
+        gas:          BigInt(600_000),
+        args: [{
+          vaultId,
+          zgRootHash:       pending.zgRootHash,
+          title:            pending.title,
+          mediaType:        pending.mediaType,
+          duration:         BigInt(pending.duration),
+          encryptedKeyHash: pending.encryptedKeyHash,
+          tokenURI:         pending.tokenURI,
+        }],
+      });
+      onRegistered();
+    } catch (err) {
+      const msg = (err as Error).message ?? "";
+      const low = msg.toLowerCase();
+      const human =
+        low.includes("user rejected") || low.includes("user denied")
+          ? "Wallet rejected."
+          : low.includes("walletconnect") || low.includes("relay") || low.includes("websocket")
+          ? "Wallet connection issue. Try your wallet's built-in browser."
+          : low.includes("insufficient funds")
+          ? "Insufficient gas funds."
+          : msg.length > 100 ? msg.slice(0, 100) + "…" : msg;
+      setErrMsg(human);
+      setState("error");
+    }
+  };
+
+  return (
+    <div className="rounded-sm border border-gold/20 bg-gold/5 px-3 py-2.5 space-y-1.5">
+      <div className="flex items-start justify-between gap-2">
+        <div className="min-w-0">
+          <p className="font-serif text-sm text-parchment/90 truncate">{pending.title}</p>
+          <p className="text-[10px] font-mono text-smoke/50 mt-0.5">
+            {pending.mediaType}
+            {" · "}
+            {new Date(pending.savedAt).toLocaleDateString()}
+            {" · "}
+            <span className="text-gold/60">✓ stored on 0G</span>
+          </p>
+        </div>
+        <button
+          onClick={handleRegister}
+          disabled={state === "signing"}
+          className="shrink-0 px-2.5 py-1 rounded-sm text-[11px] font-mono border border-brass/40 text-brass
+            hover:border-brass hover:bg-brass/10 transition-all duration-200 disabled:opacity-40"
+        >
+          {state === "signing" ? "Signing…" : "Register on-chain"}
+        </button>
+      </div>
+      {errMsg && (
+        <p className="text-[10px] font-mono text-burgundy/70 leading-relaxed">{errMsg}</p>
+      )}
+      <p className="text-[10px] font-mono text-smoke/30 truncate">{pending.zgRootHash}</p>
     </div>
   );
 }
