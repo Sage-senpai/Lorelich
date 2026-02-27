@@ -601,34 +601,51 @@ function CreateVaultModal({
 }) {
   const [name,      setName]      = useState("");
   const [isPrivate, setIsPrivate] = useState(false);
+  const [txState,   setTxState]   = useState<"idle" | "pending" | "sent" | "error">("idle");
   const [txError,   setTxError]   = useState<string | null>(null);
-  const { writeContractAsync, isPending } = useWriteContract();
+  const [txHash,    setTxHash]    = useState<string | null>(null);
+  const { writeContractAsync } = useWriteContract();
 
   const handleCreate = async () => {
     if (!name.trim()) return;
     setTxError(null);
+    setTxHash(null);
+    setTxState("pending");
     try {
-      await writeContractAsync({
+      const hash = await writeContractAsync({
         address:      LORE_VAULT_ADDRESS,
         abi:          LORE_VAULT_ABI,
         functionName: "createVault",
-        // Manual gas limit bypasses eth_estimateGas which is unreliable on 0G testnet
-        gas:          BigInt(200_000),
+        // Manual gas limit — bypasses eth_estimateGas which is unreliable on 0G testnet
+        gas:          BigInt(350_000),
         args:         [name.trim(), isPrivate],
       });
+      setTxHash(hash);
+      setTxState("sent");
       onCreated?.();
-      onClose();
+      // Auto-close after 4 s so user can see the success message + tx hash
+      setTimeout(onClose, 4000);
     } catch (err) {
       const msg = (err as Error).message ?? "";
+      const low = msg.toLowerCase();
+      setTxState("error");
       setTxError(
-        msg.includes("User rejected") || msg.includes("user rejected")
+        low.includes("user rejected") || low.includes("user denied") || low.includes("rejected the request")
           ? "Transaction rejected in wallet."
-          : msg.length > 120
-          ? msg.slice(0, 120) + "…"
-          : msg,
+          : low.includes("walletconnect") || low.includes("relay") || low.includes("websocket") ||
+            low.includes("connection timeout") || low.includes("failed to publish") ||
+            low.includes("transaction failed")
+          ? "Wallet connection issue. Open this site inside your wallet's built-in browser (OKX → Browser tab), or use a desktop extension. The 0G testnet RPC can cause false failures — try again or switch connection method."
+          : low.includes("insufficient funds") || low.includes("underpriced")
+          ? "Insufficient OG tokens for gas. Make sure you have testnet OG on the 0G Galileo network (chain ID 16602)."
+          : low.includes("execution reverted") || low.includes("revert")
+          ? `Contract rejected: ${msg.match(/reason: (.+?)(?:\n|$)/)?.[1]?.slice(0, 100) ?? "check your inputs"}`
+          : msg.length > 160 ? msg.slice(0, 160) + "…" : msg,
       );
     }
   };
+
+  const explorerBase = "https://chainscan-galileo.0g.ai";
 
   return (
     <Modal onClose={onClose} title="Create a Vault">
@@ -645,6 +662,7 @@ function CreateVaultModal({
             maxLength={100}
             className="input-dark"
             autoFocus
+            disabled={txState === "pending" || txState === "sent"}
           />
         </div>
 
@@ -658,11 +676,13 @@ function CreateVaultModal({
               <button
                 key={String(opt.value)}
                 onClick={() => setIsPrivate(opt.value)}
+                disabled={txState === "pending" || txState === "sent"}
                 className={[
                   "flex-1 p-3 rounded-sm border text-left transition-all duration-200",
                   isPrivate === opt.value
                     ? "border-brass bg-brass/5 text-parchment"
                     : "border-brass/20 text-smoke hover:border-brass/40",
+                  txState === "pending" || txState === "sent" ? "opacity-50 pointer-events-none" : "",
                 ].join(" ")}
               >
                 <p className="text-sm font-mono">{opt.label}</p>
@@ -672,19 +692,53 @@ function CreateVaultModal({
           </div>
         </div>
 
+        {/* Success */}
+        {txState === "sent" && txHash && (
+          <div className="rounded-sm border border-moss/30 bg-moss/5 px-3 py-2.5 space-y-1">
+            <p className="text-xs font-mono text-moss">✓ Vault creation submitted</p>
+            <p className="text-[10px] font-mono text-smoke/60">Your vault will appear shortly. Transaction:</p>
+            <a
+              href={`${explorerBase}/tx/${txHash}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[10px] font-mono text-brass/70 hover:text-brass underline break-all"
+            >
+              {txHash.slice(0, 20)}…{txHash.slice(-8)}
+            </a>
+          </div>
+        )}
+
+        {/* Error */}
         {txError && (
-          <p className="text-xs font-mono text-burgundy/80 border border-burgundy/30 rounded-sm px-3 py-2">
+          <p className="text-xs font-mono text-burgundy/80 border border-burgundy/30 rounded-sm px-3 py-2 leading-relaxed">
             {txError}
           </p>
         )}
 
         <button
           onClick={handleCreate}
-          disabled={!name.trim() || isPending}
+          disabled={!name.trim() || txState === "pending" || txState === "sent"}
           className="btn-brass w-full py-2.5"
         >
-          {isPending ? "Creating..." : "Create Vault"}
+          {txState === "pending" ? "Open wallet to sign…" : txState === "sent" ? "Submitted ✓" : "Create Vault"}
         </button>
+
+        {txState === "error" && (
+          <button
+            onClick={() => { setTxState("idle"); setTxError(null); }}
+            className="w-full py-1.5 text-xs font-mono text-smoke/60 hover:text-aged transition-colors"
+          >
+            Try again
+          </button>
+        )}
+
+        {/* Mobile wallet tip */}
+        {txState === "idle" && (
+          <p className="text-[10px] font-mono text-smoke/35 text-center leading-relaxed">
+            On mobile? For best results open this page inside your wallet&apos;s browser
+            (OKX → Browser tab · MetaMask → Browser).
+          </p>
+        )}
       </div>
     </Modal>
   );
