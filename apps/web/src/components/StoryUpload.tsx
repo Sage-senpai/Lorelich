@@ -168,10 +168,22 @@ export function StoryUpload({ vaultId, isPrivate, onComplete }: StoryUploadProps
       setUploadState({ step: "complete", progress: 100 });
       setTimeout(() => onComplete?.(0n), 2000);
     } catch (err) {
-      const humanMsg = classifyContractError((err as Error).message ?? "");
+      const raw = (err as Error).message ?? "";
+      const low = raw.toLowerCase();
+      const isRelayDrop =
+        low.includes("walletconnect") || low.includes("relay") || low.includes("websocket") ||
+        low.includes("connection timeout") || low.includes("failed to publish") ||
+        low.includes("transaction failed");
+      const isUserRejection =
+        low.includes("user rejected") || low.includes("user denied") || low.includes("rejected the request");
+
       // Stay in stored_0g state — 0G data is safe, only signing failed
       setUploadState({ step: "stored_0g", progress: 70 });
-      setSignError(humanMsg);
+      setSignError(
+        isRelayDrop && !isUserRejection
+          ? "Wallet connection dropped. Your transaction may still have been submitted — wait a few seconds then check your vault. If the story doesn't appear, click 'Retry signing'. Your file is safely stored on 0G."
+          : classifyContractError(raw),
+      );
     }
   };
 

@@ -628,20 +628,31 @@ function CreateVaultModal({
     } catch (err) {
       const msg = (err as Error).message ?? "";
       const low = msg.toLowerCase();
+      const isUserRejection =
+        low.includes("user rejected") || low.includes("user denied") || low.includes("rejected the request");
+      const isMaybeRelayDrop =
+        low.includes("walletconnect") || low.includes("relay") || low.includes("websocket") ||
+        low.includes("connection timeout") || low.includes("failed to publish") ||
+        low.includes("transaction failed");
+
       setTxState("error");
       setTxError(
-        low.includes("user rejected") || low.includes("user denied") || low.includes("rejected the request")
+        isUserRejection
           ? "Transaction rejected in wallet."
-          : low.includes("walletconnect") || low.includes("relay") || low.includes("websocket") ||
-            low.includes("connection timeout") || low.includes("failed to publish") ||
-            low.includes("transaction failed")
-          ? "Wallet connection issue. Open this site inside your wallet's built-in browser (OKX → Browser tab), or use a desktop extension. The 0G testnet RPC can cause false failures — try again or switch connection method."
+          : isMaybeRelayDrop
+          ? "Wallet connection issue. Your transaction may still have been submitted — check your vault list in a few seconds. If it doesn't appear, try again using your wallet's built-in browser (OKX → Browser tab)."
           : low.includes("insufficient funds") || low.includes("underpriced")
           ? "Insufficient OG tokens for gas. Make sure you have testnet OG on the 0G Galileo network (chain ID 16602)."
           : low.includes("execution reverted") || low.includes("revert")
           ? `Contract rejected: ${msg.match(/reason: (.+?)(?:\n|$)/)?.[1]?.slice(0, 100) ?? "check your inputs"}`
           : msg.length > 160 ? msg.slice(0, 160) + "…" : msg,
       );
+
+      // If this was NOT a user rejection, the tx may have been broadcast despite the relay error.
+      // Trigger a background vault list refresh — the vault may appear even though we got an error.
+      if (!isUserRejection) {
+        onCreated?.();
+      }
     }
   };
 
