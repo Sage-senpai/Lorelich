@@ -52,12 +52,26 @@ function classifyContractError(msg: string): string {
   if (low.includes("user rejected") || low.includes("rejected the request") || low.includes("user denied")) {
     return "Wallet rejected the transaction. Your story is safely stored on 0G — you can register on-chain later from the vault.";
   }
+  // Decoded custom errors (now in ABI so viem can name them properly)
+  if (low.includes("notvaultowner") || low.includes("not vault owner")) {
+    return "You don't own this vault. Make sure the correct wallet account is connected, then retry.";
+  }
+  if (low.includes("vaultnotfound") || low.includes("vault not found")) {
+    return "Vault not found on-chain. If you just created it, wait a few seconds and retry.";
+  }
+  if (low.includes("emptystring")) {
+    const field = msg.match(/EmptyString\("?(\w+)"?\)/)?.[1] ?? "field";
+    return `Missing required field: ${field}. Please check the story details.`;
+  }
+  if (low.includes("maxstoriesreached")) {
+    return "This vault has reached the maximum number of stories (10,000).";
+  }
   if (
     low.includes("walletconnect") || low.includes("relay") ||
     low.includes("websocket") || low.includes("connection timeout") ||
     low.includes("failed to publish") || low.includes("transaction failed")
   ) {
-    return "Wallet connection issue (WalletConnect relay). Open this site inside your wallet's built-in browser, or use a desktop extension. Your story is safely on 0G — register later.";
+    return "Transaction failed. Try again — if it keeps failing, switch to a desktop browser extension wallet.";
   }
   if (low.includes("insufficient funds") || low.includes("underpriced") || low.includes("max fee")) {
     return "Insufficient gas / fee too low. Make sure you have OG tokens for gas on the 0G testnet.";

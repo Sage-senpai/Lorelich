@@ -10,7 +10,18 @@ import { useEffect } from "react";
 
 export function useOwnerVaults() {
   const { address } = useAccount();
-  const setVaults   = useVaultStore((s) => s.setVaults);
+  const setVaults      = useVaultStore((s) => s.setVaults);
+  const clearVaultData = useVaultStore((s) => s.clearVaultData);
+  const selectVault    = useVaultStore((s) => s.selectVault);
+
+  // When the connected wallet changes, immediately wipe stale vault data so the
+  // old account's vaults are never shown while the new account's data loads.
+  // Without this, wallet A's vaults remain visible after switching to wallet B,
+  // and uploading to them causes a NotVaultOwner revert on-chain.
+  useEffect(() => {
+    clearVaultData();
+    selectVault(null);
+  }, [address]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const { data: vaultIds, isLoading, error, refetch } = useReadContract({
     address:      LORE_VAULT_ADDRESS,

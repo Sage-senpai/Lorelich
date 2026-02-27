@@ -220,7 +220,8 @@ export default function VaultPage() {
                   >
                     🕯 LoreLich
                   </button>
-                  {!isDemoActive && (
+                  {/* Only vault owner can upload — prevents NotVaultOwner revert */}
+                  {!isDemoActive && selectedVault.owner.toLowerCase() === address?.toLowerCase() && (
                     <button
                       onClick={() => setShowUploadModal(true)}
                       className="btn-brass text-xs"
@@ -548,11 +549,16 @@ function PendingStoryCard({
       const human =
         low.includes("user rejected") || low.includes("user denied")
           ? "Wallet rejected."
-          : low.includes("walletconnect") || low.includes("relay") || low.includes("websocket")
-          ? "Wallet connection issue. Try your wallet's built-in browser."
+          : low.includes("notvaultowner") || low.includes("not vault owner")
+          ? "Wrong wallet — you're not the owner of this vault. Connect the wallet that created it."
+          : low.includes("vaultnotfound") || low.includes("vault not found")
+          ? "Vault not found on-chain. It may not have been created yet."
+          : low.includes("walletconnect") || low.includes("relay") || low.includes("websocket") ||
+            low.includes("transaction failed")
+          ? "Transaction failed. Try again."
           : low.includes("insufficient funds")
-          ? "Insufficient gas funds."
-          : msg.length > 100 ? msg.slice(0, 100) + "…" : msg;
+          ? "Insufficient OG tokens for gas."
+          : msg.length > 120 ? msg.slice(0, 120) + "…" : msg;
       setErrMsg(human);
       setState("error");
     }

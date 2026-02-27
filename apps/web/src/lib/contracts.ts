@@ -138,6 +138,15 @@ export const LORE_VAULT_ABI = [
     inputs: [],
     outputs: [{ name: "", type: "uint256" }],
   },
+  // Custom errors — needed so viem decodes reverts instead of showing "Transaction failed"
+  { name: "NotVaultOwner",    type: "error", inputs: [{ name: "vaultId", type: "uint256" }, { name: "caller",  type: "address" }] },
+  { name: "VaultNotFound",    type: "error", inputs: [{ name: "vaultId", type: "uint256" }] },
+  { name: "StoryNotFound",    type: "error", inputs: [{ name: "storyId", type: "uint256" }] },
+  { name: "AccessDenied",     type: "error", inputs: [{ name: "vaultId", type: "uint256" }, { name: "caller",  type: "address" }] },
+  { name: "MaxStoriesReached",type: "error", inputs: [{ name: "vaultId", type: "uint256" }] },
+  { name: "MaxVaultsReached", type: "error", inputs: [{ name: "owner",   type: "address" }] },
+  { name: "EmptyString",      type: "error", inputs: [{ name: "field",   type: "string"  }] },
+  { name: "InvalidDuration",  type: "error", inputs: [] },
   // Events
   {
     name: "VaultCreated",
