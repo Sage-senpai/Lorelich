@@ -8,6 +8,11 @@ solc = "0.8.24"
 optimizer = true
 optimizer_runs = 200
 via_ir = true
+# 0G Galileo testnet only supports Shanghai EVM (not Cancun).
+# Cancun opcodes MCOPY (0x5e), TSTORE (0x5d), TLOAD (0x5c) cause "invalid opcode"
+# reverts on complex functions (uploadStory) while simpler functions (createVault) happen
+# to avoid the problematic paths.  Shanghai gives PUSH0 and all pre-Cancun opcodes.
+evm_version = "shanghai"
 remappings = [
   "@openzeppelin/=lib/openzeppelin-contracts/",
   "forge-std/=lib/forge-std/src/"
