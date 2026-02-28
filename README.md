@@ -99,6 +99,28 @@ bun dev
 | `SoulboundStory.sol` | ERC5192 soulbound token per story | *(see docs/deployment.md)* |
 | `LoreIPModule.sol` | IP licensing, royalties, license requests | `0x036eACE959adb91BdD35b7c1cf607B0133545968` |
 
+## V3 Roadmap (Planned — 21 New Features)
+
+V3 evolves LoreLich from a personal archive into a community-owned cultural protocol.
+
+**Group 1 — Platform Foundations:** Video playback, LoreLich AI streaming (SSE), 0G KV write path, Upstash Redis rate limiting
+
+**Group 2 — Collaborative Vaults:** Multi-custodian vaults (`CollaborativeVault.sol`), story versioning
+
+**Group 3 — Discovery & Social:** User profile pages, public story feed, story collections, ENS name resolution
+
+**Group 4 — AI Expansion:** Story translation (15 languages), AI voice synthesis (consent-based, on-chain), automated Proverb-of-the-Day, cultural auto-tagging on upload
+
+**Group 5 — Genealogy 2.0:** Manual ancestor editor (no GEDCOM required), ancestor profile pages, 0G tree cloud backup
+
+**Group 6 — Financial Layer:** Royalty dashboard, `LoreIPModuleV2.sol` with sublicense + dispute window
+
+**Group 7 — Governance:** `$LORE` governance token (earn via contributions), Snapshot DAO, curation bounties
+
+→ Full spec: [V3 Strategy](docs/v3-strategy.md)
+
+---
+
 ## Documentation
 
 - [Deployment Guide](docs/deployment.md)
@@ -108,6 +130,7 @@ bun dev
 - [Security Audit Checklist](docs/security-audit.md)
 - [Scaling Roadmap](docs/scaling-roadmap.md)
 - [V2 Strategy](docs/v2-strategy.md)
+- [V3 Strategy](docs/v3-strategy.md)
 
 ## License
 

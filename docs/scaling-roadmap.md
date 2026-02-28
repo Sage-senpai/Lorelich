@@ -97,10 +97,23 @@ Single-region, serverless, stateless. Sufficient for 0–10K MAU.
 |---|---|---|---|
 | Page load (LCP) | <3s | <2s | <1.5s |
 | Story upload (10MB) | <30s | <15s | <10s |
-| AI response (first token) | <3s | <2s | <1s |
+| AI response (first token) | <3s | <2s | <500ms (streaming) |
 | Pitch brief generation | <8s | <5s | <3s |
 | Tree render (100 ancestors) | <500ms | <300ms | <200ms |
+| 0G download (cached) | N/A | ~2s (live 0G) | <50ms (Vercel KV hit) |
+| Translation (2000 chars) | N/A | N/A | <4s |
 | MAU supported | 10K | 100K | 1M+ |
+
+## V3 Infrastructure Changes
+
+| Area | V2 State | V3 Change |
+|---|---|---|
+| Rate limiting | In-memory `Map` | Upstash Redis (persistent, multi-instance safe) |
+| 0G download cache | None | Vercel KV edge cache (immutable TTL) |
+| AI streaming | Blocking full-response | SSE token streaming on LoreLich chat |
+| Tag storage | localStorage only | 0G KV bidirectional (read + write) |
+| Cron jobs | None | Vercel Cron (proverb-of-the-day, 08:00 UTC daily) |
+| Contract indexing | Batch RPC reads | Partial event log scanning (The Graph in V4) |
 
 ---
 

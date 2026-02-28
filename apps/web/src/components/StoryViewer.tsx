@@ -116,20 +116,22 @@ export function StoryViewer({ story, onClose, contentOverride }: StoryViewerProp
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 flex items-center justify-center p-4"
+        className="fixed inset-0 z-50 overflow-y-auto"
         style={{ background: "rgba(13,11,14,0.80)", backdropFilter: "blur(6px)" }}
-        onClick={(e) => e.target === e.currentTarget && onClose()}
       >
+        <div
+          className="flex min-h-full items-center justify-center p-3 sm:p-4"
+          onClick={(e) => e.target === e.currentTarget && onClose()}
+        >
         <motion.div
           initial={{ scale: 0.95, opacity: 0, y: 12 }}
           animate={{ scale: 1, opacity: 1, y: 0 }}
           exit={{ scale: 0.95, opacity: 0 }}
           transition={{ duration: 0.2 }}
-          className="w-full max-w-2xl vault-glass rounded-sm shadow-vault flex flex-col"
-          style={{ maxHeight: "80vh" }}
+          className="w-full max-w-2xl vault-glass rounded-sm shadow-vault flex flex-col max-h-[90vh]"
         >
           {/* Header */}
-          <div className="flex items-start justify-between p-5 border-b border-brass/10 shrink-0">
+          <div className="flex items-start justify-between p-4 sm:p-5 border-b border-brass/10 shrink-0">
             <div>
               <h2 className="font-serif text-parchment text-lg leading-tight">{story.title}</h2>
               <p className="text-xs font-mono text-smoke/60 mt-0.5">
@@ -149,7 +151,7 @@ export function StoryViewer({ story, onClose, contentOverride }: StoryViewerProp
           </div>
 
           {/* Content area */}
-          <div className="flex-1 overflow-auto p-5">
+          <div className="flex-1 overflow-auto p-4 sm:p-5">
             {state.status === "loading" && (
               <StatusView icon="📡" label="Fetching from 0G Storage…" pulse />
             )}
@@ -176,7 +178,7 @@ export function StoryViewer({ story, onClose, contentOverride }: StoryViewerProp
 
           {/* Footer */}
           {state.status === "ready" && (
-            <div className="shrink-0 flex items-center justify-between px-5 py-3 border-t border-brass/10">
+            <div className="shrink-0 flex items-center justify-between px-4 sm:px-5 py-3 border-t border-brass/10">
               <p className="text-xs font-mono text-smoke/40">
                 {contentOverride
                   ? "⚠ Demo content · fictional ancestral story"
@@ -194,6 +196,7 @@ export function StoryViewer({ story, onClose, contentOverride }: StoryViewerProp
             </div>
           )}
         </motion.div>
+        </div>
       </motion.div>
     </AnimatePresence>
   );

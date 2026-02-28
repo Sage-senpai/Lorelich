@@ -125,21 +125,24 @@ export function AccessGrantModal({ vault, onClose }: AccessGrantModalProps) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      className="fixed inset-0 z-50 overflow-y-auto"
       style={{ background: "rgba(13,11,14,0.80)", backdropFilter: "blur(6px)" }}
-      onClick={(e) => e.target === e.currentTarget && onClose()}
     >
+      <div
+        className="flex min-h-full items-center justify-center p-3 sm:p-4"
+        onClick={(e) => e.target === e.currentTarget && onClose()}
+      >
       <motion.div
         initial={{ scale: 0.95, opacity: 0, y: 12 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
         exit={{ scale: 0.95, opacity: 0 }}
         transition={{ duration: 0.2 }}
-        className="w-full max-w-md vault-glass rounded-sm p-6 shadow-vault"
+        className="w-full max-w-md vault-glass rounded-sm p-4 sm:p-6 shadow-vault"
       >
         {/* Header */}
-        <div className="flex items-center justify-between mb-5">
+        <div className="flex items-center justify-between mb-4 sm:mb-5">
           <div>
-            <h2 className="font-serif text-parchment text-xl">Manage Access</h2>
+            <h2 className="font-serif text-parchment text-lg sm:text-xl">Manage Access</h2>
             <p className="text-xs font-mono text-smoke/50 mt-0.5">
               🔒 {vault.name} · Private Vault
             </p>
@@ -231,6 +234,7 @@ export function AccessGrantModal({ vault, onClose }: AccessGrantModalProps) {
           download and decrypt stories stored in this private vault.
         </p>
       </motion.div>
+      </div>
     </motion.div>
   );
 }

@@ -350,3 +350,47 @@ export const LORE_IP_MODULE_ABI = [
     ],
   },
 ] as const;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SoulboundStory ABI
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const SOULBOUND_ABI = [
+  {
+    name: "ownerOf",
+    type: "function",
+    stateMutability: "view",
+    inputs: [{ name: "tokenId", type: "uint256" }],
+    outputs: [{ name: "", type: "address" }],
+  },
+  {
+    name: "tokenURI",
+    type: "function",
+    stateMutability: "view",
+    inputs: [{ name: "tokenId", type: "uint256" }],
+    outputs: [{ name: "", type: "string" }],
+  },
+  {
+    name: "locked",
+    type: "function",
+    stateMutability: "view",
+    inputs: [{ name: "tokenId", type: "uint256" }],
+    outputs: [{ name: "", type: "bool" }],
+  },
+  {
+    name: "tokenToStory",
+    type: "function",
+    stateMutability: "view",
+    inputs: [{ name: "tokenId", type: "uint256" }],
+    outputs: [{ name: "", type: "uint256" }],
+  },
+  {
+    name: "StoryMinted",
+    type: "event",
+    inputs: [
+      { name: "to",      type: "address", indexed: true },
+      { name: "tokenId", type: "uint256", indexed: true },
+      { name: "storyId", type: "uint256", indexed: true },
+    ],
+  },
+] as const;

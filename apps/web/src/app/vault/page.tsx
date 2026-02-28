@@ -17,6 +17,7 @@ import { StoryTags } from "@/components/StoryTags";
 import { TranscriptButton } from "@/components/TranscriptButton";
 import { AccessGrantModal } from "@/components/AccessGrantModal";
 import { CertificateModal } from "@/components/CertificateModal";
+import { SoulboundBadge } from "@/components/SoulboundBadge";
 import { LORE_VAULT_ADDRESS, LORE_VAULT_ABI } from "@/lib/contracts";
 import type { Vault, StoryMetadata, PendingStory } from "@/types";
 import { DEMO_VAULTS, DEMO_STORY_MAP, DEMO_STORY_CONTENT, isDemoId } from "@/lib/demoData";
@@ -42,6 +43,36 @@ export default function VaultPage() {
     if (address) loadPendingStories(address);
   }, [address, loadPendingStories]);
 
+  // Load local UI overrides from localStorage on mount
+  useEffect(() => {
+    try {
+      const n = localStorage.getItem("lorelich_vault_names");
+      if (n) setLocalVaultNames(JSON.parse(n) as Record<string, string>);
+      const a = localStorage.getItem("lorelich_archived_vaults");
+      if (a) setArchivedVaultIds(new Set(JSON.parse(a) as string[]));
+      const h = localStorage.getItem("lorelich_hidden_stories");
+      if (h) setHiddenStoryIds(new Set(JSON.parse(h) as string[]));
+    } catch { /* ignore corrupt data */ }
+  }, []);
+
+  function saveVaultName(id: string, name: string) {
+    const next = { ...localVaultNames, [id]: name };
+    setLocalVaultNames(next);
+    localStorage.setItem("lorelich_vault_names", JSON.stringify(next));
+  }
+  function toggleArchiveVault(id: string) {
+    const next = new Set(archivedVaultIds);
+    if (next.has(id)) next.delete(id); else next.add(id);
+    setArchivedVaultIds(next);
+    localStorage.setItem("lorelich_archived_vaults", JSON.stringify([...next]));
+  }
+  function toggleHideStory(id: string) {
+    const next = new Set(hiddenStoryIds);
+    if (next.has(id)) next.delete(id); else next.add(id);
+    setHiddenStoryIds(next);
+    localStorage.setItem("lorelich_hidden_stories", JSON.stringify([...next]));
+  }
+
   const { isLoading: storiesLoading, refetch: refetchStories } = useVaultStories(selectedVaultId);
 
   const [showCreateModal,  setShowCreateModal]  = useState(false);
@@ -53,6 +84,14 @@ export default function VaultPage() {
   const [showAccessModal,  setShowAccessModal]  = useState(false);
   const [showIncoming,     setShowIncoming]     = useState(true);
   const [demoVaultId,      setDemoVaultId]      = useState<bigint | null>(null);
+  const [nftStory,         setNftStory]         = useState<StoryMetadata | null>(null);
+  const [isRenamingVault,  setIsRenamingVault]  = useState(false);
+  const [renameInput,      setRenameInput]      = useState("");
+  const [localVaultNames,  setLocalVaultNames]  = useState<Record<string, string>>({});
+  const [archivedVaultIds, setArchivedVaultIds] = useState<Set<string>>(new Set());
+  const [showArchived,     setShowArchived]     = useState(false);
+  const [hiddenStoryIds,   setHiddenStoryIds]   = useState<Set<string>>(new Set());
+  const [showHidden,       setShowHidden]       = useState(false);
 
   // When a demo vault is active, pull data locally; otherwise use on-chain store
   const isDemoActive    = demoVaultId !== null;
@@ -81,6 +120,13 @@ export default function VaultPage() {
     () => Object.fromEntries(selectedStories.map((s) => [s.id.toString(), s.title])),
     [selectedStories],
   );
+
+  // Local-override derived values
+  const visibleVaults      = vaults.filter((v) => showArchived || !archivedVaultIds.has(v.id.toString()));
+  const archivedCount      = vaults.filter((v) =>  archivedVaultIds.has(v.id.toString())).length;
+  const visibleStories     = showHidden ? selectedStories : selectedStories.filter((s) => !hiddenStoryIds.has(s.id.toString()));
+  const hiddenCount        = selectedStories.filter((s) =>  hiddenStoryIds.has(s.id.toString())).length;
+  const effectiveVaultName = selectedVault ? (localVaultNames[selectedVault.id.toString()] ?? selectedVault.name) : "";
 
   // Wagmi rehydrates from localStorage on page load — wait before showing gate
   if (status === "reconnecting" || status === "connecting") {
@@ -129,18 +175,36 @@ export default function VaultPage() {
           ) : vaults.length === 0 ? (
             <VaultCardEmpty />
           ) : (
-            vaults.map((v, i) => (
-              <VaultCard
-                key={v.id.toString()}
-                vault={v}
-                index={i}
-                onClick={() => {
-                  selectVault(v.id);
-                  setDemoVaultId(null);
-                  setShowChatPanel(false);
-                }}
-              />
+            visibleVaults.map((v, i) => (
+              <div key={v.id.toString()} className="relative group">
+                <VaultCard
+                  vault={{ ...v, name: localVaultNames[v.id.toString()] ?? v.name }}
+                  index={i}
+                  onClick={() => {
+                    selectVault(v.id);
+                    setDemoVaultId(null);
+                    setShowChatPanel(false);
+                  }}
+                />
+                <button
+                  onClick={(e) => { e.stopPropagation(); toggleArchiveVault(v.id.toString()); }}
+                  title="Archive vault (local only — hides from sidebar)"
+                  className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity
+                    text-[11px] text-smoke/30 hover:text-burgundy/60 leading-none z-10 px-1"
+                >
+                  ⊗
+                </button>
+              </div>
             ))
+          )}
+
+          {archivedCount > 0 && (
+            <button
+              onClick={() => setShowArchived((p) => !p)}
+              className="text-[10px] font-mono text-smoke/30 hover:text-smoke/60 transition-colors mt-1 w-full text-center"
+            >
+              {showArchived ? "▲ Hide archived" : `▼ ${archivedCount} archived vault${archivedCount === 1 ? "" : "s"}`}
+            </button>
           )}
 
           {/* Demo vaults — always visible */}
@@ -191,7 +255,48 @@ export default function VaultPage() {
               {/* Vault header */}
               <div className="flex items-center justify-between mb-5">
                 <div>
-                  <h2 className="font-serif text-parchment text-2xl">{selectedVault.name}</h2>
+                  {isRenamingVault ? (
+                    <div className="flex items-center gap-2 mb-0.5">
+                      <input
+                        type="text"
+                        value={renameInput}
+                        onChange={(e) => setRenameInput(e.target.value)}
+                        maxLength={100}
+                        className="input-dark text-base font-serif py-0.5 w-44"
+                        autoFocus
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter")  { saveVaultName(selectedVault.id.toString(), renameInput.trim() || selectedVault.name); setIsRenamingVault(false); }
+                          if (e.key === "Escape") { setIsRenamingVault(false); }
+                        }}
+                      />
+                      <button
+                        onClick={() => { saveVaultName(selectedVault.id.toString(), renameInput.trim() || selectedVault.name); setIsRenamingVault(false); }}
+                        className="text-xs font-mono text-moss hover:text-moss/70 transition-colors"
+                      >
+                        Save
+                      </button>
+                      <button
+                        onClick={() => setIsRenamingVault(false)}
+                        className="text-xs font-mono text-smoke/50 hover:text-smoke transition-colors"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2 group/rename">
+                      <h2 className="font-serif text-parchment text-2xl">{effectiveVaultName}</h2>
+                      {!isDemoActive && selectedVault.owner.toLowerCase() === address?.toLowerCase() && (
+                        <button
+                          onClick={() => { setRenameInput(effectiveVaultName); setIsRenamingVault(true); }}
+                          className="opacity-0 group-hover/rename:opacity-100 transition-opacity
+                            text-smoke/30 hover:text-aged text-xs font-mono"
+                          title="Rename vault (local only)"
+                        >
+                          ✏
+                        </button>
+                      )}
+                    </div>
+                  )}
                   <p className="text-smoke text-xs font-mono mt-0.5">
                     {selectedVault.storyCount.toString()} {selectedVault.storyCount === 1n ? "story" : "stories"}
                     {" · "}
@@ -311,7 +416,18 @@ export default function VaultPage() {
                     </div>
                   ) : selectedStories.length > 0 ? (
                     <div className="space-y-3">
-                      {selectedStories.map((story) => (
+                      {visibleStories.length === 0 && hiddenCount > 0 && (
+                        <p className="text-sm font-serif text-smoke/40 text-center py-10">
+                          {hiddenCount} {hiddenCount === 1 ? "story" : "stories"} hidden ·{" "}
+                          <button
+                            onClick={() => setShowHidden(true)}
+                            className="text-aged hover:text-brass transition-colors"
+                          >
+                            Show
+                          </button>
+                        </p>
+                      )}
+                      {visibleStories.map((story) => (
                         <div
                           key={story.id.toString()}
                           className="vault-glass rounded-sm p-4 space-y-3"
@@ -347,6 +463,16 @@ export default function VaultPage() {
                                   Share
                                 </a>
                               )}
+                              {/* Soulbound NFT — disabled for demo */}
+                              {!isDemoActive && (
+                                <button
+                                  onClick={() => setNftStory(story)}
+                                  className="text-xs font-mono px-2 py-0.5 rounded-sm border border-brass/20 text-smoke/50
+                                    hover:border-brass/40 hover:text-aged transition-colors"
+                                >
+                                  🪙 NFT
+                                </button>
+                              )}
                               {/* License terms button — disabled for demo */}
                               {!isDemoActive && (
                                 <button
@@ -374,6 +500,17 @@ export default function VaultPage() {
                               ].join(" ")}>
                                 {isDemoActive ? "DEMO" : "✓ 0G"}
                               </span>
+                              {/* Hide story (local only) — disabled for demo */}
+                              {!isDemoActive && (
+                                <button
+                                  onClick={() => toggleHideStory(story.id.toString())}
+                                  title="Hide story from list (local only)"
+                                  className="text-xs font-mono px-2 py-0.5 rounded-sm border border-smoke/10
+                                    text-smoke/25 hover:border-burgundy/30 hover:text-burgundy/60 transition-colors"
+                                >
+                                  {hiddenStoryIds.has(story.id.toString()) ? "Show" : "Hide"}
+                                </button>
+                              )}
                             </div>
                           </div>
 
@@ -397,6 +534,18 @@ export default function VaultPage() {
                           </p>
                         </div>
                       ))}
+                      {!isDemoActive && hiddenCount > 0 && visibleStories.length > 0 && (
+                        <div className="text-center mt-1">
+                          <button
+                            onClick={() => setShowHidden((p) => !p)}
+                            className="text-[10px] font-mono text-smoke/30 hover:text-smoke/60 transition-colors"
+                          >
+                            {showHidden
+                              ? `▲ Collapse ${hiddenCount} hidden`
+                              : `▼ Show ${hiddenCount} hidden ${hiddenCount === 1 ? "story" : "stories"}`}
+                          </button>
+                        </div>
+                      )}
                     </div>
                   ) : null}
                 </div>
@@ -499,6 +648,16 @@ export default function VaultPage() {
           <AccessGrantModal
             vault={selectedVault}
             onClose={() => setShowAccessModal(false)}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Soulbound NFT Badge */}
+      <AnimatePresence>
+        {nftStory && (
+          <SoulboundBadge
+            story={nftStory}
+            onClose={() => setNftStory(null)}
           />
         )}
       </AnimatePresence>
@@ -779,29 +938,33 @@ function Modal({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      className="fixed inset-0 z-50 overflow-y-auto"
       style={{ background: "rgba(13,11,14,0.75)", backdropFilter: "blur(4px)" }}
-      onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <motion.div
-        initial={{ scale: 0.95, opacity: 0, y: 10 }}
-        animate={{ scale: 1, opacity: 1, y: 0 }}
-        exit={{ scale: 0.95, opacity: 0 }}
-        transition={{ duration: 0.2 }}
-        className="w-full max-w-md vault-glass rounded-sm p-6 shadow-vault"
+      <div
+        className="flex min-h-full items-center justify-center p-3 sm:p-4"
+        onClick={(e) => e.target === e.currentTarget && onClose()}
       >
-        <div className="flex items-center justify-between mb-5">
-          <h2 className="font-serif text-parchment text-xl">{title}</h2>
-          <button
-            onClick={onClose}
-            className="text-smoke hover:text-aged transition-colors text-lg"
-            aria-label="Close"
-          >
-            ×
-          </button>
-        </div>
-        {children}
-      </motion.div>
+        <motion.div
+          initial={{ scale: 0.95, opacity: 0, y: 10 }}
+          animate={{ scale: 1, opacity: 1, y: 0 }}
+          exit={{ scale: 0.95, opacity: 0 }}
+          transition={{ duration: 0.2 }}
+          className="w-full max-w-md vault-glass rounded-sm p-4 sm:p-6 shadow-vault"
+        >
+          <div className="flex items-center justify-between mb-4 sm:mb-5">
+            <h2 className="font-serif text-parchment text-lg sm:text-xl">{title}</h2>
+            <button
+              onClick={onClose}
+              className="text-smoke hover:text-aged transition-colors text-lg"
+              aria-label="Close"
+            >
+              ×
+            </button>
+          </div>
+          {children}
+        </motion.div>
+      </div>
     </motion.div>
   );
 }

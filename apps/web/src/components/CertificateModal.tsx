@@ -58,11 +58,14 @@ export function CertificateModal({ story, vault, onClose }: CertificateModalProp
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto"
+        className="fixed inset-0 z-50 overflow-y-auto"
         style={{ background: "rgba(13,11,14,0.85)", backdropFilter: "blur(6px)" }}
-        onClick={(e) => e.target === e.currentTarget && onClose()}
       >
-        <div className="w-full max-w-2xl my-4">
+        <div
+          className="flex min-h-full items-center justify-center p-3 sm:p-4"
+          onClick={(e) => e.target === e.currentTarget && onClose()}
+        >
+        <div className="w-full max-w-2xl">
 
           {/* Action buttons — hidden on print */}
           <div className="no-print flex items-center justify-between mb-4">
@@ -89,11 +92,10 @@ export function CertificateModal({ story, vault, onClose }: CertificateModalProp
           {/* Certificate paper */}
           <div
             id="lorelich-cert-paper"
-            className="bg-white text-gray-900 rounded-sm shadow-2xl"
+            className="bg-white text-gray-900 rounded-sm shadow-2xl p-6 sm:p-12"
             style={{
               fontFamily: "Georgia, 'Times New Roman', serif",
               border: "2px solid #c5a028",
-              padding: "3rem",
             }}
           >
             {/* Header ornament */}
@@ -125,8 +127,8 @@ export function CertificateModal({ story, vault, onClose }: CertificateModalProp
             </div>
 
             <div style={{ borderTop: "1px solid #e5e5e5", paddingTop: "1.5rem", marginBottom: "1.5rem" }}>
-              {/* Two-column details */}
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1.5rem" }}>
+              {/* Two-column details (1-col on mobile) */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
                 <CertField label="Preserved by"    value={formatAddr(story.uploader)} mono />
                 <CertField label="Preservation Date" value={`${dateStr}, ${timeStr}`} />
                 <CertField label="Unix Timestamp"  value={story.timestamp.toString()} mono />
@@ -164,7 +166,7 @@ export function CertificateModal({ story, vault, onClose }: CertificateModalProp
             </div>
 
             {/* Footer */}
-            <div style={{ borderTop: "1px solid #e5e5e5", paddingTop: "1rem", display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+            <div className="flex flex-col gap-2 sm:flex-row sm:justify-between sm:items-end" style={{ borderTop: "1px solid #e5e5e5", paddingTop: "1rem" }}>
               <div>
                 <p style={{ fontSize: "0.65rem", color: "#999" }}>LoreVault Contract</p>
                 <p style={{ fontSize: "0.65rem", color: "#666", fontFamily: "monospace" }}>
@@ -177,6 +179,7 @@ export function CertificateModal({ story, vault, onClose }: CertificateModalProp
               </div>
             </div>
           </div>
+        </div>
         </div>
       </motion.div>
     </>
@@ -199,7 +202,7 @@ function CertField({
   full?:  boolean;
 }) {
   return (
-    <div style={{ gridColumn: full ? "1 / -1" : undefined }}>
+    <div className={full ? "sm:col-span-2" : undefined}>
       <p style={{ fontSize: "0.65rem", color: "#999", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: "0.2rem" }}>
         {label}
       </p>
