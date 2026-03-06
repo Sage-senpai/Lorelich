@@ -3,16 +3,16 @@
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
-const NAV_LINKS = [
-  { href: "/vault",       label: "Vaults"      },
-  { href: "/upload",      label: "Upload"      },
-  { href: "/marketplace", label: "Marketplace" },
-  { href: "/pitch",       label: "Pitch"       },
-  { href: "/lore",        label: "Lore"        },
-  { href: "/tree",        label: "Tree"        },
-  { href: "/search",      label: "Search"      },
-  { href: "/learn",       label: "Learn"       },
-  { href: "/proverbs",    label: "Proverbs"    },
+const NAV_LINKS: { href: string; label: string; indent?: boolean }[] = [
+  { href: "/vault",       label: "Vaults"       },
+  { href: "/tree",        label: "Genealogy",   indent: true },
+  { href: "/upload",      label: "Upload"       },
+  { href: "/marketplace", label: "Marketplace"  },
+  { href: "/search",      label: "Search",      indent: true },
+  { href: "/lore",        label: "Lore Studio", indent: true },
+  { href: "/pitch",       label: "Pitch"        },
+  { href: "/learn",       label: "Learn"        },
+  { href: "/proverbs",    label: "Proverbs"     },
 ];
 
 export function MobileNav() {
@@ -62,7 +62,12 @@ export function MobileNav() {
                 key={link.href}
                 href={link.href}
                 onClick={() => setOpen(false)}
-                className="block px-5 py-2.5 font-mono text-sm text-smoke hover:text-aged hover:bg-brass/5 transition-colors"
+                className={[
+                  "block py-2.5 font-mono text-sm hover:text-aged hover:bg-brass/5 transition-colors",
+                  link.indent
+                    ? "pl-9 pr-5 text-smoke/60 text-xs"
+                    : "px-5 text-smoke",
+                ].join(" ")}
               >
                 {link.label}
               </a>
