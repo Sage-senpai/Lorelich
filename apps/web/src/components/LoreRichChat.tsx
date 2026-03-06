@@ -2,12 +2,12 @@
 
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useLoreLichStore } from "@/store";
-import type { LoreLichMessage } from "@/types";
+import { useLoreRichStore } from "@/store";
+import type { LoreRichMessage } from "@/types";
 
 // ─────────────────────────────────────────────────────────────────────────────
-// LoreLichChat — AI guardian chat interface
-// Communicates with /api/lorelich route (server-side Claude API)
+// LoreRichChat — AI guardian chat interface
+// Communicates with /api/lorerich route (server-side Claude API)
 // ─────────────────────────────────────────────────────────────────────────────
 
 // Prompt injection patterns to reject client-side
@@ -29,9 +29,9 @@ function sanitizeInput(input: string): string {
   return clean;
 }
 
-export function LoreLichChat() {
+export function LoreRichChat() {
   const { messages, isLoading, contextStory, addMessage, setLoading, clearMessages } =
-    useLoreLichStore();
+    useLoreRichStore();
 
   const [input,   setInput]   = useState("");
   const [error,   setError]   = useState<string | null>(null);
@@ -56,7 +56,7 @@ export function LoreLichChat() {
     if (!sanitized) return;
     setInput("");
 
-    const userMsg: LoreLichMessage = {
+    const userMsg: LoreRichMessage = {
       role:      "user",
       content:   sanitized,
       timestamp: Date.now(),
@@ -65,7 +65,7 @@ export function LoreLichChat() {
     setLoading(true);
 
     try {
-      const res = await fetch("/api/lorelich", {
+      const res = await fetch("/api/lorerich", {
         method:  "POST",
         headers: { "Content-Type": "application/json" },
         body:    JSON.stringify({
@@ -112,7 +112,7 @@ export function LoreLichChat() {
         <div className="flex items-center gap-2">
           <span className="text-lg animate-candle-flicker">🕯</span>
           <div>
-            <p className="font-serif text-parchment text-sm">LoreLich</p>
+            <p className="font-serif text-parchment text-sm">LoreRich</p>
             <p className="text-xs text-smoke font-mono">Guardian of Ancestral Stories</p>
           </div>
         </div>
@@ -136,7 +136,7 @@ export function LoreLichChat() {
             className="text-center py-8"
           >
             <p className="font-serif text-aged text-sm leading-relaxed italic">
-              "I am the LoreLich — keeper of what was spoken<br />
+              "I am the LoreRich — keeper of what was spoken<br />
               before it could be written.<br />
               Ask me of the stories in your vault."
             </p>
@@ -196,7 +196,7 @@ export function LoreLichChat() {
 // Message bubble
 // ─────────────────────────────────────────────────────────────────────────────
 
-function ChatMessage({ message }: { message: LoreLichMessage }) {
+function ChatMessage({ message }: { message: LoreRichMessage }) {
   const isUser = message.role === "user";
 
   return (
@@ -216,7 +216,7 @@ function ChatMessage({ message }: { message: LoreLichMessage }) {
       >
         {!isUser && (
           <span className="text-brass/60 text-xs font-mono not-italic block mb-1">
-            LoreLich
+            LoreRich
           </span>
         )}
         <p className="whitespace-pre-wrap">{message.content}</p>

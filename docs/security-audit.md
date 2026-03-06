@@ -1,4 +1,4 @@
-# LoreLich Vault — Security Audit Checklist
+# LoreRich Vault — Security Audit Checklist
 
 ## Smart Contract Security
 

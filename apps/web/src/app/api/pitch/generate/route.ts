@@ -4,7 +4,7 @@ import type { PitchGenerateRequest } from "@/types";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // POST /api/pitch/generate
-// Generates a documentary film treatment brief via LoreLich AI
+// Generates a documentary film treatment brief via LoreRich AI
 // ─────────────────────────────────────────────────────────────────────────────
 
 const client = new Groq({ apiKey: process.env.GROQ_API_KEY! });

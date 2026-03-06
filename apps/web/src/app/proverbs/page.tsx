@@ -68,7 +68,7 @@ export default function ProverbsPage() {
         <div>
           <h1 className="font-serif text-parchment text-3xl mb-1">Vault Proverbs</h1>
           <p className="text-smoke font-mono text-xs">
-            Wisdom distilled from ancestral stories by LoreLich AI
+            Wisdom distilled from ancestral stories by LoreRich AI
           </p>
         </div>
         {isConnected && (
@@ -255,7 +255,7 @@ function ExtractorPanel({ onExtracted }: { onExtracted: (p: StoryProverb) => voi
         className="btn-brass px-5 py-2 text-sm disabled:opacity-40"
       >
         {isGenerating ? (
-          <span className="animate-pulse">LoreLich is listening…</span>
+          <span className="animate-pulse">LoreRich is listening…</span>
         ) : (
           "Extract Proverb"
         )}
@@ -337,7 +337,7 @@ function EmptyState({ isConnected, onOpen }: { isConnected: boolean; onOpen: () 
       <div className="text-5xl mb-5 opacity-30">🕯</div>
       <h2 className="font-serif text-parchment text-xl mb-3">No proverbs yet</h2>
       <p className="text-smoke font-mono text-sm max-w-md mx-auto mb-8 leading-relaxed">
-        LoreLich can distill timeless wisdom from your ancestral stories.
+        LoreRich can distill timeless wisdom from your ancestral stories.
         Paste a passage from any story and the guardian will extract the proverb hidden within it.
       </p>
       {isConnected ? (

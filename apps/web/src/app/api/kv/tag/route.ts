@@ -6,7 +6,7 @@ import { KvClient } from "@0glabs/0g-ts-sdk";
 // Reads story tags from the 0G KV Store.
 //
 // 0G KV is a decentralized key-value store built on 0G Storage.
-// StreamId is a fixed LoreLich-owned stream. Key = rootHash bytes.
+// StreamId is a fixed LoreRich-owned stream. Key = rootHash bytes.
 // Tags are stored as a UTF-8 comma-separated string.
 //
 // Returns: { tags: string[] }

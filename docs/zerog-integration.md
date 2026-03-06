@@ -1,4 +1,4 @@
-# LoreLich Vault — 0G Storage Integration
+# LoreRich Vault — 0G Storage Integration
 
 ## What is 0G?
 
@@ -8,7 +8,7 @@
 - **0G Chain** — EVM-compatible L1 (Galileo Testnet: chain ID 16601)
 - **0G KV** — Decentralized key-value store built on 0G Storage
 
-LoreLich uses **0G Storage** for the full story lifecycle: upload (write) and download (read), with 0G Chain for all smart contract interactions.
+LoreRich uses **0G Storage** for the full story lifecycle: upload (write) and download (read), with 0G Chain for all smart contract interactions.
 
 ---
 

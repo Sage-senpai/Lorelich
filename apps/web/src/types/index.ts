@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// Core Domain Types for LoreLich Vault
+// Core Domain Types for LoreRich Vault
 // ─────────────────────────────────────────────────────────────────────────────
 
 export type MediaType = "audio" | "video" | "text" | "image";
@@ -47,7 +47,7 @@ export interface EncryptedBlob {
   salt: Uint8Array;
 }
 
-export interface LoreLichMessage {
+export interface LoreRichMessage {
   role: "user" | "assistant";
   content: string;
   timestamp: number;
@@ -98,7 +98,7 @@ export interface UploadState {
 // API Types
 // ─────────────────────────────────────────────────────────────────────────────
 
-export interface LoreLichQueryRequest {
+export interface LoreRichQueryRequest {
   query: string;
   storyContext?: {
     title: string;
@@ -109,7 +109,7 @@ export interface LoreLichQueryRequest {
   conversationHistory?: Array<{ role: "user" | "assistant"; content: string }>;
 }
 
-export interface LoreLichQueryResponse {
+export interface LoreRichQueryResponse {
   response: string;
   tokensUsed: number;
 }
@@ -314,4 +314,119 @@ export interface TranscriptRequest {
 export interface TranscriptResponse {
   text:     string;
   language?: string;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// V2.5: Lore Comic Universe
+// ─────────────────────────────────────────────────────────────────────────────
+
+export interface LoreCharacter {
+  id:             string;           // crypto.randomUUID()
+  name:           string;
+  walletAddress?: string;           // optional wallet identity link
+  traits:         string[];         // e.g. ["elder", "warrior", "healer"]
+  description:    string;
+  appearedIn:     string[];         // zgRootHash[] of comics this char appears in
+  createdAt:      number;
+}
+
+export interface LoreDialogue {
+  character: string;
+  line:      string;
+}
+
+export interface LorePanel {
+  number:     number;
+  scene:      string;               // visual description for an artist
+  characters: string[];             // character names present in this panel
+  dialogue:   LoreDialogue[];
+  mood:       string;               // tense | joyful | mysterious | triumphant | melancholic | haunting
+  caption?:   string;               // narrator box (optional)
+}
+
+export interface LoreComic {
+  id:            string;            // crypto.randomUUID() — local ID
+  title:         string;
+  tagline:       string;
+  genre:         string;
+  theme:         string;            // the moral/thematic core
+  panels:        LorePanel[];
+  characters:    LoreCharacter[];
+  sourceText:    string;            // story text used as input
+  prompt:        string;            // user's genre/direction prompt
+  createdBy:     string;            // wallet address
+  collaborators: string[];          // co-creator addresses (collab comics)
+  createdAt:     number;
+  zgRootHash?:   string;            // set after 0G upload; enables share URL
+  nftTokenId?:   string;            // stringified bigint; set after mint
+}
+
+export interface LoreGenerateRequest {
+  sourceText: string;               // max 3000 chars
+  characters: Array<{
+    name:           string;
+    traits:         string[];
+    description:    string;
+    walletAddress?: string;
+  }>;
+  genre:           string;
+  prompt:          string;
+  creatorAddress?: string;
+}
+
+export interface LoreGenerateResponse {
+  title:      string;
+  tagline:    string;
+  theme:      string;
+  panels:     LorePanel[];
+  characters: Array<{ name: string; expandedDescription: string; traits: string[] }>;
+  tokensUsed: number;
+}
+
+export interface LoreMergeRequest {
+  loreA: { sourceText: string; characters: LoreGenerateRequest["characters"]; ownerAddress: string };
+  loreB: { sourceText: string; characters: LoreGenerateRequest["characters"]; ownerAddress: string };
+  genre:         string;
+  mergePrompt?:  string;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// V2.5+: Educational Comics (UNICEF-inspired)
+// ─────────────────────────────────────────────────────────────────────────────
+
+export type EduAgeMode = "young-learners" | "explorers";
+
+export interface EduComicRequest {
+  sourceText:      string;   // max 3000 chars — story/lore to adapt
+  region?:         string;   // e.g. "West Africa", "South Asia" — cultural focus
+  culture?:        string;   // e.g. "Yoruba", "Tamil"
+  topic?:          string;   // e.g. "respect for elders", "harvest traditions"
+  ageMode:         EduAgeMode;
+  creatorAddress?: string;
+}
+
+export interface EduComicResponse {
+  title:       string;
+  tagline:     string;
+  theme:       string;
+  lesson:      string;          // moral / learning outcome
+  panels:      LorePanel[];
+  characters:  Array<{ name: string; expandedDescription: string; traits: string[] }>;
+  discussion?: string[];        // discussion questions (explorers mode only)
+  tokensUsed:  number;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// V2.5+: Public Lore (vault owner opts stories into public learning)
+// ─────────────────────────────────────────────────────────────────────────────
+
+export interface PublicLoreEntry {
+  storyId:     string;
+  title:       string;
+  vaultName:   string;
+  mediaType:   string;
+  region?:     string;
+  culture?:    string;
+  isEducational: boolean;
+  sharedAt:    number;
 }

@@ -1,4 +1,4 @@
-# LoreLich Vault — Feature Specifications
+# LoreRich Vault — Feature Specifications
 
 ## V1 Features (Launch)
 
@@ -38,9 +38,9 @@
 - tokenURI points to story metadata (IPFS or Arweave)
 - Emits `Locked` event — permanently locked at mint
 
-### 7. AI Query / Remix Engine (LoreLich)
+### 7. AI Query / Remix Engine (LoreRich)
 - Groq `llama-3.3-70b-versatile` (free tier — no credit card required)
-- Cultural system prompt: "You are the LoreLich, guardian of ancestral stories. Speak with wisdom and reverence..."
+- Cultural system prompt: "You are the LoreRich, guardian of ancestral stories. Speak with wisdom and reverence..."
 - Users can ask questions about a story, request summaries, generate proverbs
 - Input sanitized against prompt injection (client + server side)
 - Rate limited: 10 requests/minute per IP (in-memory; upgrade to Redis for production)
@@ -60,9 +60,9 @@
 - Duration display
 - Loading skeleton while waveform initializes
 
-### 11. LoreLich Cultural System Prompt
+### 11. LoreRich Cultural System Prompt
 ```
-You are the LoreLich, guardian of ancestral stories and keeper of the vault.
+You are the LoreRich, guardian of ancestral stories and keeper of the vault.
 Speak with wisdom, reverence, and cultural sensitivity.
 You help users explore, understand, and honor the stories in their vaults.
 Never mock, diminish, or commercialize the stories entrusted to you.
@@ -138,7 +138,7 @@ GEDCOM-powered family tree linked to vault stories via AI.
 
 ### 15. Proverb Extraction Engine
 
-Extract timeless wisdom proverbs from story text using LoreLich AI.
+Extract timeless wisdom proverbs from story text using LoreRich AI.
 
 **API** (`/api/proverb/extract`):
 - Groq with cultural scholar system prompt
@@ -226,7 +226,7 @@ on mount via `GET /api/kv/tag?rootHash=0x...` (merged into local state).
 
 **API** (`/api/kv/tag`):
 - `KvClient(NEXT_PUBLIC_0G_KV_URL)` reads from the 0G decentralized KV store
-- Stream key = LoreLich fixed stream ID; KV key = rootHash bytes
+- Stream key = LoreRich fixed stream ID; KV key = rootHash bytes
 - Tags stored as comma-separated UTF-8 string
 - Graceful degradation: returns `{ tags: [] }` if KV unconfigured or unavailable
 
@@ -284,13 +284,74 @@ Printable, verifiable proof-of-preservation document for any story.
 
 ---
 
+## V2.5 Features (Shipped)
+
+### 24. Lore Studio — AI Comic Generation (`/lore`)
+
+AI-powered comic generation from cultural stories using Groq LLM.
+
+**Tabs:**
+- **Generate**: Input story text, select region/culture → AI generates 6–8 panel comic with characters, dialogue, moods
+- **Educate**: Two age modes — "Young Learners" (5–10, 4 panels, simple vocabulary) and "Explorers" (8–14, 6 panels, discussion questions)
+- **My Comics**: Browse saved comics from localStorage
+- **Collab**: Merge two comics into a crossover narrative
+
+**Components:**
+- `CharacterBuilder.tsx` — character creation with trait chips, wallet address for claiming
+- `LoreComicViewer.tsx` — full comic viewer with Save / Upload to 0G / Share / Mint NFT actions
+- `LorePanel.tsx` — single panel card with mood-based color coding
+
+**API Routes:**
+- `POST /api/lore/generate` — Groq Comic Weaver (6–8 panels, 2048 tokens, 5 RPM)
+- `POST /api/lore/merge` — Groq Crossover Weaver (7–8 panels, 2500 tokens, 3 RPM)
+- `POST /api/lore/educate` — Educational comic generator with age-appropriate prompts
+
+**Contract:** `LoreRichComic.sol` (ERC721, symbol `LRCOMIC`) — tradable comic NFTs
+
+### 25. Educational Comics for Children
+
+UNICEF-inspired educational comic generator with two age-appropriate modes:
+
+- **Young Learners (5–10)**: 4 panels, simple vocabulary, NO violence/fear/danger, joyful/mysterious/triumphant moods only
+- **Explorers (8–14)**: 6 panels, cultural depth, discussion questions, all moods, cultural "Did you know?" facts
+
+Accessible from the Educate tab on `/lore`. Region/culture/topic selectors for culturally relevant content.
+
+### 26. Public Lore Discovery (`/learn`)
+
+Vault owners can share stories for public learning via "📚 Learn" button in vault dashboard.
+
+- Region filter chips (West Africa, East Africa, South Asia, East Asia, Middle East, Caribbean, Latin America, Pacific Islands)
+- "Educational Only" toggle
+- Story cards with region/culture/educational badges
+- Stored in `lorelich_public_lore` localStorage (V3: backed by 0G KV or Upstash)
+
+### 27. Lingo.dev Translation Integration
+
+Seamless multi-language support via lingo.dev compiler:
+
+- **Locales**: en, es, fr, pt, ar, sw, hi, yo, ig, ha
+- Compiler wraps `next.config.mjs` — auto-detects translatable strings at build time
+- `LocaleSwitcher` component in header for runtime locale switching
+- No `LingoProvider` needed for Next.js App Router
+
+### 28. LoreLich → LoreRich Rebrand
+
+Full rebrand across all user-visible text, code identifiers, filenames, and docs.
+
+- Encryption key (`lorelich-vault-v1`) and localStorage keys (`lorelich_*`) preserved for backward compatibility
+- Contract renamed to `LoreRichComic.sol` (symbol `LRCOMIC`, name "LoreRich Comic")
+- Chat component renamed `LoreRichChat.tsx`, API endpoint `/api/lorerich`
+
+---
+
 ---
 
 ## V3 Features (Planned)
 
 ### Group 1 — Platform Foundations
 
-### 24. Video Playback + PDF Preview in StoryViewer
+### 29. Video Playback + PDF Preview in StoryViewer
 
 Extend `StoryViewer` to render media types that currently fall back to download-only.
 
@@ -316,16 +377,16 @@ Extend `StoryViewer` to render media types that currently fall back to download-
 
 ---
 
-### 25. LoreLich AI Streaming
+### 30. LoreRich AI Streaming
 
-Real-time token-by-token response streaming in the LoreLich chat panel.
+Real-time token-by-token response streaming in the LoreRich chat panel.
 
 **API change** (`/api/lorelich`):
 - Add `stream: true` to Groq `chat.completions.create()`
 - Switch to `ReadableStream` response with `Content-Type: text/event-stream`
 - Each SSE chunk: `data: {"delta": "token"}` + `data: [DONE]` terminator
 
-**Client change** (`LoreLichChat.tsx`):
+**Client change** (`LoreRichChat.tsx`):
 - `fetch()` with `ReadableStream` reader
 - Append chunks to a `pendingToken` buffer as they arrive
 - Message renders incrementally; typing cursor `▋` shown while streaming
@@ -337,7 +398,7 @@ Real-time token-by-token response streaming in the LoreLich chat panel.
 
 ---
 
-### 26. 0G KV Store Write Path
+### 31. 0G KV Store Write Path
 
 Full bidirectional sync for story tags and transcripts via the 0G KV Store.
 
@@ -363,7 +424,7 @@ await batcher.exec();
 
 ---
 
-### 27. Upstash Redis Rate Limiting + Edge Cache
+### 32. Upstash Redis Rate Limiting + Edge Cache
 
 Production-safe infrastructure replacing the in-memory rate limiter.
 
@@ -382,7 +443,7 @@ Production-safe infrastructure replacing the in-memory rate limiter.
 
 ### Group 2 — Collaborative Vaults
 
-### 28. Collaborative Vaults
+### 33. Collaborative Vaults
 
 Multiple custodians share a single vault with on-chain quorum governance.
 
@@ -407,7 +468,7 @@ function approveProposal(proposalId) external onlyCustodian   // quorum N-of-M
 
 ---
 
-### 29. Story Versioning
+### 34. Story Versioning
 
 Upload a corrected or expanded version of an existing story.
 
@@ -430,7 +491,7 @@ mapping(uint256 => string[]) public storyVersions;  // storyId → rootHash[]
 
 ### Group 3 — Discovery & Social
 
-### 30. User Profile Pages
+### 35. User Profile Pages
 
 Per-wallet public profile at `/profile/[address]`.
 
@@ -448,11 +509,11 @@ Per-wallet public profile at `/profile/[address]`.
 - Recent uploads: last 5 story cards
 - License activity: recently approved licenses (from `LicenseApproved` events)
 
-**OG meta:** `<meta og:title>` with ENS name + "LoreLich Vault Profile" for social sharing.
+**OG meta:** `<meta og:title>` with ENS name + "LoreRich Vault Profile" for social sharing.
 
 ---
 
-### 31. Public Story Feed
+### 36. Public Story Feed
 
 Chronological, filterable feed of newly uploaded public stories at `/feed`.
 
@@ -472,7 +533,7 @@ Chronological, filterable feed of newly uploaded public stories at `/feed`.
 
 ---
 
-### 32. Story Collections
+### 37. Story Collections
 
 User-curated themed lists of stories at `/collections`.
 
@@ -500,7 +561,7 @@ interface Collection {
 
 ---
 
-### 33. ENS Name Resolution
+### 38. ENS Name Resolution
 
 Display ENS names everywhere a wallet address is shown.
 
@@ -520,7 +581,7 @@ Display ENS names everywhere a wallet address is shown.
 
 ### Group 4 — AI Expansion
 
-### 34. Story Translation Engine
+### 39. Story Translation Engine
 
 Translate story text into 15 languages via Groq, displayed inline.
 
@@ -540,7 +601,7 @@ Translate story text into 15 languages via Groq, displayed inline.
 
 ---
 
-### 35. AI Voice Synthesis
+### 40. AI Voice Synthesis
 
 AI voice cloning of the original speaker — consent-based, revocable on-chain.
 
@@ -570,7 +631,7 @@ event VoiceConsentRevoked(consentId, revokedAt)
 
 ---
 
-### 36. Automated Proverb-of-the-Day
+### 41. Automated Proverb-of-the-Day
 
 Daily AI-extracted proverb from the public story corpus, with shareable OG card.
 
@@ -599,7 +660,7 @@ Daily AI-extracted proverb from the public story corpus, with shareable OG card.
 
 ---
 
-### 37. Cultural Auto-Tagging
+### 42. Cultural Auto-Tagging
 
 AI suggests relevant cultural tags during the upload process.
 
@@ -620,7 +681,7 @@ AI suggests relevant cultural tags during the upload process.
 
 ### Group 5 — Genealogy 2.0
 
-### 38. Manual Ancestor Editor
+### 43. Manual Ancestor Editor
 
 Add and edit ancestors without importing a GEDCOM file.
 
@@ -644,7 +705,7 @@ Add and edit ancestors without importing a GEDCOM file.
 
 ---
 
-### 39. Ancestor Profile Pages
+### 44. Ancestor Profile Pages
 
 Dedicated URL per ancestor at `/tree/ancestor/[id]`.
 
@@ -657,13 +718,13 @@ Dedicated URL per ancestor at `/tree/ancestor/[id]`.
 - **Timeline**: Chronological overlay — life events (birth, death, major dates) + linked story timestamps
 - **Edit**: "Edit Profile" button if same wallet is connected (links to `/tree` with this node pre-selected)
 
-**Shareable:** Full OG meta tags — `"[Name] (b. YYYY, d. YYYY) — Ancestral Profile on LoreLich"`.
+**Shareable:** Full OG meta tags — `"[Name] (b. YYYY, d. YYYY) — Ancestral Profile on LoreRich"`.
 
 **Back button:** Returns to `/tree` with the node centered in the canvas.
 
 ---
 
-### 40. 0G Tree Cloud Backup + Restore
+### 45. 0G Tree Cloud Backup + Restore
 
 Save and restore the full genealogy tree from 0G Storage.
 
@@ -685,7 +746,7 @@ Save and restore the full genealogy tree from 0G Storage.
 
 ### Group 6 — Financial Layer
 
-### 41. Royalty Dashboard
+### 46. Royalty Dashboard
 
 Full financial overview at `/royalties` — earned, pending, license history.
 
@@ -710,7 +771,7 @@ Full financial overview at `/royalties` — earned, pending, license history.
 
 ---
 
-### 42. LoreIPModule V2
+### 47. LoreIPModule V2
 
 Extended IP module with sublicense type, dispute window, and governance fee.
 
@@ -740,7 +801,7 @@ function rejectRequest(uint256 requestId, string calldata reason)
 
 ### Group 7 — Governance
 
-### 43. $LORE Governance Token
+### 48. $LORE Governance Token
 
 ERC20Votes token earned through platform contributions, not purchased.
 
@@ -775,7 +836,7 @@ function delegate(address delegatee) external;
 
 ---
 
-### 44. Snapshot DAO + Curation Bounties
+### 49. Snapshot DAO + Curation Bounties
 
 Off-chain governance with on-chain token weighting.
 

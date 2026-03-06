@@ -1,4 +1,4 @@
-# LoreLich Vault — Environment Variables
+# LoreRich Vault — Environment Variables
 
 ## Frontend (`apps/web/.env.local`)
 

@@ -1,4 +1,4 @@
-# LoreLich Vault — Scaling Roadmap
+# LoreRich Vault — Scaling Roadmap
 
 ## Current Architecture (V1.5 Baseline)
 
@@ -39,7 +39,7 @@ Single-region, serverless, stateless. Sufficient for 0–10K MAU.
 
 | Area | Action |
 |---|---|
-| AI | Streaming responses on LoreLich chat (`stream: true`) |
+| AI | Streaming responses on LoreRich chat (`stream: true`) |
 | AI | Move pitch generation to async queue (long-running Groq calls) |
 | Storage | Multi-region 0G node pinning for faster downloads |
 | Indexing | The Graph subgraph for contract event indexing (vault + IP module) |
@@ -110,7 +110,7 @@ Single-region, serverless, stateless. Sufficient for 0–10K MAU.
 |---|---|---|
 | Rate limiting | In-memory `Map` | Upstash Redis (persistent, multi-instance safe) |
 | 0G download cache | None | Vercel KV edge cache (immutable TTL) |
-| AI streaming | Blocking full-response | SSE token streaming on LoreLich chat |
+| AI streaming | Blocking full-response | SSE token streaming on LoreRich chat |
 | Tag storage | localStorage only | 0G KV bidirectional (read + write) |
 | Cron jobs | None | Vercel Cron (proverb-of-the-day, 08:00 UTC daily) |
 | Contract indexing | Batch RPC reads | Partial event log scanning (The Graph in V4) |

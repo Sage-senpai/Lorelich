@@ -1,4 +1,4 @@
-# LoreLich Vault — Deployment Guide
+# LoreRich Vault — Deployment Guide
 
 ## Prerequisites
 

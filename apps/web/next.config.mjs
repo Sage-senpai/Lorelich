@@ -1,3 +1,5 @@
+import lingoCompiler from "lingo.dev/compiler";
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Strict mode for better dev experience
@@ -80,4 +82,12 @@ const nextConfig = {
   },
 };
 
-export default nextConfig;
+// Wrap with lingo.dev compiler for build-time i18n
+// Target languages: Spanish, French, Portuguese, Arabic, Swahili, Hindi, Yoruba, Igbo, Hausa
+// The compiler auto-detects translatable strings and generates localized variants at build time
+export default lingoCompiler.next({
+  sourceRoot: "src",
+  sourceLocale: "en",
+  targetLocales: ["es", "fr", "pt", "ar", "sw", "hi", "yo", "ig", "ha"],
+  models: "lingo.dev",
+})(nextConfig);

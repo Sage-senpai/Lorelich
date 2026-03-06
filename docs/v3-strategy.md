@@ -1,4 +1,4 @@
-# LoreLich Vault — Version 3 Strategy
+# LoreRich Vault — Version 3 Strategy
 
 > V3 target: evolve from a personal archive tool into a **community-owned cultural protocol** — collaborative, monetizable, discoverable, and spoken in every language.
 
@@ -10,7 +10,7 @@
 
 | Version | Key Additions |
 |---|---|
-| V1 | Vault CRUD, 0G Upload, Soulbound ERC5192, LoreLich AI, Encryption, Waveform |
+| V1 | Vault CRUD, 0G Upload, Soulbound ERC5192, LoreRich AI, Encryption, Waveform |
 | V1.5 | IP Licensing, Marketplace, Pitch Portal, Genealogy Tree |
 | V2 | Proverbs Engine, Semantic Search |
 | V2.1 | 0G Download, StoryViewer, Mobile Nav, 7 bug fixes |
@@ -26,7 +26,7 @@
 | No public discovery surface | Stories exist in silos; no feed, no culture browsing |
 | No user identity layer | Wallet addresses are anonymous; no human presence |
 | No royalty visibility | Earners don't know what they've earned without CLI |
-| LoreLich chat is stateless | Conversation dies on navigation; no history export |
+| LoreRich chat is stateless | Conversation dies on navigation; no history export |
 | Genealogy tree is localStorage-only | Proper 0G cloud backup undefined |
 | No real-time notifications | License request arrives; owner has no idea |
 | AI responses are not streamed | Users wait 3–8s for full response to render |
@@ -54,7 +54,7 @@
 | # | Feature | Summary |
 |---|---|---|
 | 24 | **Video Playback + PDF Preview** | Extend StoryViewer to render `<video>` for MP4/WebM; PDF preview via `<iframe>` or pdf.js |
-| 25 | **LoreLich AI Streaming** | SSE streaming on `/api/lorelich` → real-time token-by-token response in chat panel |
+| 25 | **LoreRich AI Streaming** | SSE streaming on `/api/lorelich` → real-time token-by-token response in chat panel |
 | 26 | **0G KV Write Path** | Write tags and transcripts to 0G KV Store via `Batcher + StreamDataBuilder`; full bidirectional sync |
 | 27 | **Redis Rate Limiting + Edge Cache** | Upstash Redis replaces in-memory rate limiting; Vercel KV caches frequent 0G downloads |
 

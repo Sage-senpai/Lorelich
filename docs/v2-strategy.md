@@ -1,4 +1,4 @@
-# LoreLich Vault — Version 2 Expansion Strategy
+# LoreRich Vault — Version 2 Expansion Strategy
 
 ## Current State
 
@@ -73,7 +73,7 @@ Allow story custodians to consent to AI voice cloning of the original speaker.
 2. Upload ≥60s of clean audio of the speaker
 3. Elevenlabs / PlayHT generates voice model
 4. Voice model stored encrypted on 0G, accessible only to authorized users
-5. LoreLich can "speak" stories in the ancestor's voice
+5. LoreRich can "speak" stories in the ancestor's voice
 
 **Consent Smart Contract**:
 ```solidity

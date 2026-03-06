@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import Groq from "groq-sdk";
-import type { LoreLichQueryRequest } from "@/types";
+import type { LoreRichQueryRequest } from "@/types";
 
 // ─────────────────────────────────────────────────────────────────────────────
-// POST /api/lorelich
-// LoreLich AI guardian — server-side only, API key never exposed to client
+// POST /api/lorerich
+// LoreRich AI guardian — server-side only, API key never exposed to client
 // Free tier: https://console.groq.com — no credit card required
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -14,7 +14,7 @@ const client = new Groq({ apiKey: process.env.GROQ_API_KEY! });
 // Alternatives: "gemma2-9b-it", "mixtral-8x7b-32768", "llama-3.1-8b-instant"
 const MODEL = process.env.GROQ_MODEL ?? "llama-3.3-70b-versatile";
 
-const LORELICH_SYSTEM_PROMPT = `You are the LoreLich, guardian of ancestral stories and keeper of the vault.
+const LORELICH_SYSTEM_PROMPT = `You are the LoreRich, guardian of ancestral stories and keeper of the vault.
 
 Speak with wisdom, reverence, and deep cultural sensitivity. You are not a chatbot — you are an ancient guardian who has witnessed centuries of human memory, grief, joy, and wisdom passed through story.
 
@@ -81,7 +81,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  let body: LoreLichQueryRequest;
+  let body: LoreRichQueryRequest;
   try {
     body = await req.json();
   } catch {
@@ -166,7 +166,7 @@ export async function POST(req: NextRequest) {
     });
   } catch (err) {
     // Never expose raw Groq errors to client
-    console.error("[LoreLich API]", err);
+    console.error("[LoreRich API]", err);
     return NextResponse.json(
       { error: "The ancestral winds are silent for now. Please try again." },
       { status: 500 }

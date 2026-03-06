@@ -129,7 +129,7 @@ export function SoulboundBadge({ story, onClose }: SoulboundBadgeProps) {
 
           <p className="text-xs font-mono text-smoke/30 mt-4 leading-relaxed">
             This Soulbound Story token is non-transferable and permanently bound to the
-            uploader&apos;s wallet — irrefutable proof of preservation on LoreLich.
+            uploader&apos;s wallet — irrefutable proof of preservation on LoreRich.
           </p>
         </motion.div>
       </div>

@@ -101,7 +101,7 @@ export default function StorySharePage() {
 
       {/* Breadcrumb */}
       <p className="text-xs font-mono text-smoke/40 mb-6">
-        <a href="/" className="hover:text-aged transition-colors">LoreLich Vault</a>
+        <a href="/" className="hover:text-aged transition-colors">LoreRich Vault</a>
         <span className="mx-2">·</span>
         {vaultName ? (
           <span>{vaultName}</span>

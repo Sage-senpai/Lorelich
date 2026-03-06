@@ -9,7 +9,7 @@ import { useVaultIncomingRequests } from "@/hooks/useIPLicense";
 import { VaultCard, VaultCardEmpty } from "@/components/VaultCard";
 import { StoryUpload } from "@/components/StoryUpload";
 import { WaveformPreview } from "@/components/WaveformPreview";
-import { LoreLichChat } from "@/components/LoreLichChat";
+import { LoreRichChat } from "@/components/LoreRichChat";
 import { LicenseTermsForm } from "@/components/LicenseTermsForm";
 import { LicenseRequestCard } from "@/components/LicenseRequestCard";
 import { StoryViewer } from "@/components/StoryViewer";
@@ -19,12 +19,12 @@ import { AccessGrantModal } from "@/components/AccessGrantModal";
 import { CertificateModal } from "@/components/CertificateModal";
 import { SoulboundBadge } from "@/components/SoulboundBadge";
 import { LORE_VAULT_ADDRESS, LORE_VAULT_ABI } from "@/lib/contracts";
-import type { Vault, StoryMetadata, PendingStory } from "@/types";
+import type { Vault, StoryMetadata, PendingStory, PublicLoreEntry } from "@/types";
 import { DEMO_VAULTS, DEMO_STORY_MAP, DEMO_STORY_CONTENT, isDemoId } from "@/lib/demoData";
 import { DemoBanner, DemoBadge } from "@/components/DemoBanner";
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Vault Dashboard — lists vaults, shows stories, upload + LoreLich AI
+// Vault Dashboard — lists vaults, shows stories, upload + LoreRich AI
 // ─────────────────────────────────────────────────────────────────────────────
 
 export default function VaultPage() {
@@ -92,6 +92,34 @@ export default function VaultPage() {
   const [showArchived,     setShowArchived]     = useState(false);
   const [hiddenStoryIds,   setHiddenStoryIds]   = useState<Set<string>>(new Set());
   const [showHidden,       setShowHidden]       = useState(false);
+  const [shareStory,       setShareStory]       = useState<StoryMetadata | null>(null);
+  const [shareRegion,      setShareRegion]      = useState("");
+  const [shareCulture,     setShareCulture]     = useState("");
+  const [shareEdu,         setShareEdu]         = useState(false);
+
+  function handleShareForLearning() {
+    if (!shareStory || !selectedVault) return;
+    const LS_KEY = "lorelich_public_lore";
+    let existing: PublicLoreEntry[] = [];
+    try { const raw = localStorage.getItem(LS_KEY); if (raw) existing = JSON.parse(raw); } catch {}
+    // Remove if already shared (update)
+    existing = existing.filter((e) => e.storyId !== shareStory.id.toString());
+    existing.push({
+      storyId:       shareStory.id.toString(),
+      title:         shareStory.title,
+      vaultName:     effectiveVaultName,
+      mediaType:     shareStory.mediaType,
+      region:        shareRegion || undefined,
+      culture:       shareCulture || undefined,
+      isEducational: shareEdu,
+      sharedAt:      Date.now(),
+    });
+    localStorage.setItem(LS_KEY, JSON.stringify(existing));
+    setShareStory(null);
+    setShareRegion("");
+    setShareCulture("");
+    setShareEdu(false);
+  }
 
   // When a demo vault is active, pull data locally; otherwise use on-chain store
   const isDemoActive    = demoVaultId !== null;
@@ -323,7 +351,7 @@ export default function VaultPage() {
                         : "border-brass/30 text-smoke hover:border-brass/60 hover:text-aged",
                     ].join(" ")}
                   >
-                    🕯 LoreLich
+                    🕯 LoreRich
                   </button>
                   {/* Only vault owner can upload — prevents NotVaultOwner revert */}
                   {!isDemoActive && selectedVault.owner.toLowerCase() === address?.toLowerCase() && (
@@ -483,6 +511,16 @@ export default function VaultPage() {
                                   🔑 License
                                 </button>
                               )}
+                              {/* Share for Learning — vault owner only, not demo */}
+                              {!isDemoActive && selectedVault?.owner.toLowerCase() === address?.toLowerCase() && (
+                                <button
+                                  onClick={() => setShareStory(story)}
+                                  className="text-xs font-mono px-2 py-0.5 rounded-sm border border-moss/25 text-moss/70
+                                    hover:border-moss/60 hover:text-moss transition-colors"
+                                >
+                                  📚 Learn
+                                </button>
+                              )}
                               {/* Certificate of Preservation — works for demo too */}
                               <button
                                 onClick={() => setCertStory(story)}
@@ -550,7 +588,7 @@ export default function VaultPage() {
                   ) : null}
                 </div>
 
-                {/* LoreLich chat panel */}
+                {/* LoreRich chat panel */}
                 <AnimatePresence>
                   {showChatPanel && (
                     <motion.div
@@ -561,7 +599,7 @@ export default function VaultPage() {
                       className="shrink-0 overflow-hidden"
                       style={{ height: "calc(100vh - 200px)" }}
                     >
-                      <LoreLichChat />
+                      <LoreRichChat />
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -659,6 +697,56 @@ export default function VaultPage() {
             story={nftStory}
             onClose={() => setNftStory(null)}
           />
+        )}
+      </AnimatePresence>
+
+      {/* Share for Learning Modal */}
+      <AnimatePresence>
+        {shareStory && (
+          <Modal onClose={() => setShareStory(null)} title="Share for Learning">
+            <div className="space-y-4">
+              <p className="text-xs text-smoke/60 font-mono">
+                Share &ldquo;{shareStory.title}&rdquo; on the public Learn page so others
+                can discover cultural stories from this vault.
+              </p>
+              <div>
+                <label className="text-[10px] font-mono text-smoke/50 uppercase tracking-wider block mb-1">Region</label>
+                <select
+                  value={shareRegion}
+                  onChange={(e) => setShareRegion(e.target.value)}
+                  className="input-dark text-xs w-full"
+                >
+                  <option value="">— Select region —</option>
+                  {["West Africa","East Africa","South Asia","East Asia","Middle East","Caribbean","Latin America","Pacific Islands"].map((r) => (
+                    <option key={r} value={r}>{r}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="text-[10px] font-mono text-smoke/50 uppercase tracking-wider block mb-1">Culture / Tradition</label>
+                <input
+                  type="text"
+                  value={shareCulture}
+                  onChange={(e) => setShareCulture(e.target.value)}
+                  placeholder="e.g. Yoruba, Tamil, Quechua…"
+                  maxLength={100}
+                  className="input-dark text-xs w-full"
+                />
+              </div>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={shareEdu}
+                  onChange={(e) => setShareEdu(e.target.checked)}
+                  className="accent-brass"
+                />
+                <span className="text-xs font-mono text-smoke/60">Mark as educational content</span>
+              </label>
+              <button onClick={handleShareForLearning} className="btn-brass w-full text-sm">
+                Share for Learning
+              </button>
+            </div>
+          </Modal>
         )}
       </AnimatePresence>
     </div>

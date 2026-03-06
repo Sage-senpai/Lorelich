@@ -27,7 +27,7 @@ const CORE_FEATURES = [
   },
   {
     icon: "🕯",
-    title: "LoreLich AI",
+    title: "LoreRich AI",
     desc:  "An AI guardian trained to speak with wisdom and reverence about ancestral stories.",
   },
 ];
@@ -43,7 +43,7 @@ const ECOSYSTEM_FEATURES = [
   {
     icon: "🎬",
     title: "Pitch Portal",
-    desc:  "LoreLich AI generates film treatment briefs — logline, synopsis, visual approach, comparables.",
+    desc:  "LoreRich AI generates film treatment briefs — logline, synopsis, visual approach, comparables.",
     href: "/pitch",
     cta:  "Explore Pitches →",
   },
@@ -92,7 +92,7 @@ export default function HomePage() {
         </motion.div>
 
         <h1 className="font-serif text-5xl md:text-6xl text-parchment mb-4 leading-tight">
-          LoreLich Vault
+          LoreRich Vault
         </h1>
 
         <p className="font-serif text-aged text-xl md:text-2xl italic mb-2">

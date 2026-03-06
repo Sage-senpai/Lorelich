@@ -1,4 +1,4 @@
-# LoreLich Vault — Smart Contracts
+# LoreRich Vault — Smart Contracts
 
 Foundry project. Two contracts. No proxies in V1.
 

@@ -1,0 +1,1581 @@
+{
+  "version": 0.1,
+  "files": {
+    "app/layout.tsx": {
+      "scopes": {
+        "9/declaration/body/0/argument/0/1/1/15/1/1": {
+          "type": "element",
+          "hash": "97a608432e4013dda17744e0cfba8322",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "LoreRich Vault — Immortal. Verifiable. Decentralized."
+        },
+        "9/declaration/body/0/argument/0/1/1/15/1/3": {
+          "type": "element",
+          "hash": "c078e54c5d917f006580395e43b38af6",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "0G Storage · Groq AI · ERC5192 · IP Licensing · Pitch Portal · Lore Comics · Educational Comics · Genealogy · Search · Learn · Proverbs · Transcripts · Certificates"
+        },
+        "9/declaration/body/0/argument/0/1/1/7/1/3/1": {
+          "type": "element",
+          "hash": "51fae6fa7d830769f3026c7e55dfcd77",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "🕯"
+        },
+        "9/declaration/body/0/argument/0/1/1/7/1/3/3": {
+          "type": "element",
+          "hash": "b60d5a872e22c905fc184fda136a22d2",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "LoreRich Vault"
+        },
+        "9/declaration/body/0/argument/0/1/1/7/1/7/1": {
+          "type": "element",
+          "hash": "bf7e2ed7970537b425ba99370e36d1bd",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Vaults"
+        },
+        "9/declaration/body/0/argument/0/1/1/7/1/7/11": {
+          "type": "element",
+          "hash": "e2b8cf364197829300e361834147b0a4",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Tree"
+        },
+        "9/declaration/body/0/argument/0/1/1/7/1/7/13": {
+          "type": "element",
+          "hash": "49dd6c21604b5e8d4153ff1aff2177e1",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Search"
+        },
+        "9/declaration/body/0/argument/0/1/1/7/1/7/15": {
+          "type": "element",
+          "hash": "6559e2075ab6947a1d4fa43e19a5d66b",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Learn"
+        },
+        "9/declaration/body/0/argument/0/1/1/7/1/7/17": {
+          "type": "element",
+          "hash": "fcd4d0d4b5a4a988dab5daa1de582d5a",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Proverbs"
+        },
+        "9/declaration/body/0/argument/0/1/1/7/1/7/3": {
+          "type": "element",
+          "hash": "4a6c84aa16db0f4e5697f49b45257bc7",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Upload"
+        },
+        "9/declaration/body/0/argument/0/1/1/7/1/7/5": {
+          "type": "element",
+          "hash": "2fded20ab612459f826c3c130aa759bc",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Marketplace"
+        },
+        "9/declaration/body/0/argument/0/1/1/7/1/7/7": {
+          "type": "element",
+          "hash": "fd668d20f3c10f8e8572f1ce4b8a8d28",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Pitch"
+        },
+        "9/declaration/body/0/argument/0/1/1/7/1/7/9": {
+          "type": "element",
+          "hash": "73e37a31450dcd255ea22d52f4291d76",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Lore"
+        }
+      }
+    },
+    "app/page.tsx": {
+      "scopes": {
+        "7/declaration/body/1/argument/11-label": {
+          "type": "attribute",
+          "hash": "bbdd99c95cb95f8765a348fcf3b86292",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "The Archive"
+        },
+        "7/declaration/body/1/argument/21-label": {
+          "type": "attribute",
+          "hash": "dacb897a3f66f76e6973862d025af5d2",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "The Ecosystem"
+        },
+        "7/declaration/body/1/argument/29-label": {
+          "type": "attribute",
+          "hash": "12a7c877c7fcded93317c71f65e21d2e",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Story Lifecycle"
+        },
+        "7/declaration/body/1/argument/3/13/expression/alternate/3": {
+          "type": "element",
+          "hash": "dd96c7b6768678b23b5293faf4f335fb",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Connect your wallet to access the vault"
+        },
+        "7/declaration/body/1/argument/3/13/expression/consequent/1": {
+          "type": "element",
+          "hash": "e845fb228e7e1f8a3a422ec8c4c9d7a9",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Enter the Vault"
+        },
+        "7/declaration/body/1/argument/3/13/expression/consequent/3": {
+          "type": "element",
+          "hash": "9f9d1c18e7dc176c2f2abe4e25ef9417",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Upload a Story"
+        },
+        "7/declaration/body/1/argument/3/13/expression/consequent/5": {
+          "type": "element",
+          "hash": "eebe0c21f01f7dcbe4f6de389a4e3276",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Marketplace"
+        },
+        "7/declaration/body/1/argument/3/3/1": {
+          "type": "element",
+          "hash": "51fae6fa7d830769f3026c7e55dfcd77",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "🕯"
+        },
+        "7/declaration/body/1/argument/3/5": {
+          "type": "element",
+          "hash": "902788269fe11cb0006ee23de0187d79",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "LoreRich Vault"
+        },
+        "7/declaration/body/1/argument/3/7": {
+          "type": "element",
+          "hash": "6835a308bb18bc2667b3d1582081fdeb",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "A sacred archive for the stories that made you."
+        },
+        "7/declaration/body/1/argument/3/9": {
+          "type": "element",
+          "hash": "bbecaabb408dc9e39065fd71e69aaf2e",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Preserve ancestral audio, video, and text on decentralized storage. License your stories. Pitch to filmmakers. Map your ancestors. Encrypted. Verifiable. Immortal."
+        },
+        "7/declaration/body/1/argument/31/1/1/expression/0/body/3/expression/right": {
+          "type": "element",
+          "hash": "1b8ccf0bbbf07c2595f012ef4987ae4e",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "→"
+        },
+        "7/declaration/body/1/argument/35": {
+          "type": "element",
+          "hash": "9696a067fea912ab211eff82d6e79b4c",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "\"The elders die twice — once when they stop breathing,<element:br></element:br> and once when their stories are forgotten.\""
+        },
+        "8/body/0/argument/3": {
+          "type": "element",
+          "hash": "346dc3139944dfa8f8860fb56922459a",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "⸻"
+        }
+      }
+    },
+    "app/vault/page.tsx": {
+      "scopes": {
+        "22/declaration/body/50/consequent/0/argument/1": {
+          "type": "element",
+          "hash": "92ce530e776fe0a15d0db314f691c424",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Restoring connection…"
+        },
+        "22/declaration/body/51/consequent/0/argument/1": {
+          "type": "element",
+          "hash": "a81f598b77088d4bfcc2e3ddb8e08567",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Connect your wallet to enter the vault."
+        },
+        "22/declaration/body/52/argument/13/1/expression/right-title": {
+          "type": "attribute",
+          "hash": "0cfb5a6bb429e6594297760b683ede42",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Upload a Story"
+        },
+        "22/declaration/body/52/argument/17/1/expression/right-title": {
+          "type": "attribute",
+          "hash": "5d914b38ea2c61ba040a45648cee75cf",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "License Terms"
+        },
+        "22/declaration/body/52/argument/3/1/1": {
+          "type": "element",
+          "hash": "8a091deb8c39ec8cda5c78eb34d1d9e5",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Your Vaults"
+        },
+        "22/declaration/body/52/argument/3/1/3": {
+          "type": "element",
+          "hash": "59ca4cc6fe3883fa2cdf3e4bcae09b64",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "<expression/>…<expression/><expression/>{vaultIds.length} <expression/>"
+        },
+        "22/declaration/body/52/argument/3/3": {
+          "type": "element",
+          "hash": "6e4ceafd61b8eac671dfb2f10784ccbf",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "+ New Vault"
+        },
+        "22/declaration/body/52/argument/37/1/expression/right-title": {
+          "type": "attribute",
+          "hash": "d4301d857baa24c5d2243b2809073385",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Share for Learning"
+        },
+        "22/declaration/body/52/argument/37/1/expression/right/1/1": {
+          "type": "element",
+          "hash": "98824715817bcd44fff415f635880b6b",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Share “{shareStory.title}” on the public Learn page so others can discover cultural stories from this vault."
+        },
+        "22/declaration/body/52/argument/37/1/expression/right/1/3/1": {
+          "type": "element",
+          "hash": "da6cd6b46344aad56101dafb050796ca",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Region"
+        },
+        "22/declaration/body/52/argument/37/1/expression/right/1/3/3/1": {
+          "type": "element",
+          "hash": "c89281678908ed7be01f61b5769d8bb9",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "— Select region —"
+        },
+        "22/declaration/body/52/argument/37/1/expression/right/1/5/1": {
+          "type": "element",
+          "hash": "440cc2fa07a4c6c98d2a0ab550ff25be",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Culture / Tradition"
+        },
+        "22/declaration/body/52/argument/37/1/expression/right/1/5/3-placeholder": {
+          "type": "attribute",
+          "hash": "b10c50ee576ec70fc2495e0cab5d63a8",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "e.g. Yoruba, Tamil, Quechua…"
+        },
+        "22/declaration/body/52/argument/37/1/expression/right/1/7/3": {
+          "type": "element",
+          "hash": "8dc32facabf7b444233148bd5e19dac5",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Mark as educational content"
+        },
+        "22/declaration/body/52/argument/37/1/expression/right/1/9": {
+          "type": "element",
+          "hash": "4c18f8a9a7960d11d32e305b1fda72d3",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Share for Learning"
+        },
+        "22/declaration/body/52/argument/5/3/1/expression/alternate/alternate/0/body/3": {
+          "type": "element",
+          "hash": "384491b638b7cdf2688fd1b219647cc8",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "⊗"
+        },
+        "22/declaration/body/52/argument/5/3/1/expression/alternate/alternate/0/body/3-title": {
+          "type": "attribute",
+          "hash": "8be7578faa5f4346661b19bb667c2863",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Archive vault (local only — hides from sidebar)"
+        },
+        "22/declaration/body/52/argument/5/3/7/1": {
+          "type": "element",
+          "hash": "7810254fca2b9766528d9060e57cb21e",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Sample Vaults"
+        },
+        "22/declaration/body/52/argument/5/3/7/3/expression/0/body/3": {
+          "type": "element",
+          "hash": "58516e00001cfe0ef86b17897e3c34c0",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "<expression/> stories"
+        },
+        "22/declaration/body/52/argument/5/7/1/expression/alternate/1": {
+          "type": "element",
+          "hash": "9dd97f3b5024a4e03c4ae2b4a5a7d1e4",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Select a vault to view its stories"
+        },
+        "22/declaration/body/52/argument/5/7/1/expression/consequent/11/1/expression/right/1": {
+          "type": "element",
+          "hash": "050645294546cece2ae643a2bd1525e9",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "<element:span>●</element:span> Incoming Requests<element:span>{pendingReqs.length} pending</element:span><element:span><expression/></element:span>"
+        },
+        "22/declaration/body/52/argument/5/7/1/expression/consequent/13/3/3/expression/right/1": {
+          "type": "element",
+          "hash": "7a62132e1b7c582500667bb2d53e14bc",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Pending On-Chain Registration"
+        },
+        "22/declaration/body/52/argument/5/7/1/expression/consequent/13/3/5/expression/alternate/alternate/consequent/1/expression/right": {
+          "type": "element",
+          "hash": "1c8a4059ac4c50d34863cb941b532934",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "{hiddenCount} <expression/> hidden · <element:button>Show</element:button>"
+        },
+        "22/declaration/body/52/argument/5/7/1/expression/consequent/13/3/5/expression/alternate/alternate/consequent/3/expression/0/body/1/3/11/expression/right": {
+          "type": "element",
+          "hash": "43eede3b3b6e4e5081e4129b2369a6ec",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "🪙 NFT"
+        },
+        "22/declaration/body/52/argument/5/7/1/expression/consequent/13/3/5/expression/alternate/alternate/consequent/3/expression/0/body/1/3/15/expression/right": {
+          "type": "element",
+          "hash": "3e4a135784bc3232cbb241830259afa4",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "🔑 License"
+        },
+        "22/declaration/body/52/argument/5/7/1/expression/consequent/13/3/5/expression/alternate/alternate/consequent/3/expression/0/body/1/3/19/expression/right": {
+          "type": "element",
+          "hash": "70bdf0231e62b87244bb5e998a0a5283",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "📚 Learn"
+        },
+        "22/declaration/body/52/argument/5/7/1/expression/consequent/13/3/5/expression/alternate/alternate/consequent/3/expression/0/body/1/3/23": {
+          "type": "element",
+          "hash": "235fc687ec9cdeb2222858d55fff221d",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "📜 Cert"
+        },
+        "22/declaration/body/52/argument/5/7/1/expression/consequent/13/3/5/expression/alternate/alternate/consequent/3/expression/0/body/1/3/3/expression/right": {
+          "type": "element",
+          "hash": "0ce18750abc1cbd4738a8eafee03e074",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "View"
+        },
+        "22/declaration/body/52/argument/5/7/1/expression/consequent/13/3/5/expression/alternate/alternate/consequent/3/expression/0/body/1/3/31/expression/right-title": {
+          "type": "attribute",
+          "hash": "1f8fdf85c397b7c1991de464175badfd",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Hide story from list (local only)"
+        },
+        "22/declaration/body/52/argument/5/7/1/expression/consequent/13/3/5/expression/alternate/alternate/consequent/3/expression/0/body/1/3/7/expression/right": {
+          "type": "element",
+          "hash": "078da19b116fcf9566281a689ceea303",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Share"
+        },
+        "22/declaration/body/52/argument/5/7/1/expression/consequent/13/3/5/expression/alternate/consequent/1": {
+          "type": "element",
+          "hash": "a1536280c15aa070f2e3733f7f76ea22",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "No stories yet"
+        },
+        "22/declaration/body/52/argument/5/7/1/expression/consequent/13/3/5/expression/alternate/consequent/3": {
+          "type": "element",
+          "hash": "40bb1fc53551fdddea9f0389086a3916",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Upload the first story to this vault."
+        },
+        "22/declaration/body/52/argument/5/7/1/expression/consequent/7/1/1/expression/alternate/3/expression/right": {
+          "type": "element",
+          "hash": "fd6fcbc9a0c3bfa401085a2198d5b6bb",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "✏"
+        },
+        "22/declaration/body/52/argument/5/7/1/expression/consequent/7/1/1/expression/alternate/3/expression/right-title": {
+          "type": "attribute",
+          "hash": "12074bd8f47df28dc59ca8a86ae82063",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Rename vault (local only)"
+        },
+        "22/declaration/body/52/argument/5/7/1/expression/consequent/7/1/1/expression/consequent/3": {
+          "type": "element",
+          "hash": "d84f6f0a26e66d6bc154d9bcd8d6e5fa",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Save"
+        },
+        "22/declaration/body/52/argument/5/7/1/expression/consequent/7/1/1/expression/consequent/5": {
+          "type": "element",
+          "hash": "1230d21c067e341f36a3d7f71c0a0bd8",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Cancel"
+        },
+        "22/declaration/body/52/argument/5/7/1/expression/consequent/7/3/3/expression/right": {
+          "type": "element",
+          "hash": "41f64db8a661b641bccea063b429a073",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "🔑 Access"
+        },
+        "22/declaration/body/52/argument/5/7/1/expression/consequent/7/3/5": {
+          "type": "element",
+          "hash": "83275ae929bea6fbf25b7f61b1818784",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "🕯 LoreRich"
+        },
+        "22/declaration/body/52/argument/5/7/1/expression/consequent/7/3/9/expression/right": {
+          "type": "element",
+          "hash": "2982d48d1959510959308cec5707cb47",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "+ Upload Story"
+        },
+        "23/body/4/argument/1/1/3/9": {
+          "type": "element",
+          "hash": "d14e0737de6a8f9a6b7690a70c6f3597",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "✓ stored on 0G"
+        },
+        "24/body/8/argument-title": {
+          "type": "attribute",
+          "hash": "cd94f054047d355a34d193f89a037710",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Create a Vault"
+        },
+        "24/body/8/argument/1/1/1": {
+          "type": "element",
+          "hash": "54b14be7471e0eb101c4e28c48cc23cb",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Vault Name"
+        },
+        "24/body/8/argument/1/1/3-placeholder": {
+          "type": "attribute",
+          "hash": "2b9714101459ffbbd9a024345eef4cf8",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Okafor Family Stories"
+        },
+        "24/body/8/argument/1/15/expression/right": {
+          "type": "element",
+          "hash": "6a43d0bf2878251b73520abb4dd463a5",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Try again"
+        },
+        "24/body/8/argument/1/19/expression/right": {
+          "type": "element",
+          "hash": "552970a4e32d8fe4ebd51172df4a2a55",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "On mobile? For best results open this page inside your wallet's browser (OKX → Browser tab · MetaMask → Browser)."
+        },
+        "24/body/8/argument/1/3/1": {
+          "type": "element",
+          "hash": "1ff412f8fcde0f460acbf11153649646",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Visibility"
+        },
+        "24/body/8/argument/1/7/expression/right/1": {
+          "type": "element",
+          "hash": "307c2d90082ed6ceeb5f6f670a8ddcf5",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "✓ Vault creation submitted"
+        },
+        "24/body/8/argument/1/7/expression/right/3": {
+          "type": "element",
+          "hash": "c84e1c5dd96643fb3449510d829228b1",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Your vault will appear shortly. Transaction:"
+        },
+        "24/body/8/argument/1/7/expression/right/5": {
+          "type": "element",
+          "hash": "0d45199526ec6696fdb7e68729fc360f",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "<function:txHash.slice/>…<function:txHash.slice/>"
+        },
+        "25/body/0/argument/1/1/1/3": {
+          "type": "element",
+          "hash": "f91395c4ebf3cbd35e633811858af628",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "×"
+        },
+        "25/body/0/argument/1/1/1/3-aria-label": {
+          "type": "attribute",
+          "hash": "2c2e22f8424a1031de89063bd0022e16",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Close"
+        }
+      }
+    },
+    "components/AccessGrantModal.tsx": {
+      "scopes": {
+        "9/declaration/body/12/argument/1/1/11/1": {
+          "type": "element",
+          "hash": "0bf353da7ddcade68599708ff955988e",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Active grants ({activeGrants.length})"
+        },
+        "9/declaration/body/12/argument/1/1/11/3/expression/alternate/1/1/expression/0/body/1/3": {
+          "type": "element",
+          "hash": "a5d13e7c780115695f4983503ea0afb8",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Granted <function:Date.toLocaleDateString/>"
+        },
+        "9/declaration/body/12/argument/1/1/11/3/expression/consequent": {
+          "type": "element",
+          "hash": "2f699a433110a97916089d1a0dc38b3d",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "No addresses have been granted access yet."
+        },
+        "9/declaration/body/12/argument/1/1/13": {
+          "type": "element",
+          "hash": "249cf235872f6218c3300ff49bf50c2e",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Access is enforced on-chain by the LoreVault contract. Grantees can download and decrypt stories stored in this private vault."
+        },
+        "9/declaration/body/12/argument/1/1/3/1/1": {
+          "type": "element",
+          "hash": "c4727adda32e99ae4bf98190b8427660",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Manage Access"
+        },
+        "9/declaration/body/12/argument/1/1/3/1/3": {
+          "type": "element",
+          "hash": "3b11c5be6194cad7e911b93e5da73c05",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "🔒 {vault.name} · Private Vault"
+        },
+        "9/declaration/body/12/argument/1/1/3/3": {
+          "type": "element",
+          "hash": "6ad11f7fb51f461132aa7d579c852e31",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "×"
+        },
+        "9/declaration/body/12/argument/1/1/3/3-aria-label": {
+          "type": "attribute",
+          "hash": "2c2e22f8424a1031de89063bd0022e16",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Close"
+        },
+        "9/declaration/body/12/argument/1/1/7/1": {
+          "type": "element",
+          "hash": "75a942732a31d581341a1536155fab50",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Grant access to wallet address"
+        },
+        "9/declaration/body/12/argument/1/1/7/3/1-placeholder": {
+          "type": "attribute",
+          "hash": "2492f2562c6823c27f9a0cf043793379",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "0x..."
+        }
+      }
+    },
+    "components/CertificateModal.tsx": {
+      "scopes": {
+        "4/declaration/body/4/argument/5/1/1/3/1": {
+          "type": "element",
+          "hash": "00ffd2f3c39124b52a47d64b674a581e",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Certificate of Preservation"
+        },
+        "4/declaration/body/4/argument/5/1/1/3/3/1": {
+          "type": "element",
+          "hash": "caafb93a746916d5ae3f9b510242eeb7",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "🖨 Print / Save as PDF"
+        },
+        "4/declaration/body/4/argument/5/1/1/3/3/3": {
+          "type": "element",
+          "hash": "b8029ae1e354d7339ab95589150a71f6",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "×"
+        },
+        "4/declaration/body/4/argument/5/1/1/3/3/3-aria-label": {
+          "type": "attribute",
+          "hash": "2c2e22f8424a1031de89063bd0022e16",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Close"
+        },
+        "4/declaration/body/4/argument/5/1/1/7/13/1": {
+          "type": "element",
+          "hash": "f231e271c4ec230551305401723d7350",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Independent Verification"
+        },
+        "4/declaration/body/4/argument/5/1/1/7/13/3": {
+          "type": "element",
+          "hash": "29980dad90e8e4dae1db45e1c2b98e28",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "The content of this story can be verified by anyone using the 0G Merkle Root Hash above. Using the 0G Storage SDK, call <element:code>indexer.download(rootHash, outputPath, false)</element:code> to retrieve an exact copy of the preserved content. The Soulbound Story token (ERC-5192) at token ID <function:story.id.toString/> on the LoreVault contract is the permanent, non-transferable on-chain record of ownership."
+        },
+        "4/declaration/body/4/argument/5/1/1/7/17/1/1": {
+          "type": "element",
+          "hash": "8e7100a52b57724002f2b9baedb353bc",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "LoreVault Contract"
+        },
+        "4/declaration/body/4/argument/5/1/1/7/17/3/1": {
+          "type": "element",
+          "hash": "70c9987f82dbc0c9169385de1508a680",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "0G Galileo Testnet · Chain ID 16601"
+        },
+        "4/declaration/body/4/argument/5/1/1/7/17/3/3": {
+          "type": "element",
+          "hash": "76fc1f4d81ec6eab872f45d8d5d58cbf",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Immortal · Verifiable · Decentralized"
+        },
+        "4/declaration/body/4/argument/5/1/1/7/3/1": {
+          "type": "element",
+          "hash": "d5eefa6ce2db1b0f36d84e58c659cad9",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "LoreRich Vault · Decentralized Ancestral Archive"
+        },
+        "4/declaration/body/4/argument/5/1/1/7/3/5": {
+          "type": "element",
+          "hash": "acd9b83103199eac55c4c5333df991e1",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Certificate of Preservation"
+        },
+        "4/declaration/body/4/argument/5/1/1/7/3/7": {
+          "type": "element",
+          "hash": "f1e208c86f3b8ce46528edc6b124063f",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Immutable on-chain record · 0G Storage Network · Galileo Testnet"
+        },
+        "4/declaration/body/4/argument/5/1/1/7/7/1": {
+          "type": "element",
+          "hash": "7ceaf89dd8812be06c8f1da3df7fba6f",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "This certifies that the following ancestral story has been permanently preserved"
+        },
+        "4/declaration/body/4/argument/5/1/1/7/7/5": {
+          "type": "element",
+          "hash": "7d1250b8b8240c685c5b971a53cf8850",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "{vault.name} · {story.mediaType}<expression/>"
+        },
+        "4/declaration/body/4/argument/5/1/1/7/9/3/1-label": {
+          "type": "attribute",
+          "hash": "e355f1fb4069e80e8425e0fe210c225c",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Preserved by"
+        },
+        "4/declaration/body/4/argument/5/1/1/7/9/3/3-label": {
+          "type": "attribute",
+          "hash": "9abdc477c6bbf6480eae83af675def58",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Preservation Date"
+        },
+        "4/declaration/body/4/argument/5/1/1/7/9/3/5-label": {
+          "type": "attribute",
+          "hash": "d96f2e30b1e0fd1f8e6681b35f309b45",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Unix Timestamp"
+        },
+        "4/declaration/body/4/argument/5/1/1/7/9/3/7-label": {
+          "type": "attribute",
+          "hash": "00ef9d919038ce7b8a9fdec9b3210cf2",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Story Token ID"
+        },
+        "4/declaration/body/4/argument/5/1/1/7/9/7-label": {
+          "type": "attribute",
+          "hash": "c773bdc2eb178f3f79f145af847c580a",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "0G Merkle Root Hash (Content Identifier)"
+        }
+      }
+    },
+    "components/DemoBanner.tsx": {
+      "scopes": {
+        "0/declaration/body/0/argument/1": {
+          "type": "element",
+          "hash": "4b7cf83223c2333933cda1dd2c012f5c",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "⚠"
+        },
+        "0/declaration/body/0/argument/3": {
+          "type": "element",
+          "hash": "4d6ed88269858f80fbe4400175b3ebb8",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Sample content below is <element:strong>fictional</element:strong> and fordemonstration purposes only. Real ancestral stories are stored on <element:span>0G Galileo Testnet</element:span>."
+        },
+        "1/declaration/body/0/argument": {
+          "type": "element",
+          "hash": "efbdab770bd40785b5926e27db8ee153",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "DEMO"
+        }
+      }
+    },
+    "components/LicenseRequestCard.tsx": {
+      "scopes": {
+        "8/declaration/body/8/argument/11/expression/right": {
+          "type": "element",
+          "hash": "face31486fed8aef731c7aef7f8df2b7",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "<function:formatEther/> OG escrowed"
+        },
+        "8/declaration/body/8/argument/15/expression/right": {
+          "type": "element",
+          "hash": "896713fa013d026ed45b206d84a97dc5",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Expires <function:fmtDate/>"
+        },
+        "8/declaration/body/8/argument/7/expression/right": {
+          "type": "element",
+          "hash": "768679994de9356f0371d055a2e15c18",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "\"{request.purposeNote}\""
+        }
+      }
+    },
+    "components/LicenseTermsForm.tsx": {
+      "scopes": {
+        "6/declaration/body/14/argument/13/expression/consequent": {
+          "type": "element",
+          "hash": "c8e4863ae01e54077a5be41bbcb37496",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "✓ License terms saved on-chain"
+        },
+        "6/declaration/body/14/argument/7-label": {
+          "type": "attribute",
+          "hash": "8c2a40b10db0c441a7eec80ad0bcd517",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Make this story licensable"
+        },
+        "6/declaration/body/14/argument/9/expression/right/11/1": {
+          "type": "element",
+          "hash": "357cdf998330a82bd795b914e825dae8",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Royalty per license (OG)"
+        },
+        "6/declaration/body/14/argument/9/expression/right/11/3-placeholder": {
+          "type": "attribute",
+          "hash": "440328cab85d4fd7a2d856dc4fe6daf8",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "0.01"
+        },
+        "6/declaration/body/14/argument/9/expression/right/11/5": {
+          "type": "element",
+          "hash": "b4c49b2b541e3aa68e707df67f8ba75f",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Set 0 to allow free requests (approval still required)"
+        },
+        "6/declaration/body/14/argument/9/expression/right/15/expression/right/1": {
+          "type": "element",
+          "hash": "a9b8809b2042ebe34d7f2a54b5b32f2f",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Exclusive license royalty (OG)"
+        },
+        "6/declaration/body/14/argument/9/expression/right/15/expression/right/3-placeholder": {
+          "type": "attribute",
+          "hash": "16a3f11bc2e6f45dcd25dd7000f4fd14",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "0.1"
+        },
+        "6/declaration/body/14/argument/9/expression/right/19/1": {
+          "type": "element",
+          "hash": "64dfc5e15c3ff12808692f7bf321c4af",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Max licenses (0 = unlimited)"
+        },
+        "6/declaration/body/14/argument/9/expression/right/19/3-placeholder": {
+          "type": "attribute",
+          "hash": "680f7639d6def9a224135b5a2512ebf3",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "0"
+        },
+        "6/declaration/body/14/argument/9/expression/right/23/1": {
+          "type": "element",
+          "hash": "6619b346de86c286bcd2716732fafdee",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Jurisdiction note <element:span>(optional, max 200 chars)</element:span>"
+        },
+        "6/declaration/body/14/argument/9/expression/right/23/3-placeholder": {
+          "type": "attribute",
+          "hash": "14d580754d542b6697abbe651ee77ceb",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "e.g. Worldwide excluding US"
+        },
+        "6/declaration/body/14/argument/9/expression/right/3-label": {
+          "type": "attribute",
+          "hash": "f92e7990d53f3afc8e98293205ca6c81",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Allow commercial use"
+        },
+        "6/declaration/body/14/argument/9/expression/right/7-label": {
+          "type": "attribute",
+          "hash": "75570c5fea127375bb07733e45c65363",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Allow exclusive licenses"
+        }
+      }
+    },
+    "components/LoreRichChat.tsx": {
+      "scopes": {
+        "6/declaration/body/6/argument/11/1/1-placeholder": {
+          "type": "attribute",
+          "hash": "c449750d4f4405da81c71f2b7a36a96e",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Ask the guardian..."
+        },
+        "6/declaration/body/6/argument/11/1/3": {
+          "type": "element",
+          "hash": "716a9f9a66c93d7dad652ca95c6f7c73",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Ask"
+        },
+        "6/declaration/body/6/argument/3/1/1": {
+          "type": "element",
+          "hash": "51fae6fa7d830769f3026c7e55dfcd77",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "🕯"
+        },
+        "6/declaration/body/6/argument/3/1/3/1": {
+          "type": "element",
+          "hash": "8a0331f982c5197b6a29d3c306ac3baf",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "LoreRich"
+        },
+        "6/declaration/body/6/argument/3/1/3/3": {
+          "type": "element",
+          "hash": "aceaa5ecbcf61df350ae1475a06685f5",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Guardian of Ancestral Stories"
+        },
+        "6/declaration/body/6/argument/3/3/expression/right": {
+          "type": "element",
+          "hash": "d12ad8d0542364caf29ce5bcc39a1dbb",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Clear"
+        },
+        "6/declaration/body/6/argument/3/3/expression/right-aria-label": {
+          "type": "attribute",
+          "hash": "49729fd59a1015d081e88afd0b2b4722",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Clear conversation"
+        },
+        "6/declaration/body/6/argument/7/1/expression/right/1": {
+          "type": "element",
+          "hash": "bdb3d51fe724af925adc18eebccb9fe6",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "\"I am the LoreRich — keeper of what was spoken<element:br></element:br> before it could be written.<element:br></element:br> Ask me of the stories in your vault.\""
+        },
+        "7/body/1/argument/1/1/expression/right": {
+          "type": "element",
+          "hash": "06bc27e130c6a58561146f0066354bdf",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "LoreRich"
+        }
+      }
+    },
+    "components/SoulboundBadge.tsx": {
+      "scopes": {
+        "6/declaration/body/5/argument/1/1/11": {
+          "type": "element",
+          "hash": "f6e96ebf7c02be31db0753f174675c94",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "This Soulbound Story token is non-transferable and permanently bound to the uploader's wallet — irrefutable proof of preservation on LoreRich."
+        },
+        "6/declaration/body/5/argument/1/1/3/1/1": {
+          "type": "element",
+          "hash": "78fa736d17f58125375508fee3ad45e8",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Soulbound NFT"
+        },
+        "6/declaration/body/5/argument/1/1/3/1/3": {
+          "type": "element",
+          "hash": "4a79019888416f9d2499f4be868b673f",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "ERC-5192 · Permanently Locked"
+        },
+        "6/declaration/body/5/argument/1/1/3/3": {
+          "type": "element",
+          "hash": "f91395c4ebf3cbd35e633811858af628",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "×"
+        },
+        "6/declaration/body/5/argument/1/1/3/3-aria-label": {
+          "type": "attribute",
+          "hash": "2c2e22f8424a1031de89063bd0022e16",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Close"
+        },
+        "6/declaration/body/5/argument/1/1/9/expression/alternate/1-label": {
+          "type": "attribute",
+          "hash": "cba2cf8275dc6a017727510b521d95ea",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Token ID"
+        },
+        "6/declaration/body/5/argument/1/1/9/expression/alternate/11/1": {
+          "type": "element",
+          "hash": "b43ef0f741c7795fd17e7b0d54296707",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "View on Explorer ↗"
+        },
+        "6/declaration/body/5/argument/1/1/9/expression/alternate/11/3/expression/right": {
+          "type": "element",
+          "hash": "5d57ad32116922eba701efb9df4dcc9a",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Token Metadata ↗"
+        },
+        "6/declaration/body/5/argument/1/1/9/expression/alternate/3-label": {
+          "type": "attribute",
+          "hash": "9c0b3aeca046c3ebd3bdc352edc83e88",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Owner"
+        },
+        "6/declaration/body/5/argument/1/1/9/expression/alternate/5-label": {
+          "type": "attribute",
+          "hash": "04022edc6c02d4c674091b405d29e07d",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Contract"
+        },
+        "6/declaration/body/5/argument/1/1/9/expression/alternate/7-label": {
+          "type": "attribute",
+          "hash": "4e1fcce15854d824919b4a582c697c90",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Status"
+        },
+        "6/declaration/body/5/argument/1/1/9/expression/alternate/9/expression/right-label": {
+          "type": "attribute",
+          "hash": "c069452b8784273b962c22e49656d5a2",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Token URI"
+        },
+        "6/declaration/body/5/argument/1/1/9/expression/consequent/1": {
+          "type": "element",
+          "hash": "e455a18cbef3ed0408a103a5f5493458",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "🪙"
+        },
+        "6/declaration/body/5/argument/1/1/9/expression/consequent/3": {
+          "type": "element",
+          "hash": "42f6a094d68054d713c86adde4295a67",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Token not found on-chain."
+        },
+        "6/declaration/body/5/argument/1/1/9/expression/consequent/5": {
+          "type": "element",
+          "hash": "64d45de38ac0b577576bbdf2075cfef4",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "The story may still be pending confirmation on the network."
+        }
+      }
+    },
+    "components/StoryTags.tsx": {
+      "scopes": {
+        "5/declaration/body/9/argument/3/expression/0/body/3": {
+          "type": "element",
+          "hash": "6ad11f7fb51f461132aa7d579c852e31",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "×"
+        },
+        "5/declaration/body/9/argument/7/expression/alternate/right": {
+          "type": "element",
+          "hash": "bd04525cab00e7730042ed41f0d25048",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "+ tag"
+        },
+        "5/declaration/body/9/argument/7/expression/consequent-placeholder": {
+          "type": "attribute",
+          "hash": "baba3c1e7bc7e2b4fdb66f8087094e0e",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "add tag…"
+        }
+      }
+    },
+    "components/StoryUpload.tsx": {
+      "scopes": {
+        "17/declaration/body/20/argument/11/expression/right-placeholder": {
+          "type": "attribute",
+          "hash": "6e37b303d103850d39cd296042b21d6c",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Story title..."
+        },
+        "17/declaration/body/20/argument/19/1/expression/right/1": {
+          "type": "element",
+          "hash": "d43381e5ded57e101b63a1264e1cb2a6",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "✓ Story stored on 0G network"
+        },
+        "17/declaration/body/20/argument/19/1/expression/right/3": {
+          "type": "element",
+          "hash": "e0b86a7d4a0a6725e5550d65803a56f5",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Your file is permanently preserved on 0G. Sign the wallet transaction to register it on-chain and receive your proof of ownership."
+        },
+        "17/declaration/body/20/argument/19/1/expression/right/7/3": {
+          "type": "element",
+          "hash": "2b126fa409f0a46b99918eb7b488cce7",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Register later"
+        },
+        "17/declaration/body/20/argument/23/expression/right/3/expression/right": {
+          "type": "element",
+          "hash": "5972cd681cff122662e2ab3236eff743",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Reset"
+        },
+        "17/declaration/body/20/argument/27/expression/right": {
+          "type": "element",
+          "hash": "f5be5f92a6602dfb0afe321d0f0081a5",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "🔒 This vault is private — your story will be encrypted before upload"
+        },
+        "17/declaration/body/20/argument/7/expression/right/1/expression/alternate/3/3": {
+          "type": "element",
+          "hash": "67dce0efa8d98b9f8f40ef11001d45df",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "<function:storyText.length.toLocaleString/> / 50,000 chars"
+        },
+        "17/declaration/body/20/argument/7/expression/right/1/expression/consequent/1-aria-label": {
+          "type": "attribute",
+          "hash": "9f11d6b5a96e66eb94d356fe03e15e2a",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Upload story file"
+        },
+        "17/declaration/body/20/argument/7/expression/right/1/expression/consequent/1/3/expression/alternate/1": {
+          "type": "element",
+          "hash": "93b46405a7173a1c3123c6017d6bf453",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "📜"
+        },
+        "17/declaration/body/20/argument/7/expression/right/1/expression/consequent/1/3/expression/alternate/3": {
+          "type": "element",
+          "hash": "983f02e603d450cde35e45855f139512",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Drop your story here"
+        },
+        "17/declaration/body/20/argument/7/expression/right/1/expression/consequent/1/3/expression/alternate/5": {
+          "type": "element",
+          "hash": "7b302eb171c54d2210e2326bc421ab28",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Audio · Video · Text · Image"
+        },
+        "17/declaration/body/20/argument/7/expression/right/1/expression/consequent/1/3/expression/consequent/3": {
+          "type": "element",
+          "hash": "12edf6173dcfe3ad0a15ce6c171ce574",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "<function:toFixed/> MB"
+        }
+      }
+    },
+    "components/StoryViewer.tsx": {
+      "scopes": {
+        "10/body/0/2/0/argument/1": {
+          "type": "element",
+          "hash": "ce93f2f16673a7306b0776e2b8a847cc",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "🎵"
+        },
+        "10/body/0/3/0/argument/1": {
+          "type": "element",
+          "hash": "22364c07bf6457ed20d0c3048a7daab0",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "📄"
+        },
+        "10/body/0/3/0/argument/3": {
+          "type": "element",
+          "hash": "dae2390e0b4f051192d566c5fc14e9c2",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "This file type cannot be previewed in-browser."
+        },
+        "10/body/0/3/0/argument/5": {
+          "type": "element",
+          "hash": "ae2e832c4481f96865fae0d55b3aa3e5",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "{content.sizeKB} KB"
+        },
+        "10/body/0/3/0/argument/7": {
+          "type": "element",
+          "hash": "26f29c79eae664230d21b7bed39a0bdf",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "↓ Download File"
+        },
+        "8/declaration/body/4/argument/1/1/1/11/expression/right/3/expression/right": {
+          "type": "element",
+          "hash": "51157aedbd0bf1839abd5fc91c28d1f8",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "↓ Download"
+        },
+        "8/declaration/body/4/argument/1/1/1/3/1/3/7": {
+          "type": "element",
+          "hash": "2a1541f48df185f71082b135734a6caa",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "<function:story.zgRootHash.slice/>…"
+        },
+        "8/declaration/body/4/argument/1/1/1/3/3": {
+          "type": "element",
+          "hash": "f91395c4ebf3cbd35e633811858af628",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "×"
+        },
+        "8/declaration/body/4/argument/1/1/1/3/3-aria-label": {
+          "type": "attribute",
+          "hash": "2c2e22f8424a1031de89063bd0022e16",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Close"
+        },
+        "8/declaration/body/4/argument/1/1/1/7/1/expression/right-label": {
+          "type": "attribute",
+          "hash": "481d844d6bf7476314b9cc7e0bad34ff",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Fetching from 0G Storage…"
+        },
+        "8/declaration/body/4/argument/1/1/1/7/3/expression/right-label": {
+          "type": "attribute",
+          "hash": "46abb4e4b6489e9b9ff08f30f1e2d457",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Decrypting with your wallet…"
+        },
+        "8/declaration/body/4/argument/1/1/1/7/5/expression/right/1": {
+          "type": "element",
+          "hash": "4b7cf83223c2333933cda1dd2c012f5c",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "⚠"
+        },
+        "8/declaration/body/4/argument/1/1/1/7/5/expression/right/5": {
+          "type": "element",
+          "hash": "d4dba1df7b16a6f09ecfba7c4798d2d6",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "The file may not yet be replicated on 0G storage nodes, or the indexer may be temporarily unavailable. Try again in a moment."
+        }
+      }
+    },
+    "components/TranscriptButton.tsx": {
+      "scopes": {
+        "5/declaration/body/7/consequent/0/argument/3/1/1": {
+          "type": "element",
+          "hash": "f521129baedd5785c9a6f73baebde1fe",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "📝 Transcript"
+        },
+        "5/declaration/body/7/consequent/0/argument/3/3": {
+          "type": "element",
+          "hash": "7ba60713adc094ed6bed7b5282fc1417",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "✕"
+        },
+        "5/declaration/body/7/consequent/0/argument/3/3-aria-label": {
+          "type": "attribute",
+          "hash": "6a6c62bbc1cf804ea0b56ab06edfa5a2",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Clear transcript"
+        },
+        "5/declaration/body/7/consequent/0/argument/7/1/expression/right/3": {
+          "type": "element",
+          "hash": "67630b31ac810e73246d975adb94a93d",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Transcribed <function:Date.toLocaleDateString/><expression/>"
+        },
+        "5/declaration/body/8/argument/1/1/expression/consequent": {
+          "type": "element",
+          "hash": "7496611741d5602401543613569f8bbd",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Transcribing via Groq Whisper…"
+        }
+      }
+    },
+    "components/VaultCard.tsx": {
+      "scopes": {
+        "6/declaration/body/3/argument/11/3": {
+          "type": "element",
+          "hash": "26b80ae8a680de73667e096098aa69d8",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "·"
+        },
+        "7/declaration/body/0/argument/1": {
+          "type": "element",
+          "hash": "b29498f2308ef8efb0493291eb5b8d8d",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "🗝"
+        },
+        "7/declaration/body/0/argument/3": {
+          "type": "element",
+          "hash": "cd7eda81acbfbde08d42689986c80c96",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "No vaults yet"
+        },
+        "7/declaration/body/0/argument/5": {
+          "type": "element",
+          "hash": "5d1e8517e072b41f70454bc198980c0c",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Create your first vault to begin preserving ancestral stories."
+        }
+      }
+    },
+    "components/WalletConnect.tsx": {
+      "scopes": {
+        "4/declaration/body/3/argument/1/expression/body/5/expression/alternate/alternate": {
+          "type": "element",
+          "hash": "e845fb228e7e1f8a3a422ec8c4c9d7a9",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Enter the Vault"
+        },
+        "4/declaration/body/3/argument/1/expression/body/5/expression/consequent": {
+          "type": "element",
+          "hash": "f270b87e182e6c9a4a2ce3dc19d15232",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Awakening..."
+        }
+      }
+    }
+  }
+}

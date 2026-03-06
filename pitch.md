@@ -1,4 +1,4 @@
-# LoreLich Vault — Pitch
+# LoreRich Vault — Pitch
 
 ---
 
@@ -32,13 +32,13 @@ And when those stories do survive — documentarians, filmmakers, and researcher
 ### V1 — The Foundation
 *"A sacred digital archive. Permanent. Verifiable. Yours."*
 
-LoreLich started with one thesis: ancestral stories deserve the same permanence as blockchain transactions.
+LoreRich started with one thesis: ancestral stories deserve the same permanence as blockchain transactions.
 
 **What we built:**
 - **Vault Dashboard** — private and public story vaults, AES-256 client-side encrypted
 - **0G Decentralized Storage** — files uploaded to the 0G network; merkle root hash stored on-chain as a permanent DA proof
 - **Soulbound Ownership** — every story mints a non-transferable ERC5192 NFT; cryptographic proof that this story belongs to this wallet, forever
-- **LoreLich AI** — a Groq-powered cultural guardian that speaks with reverence; answers questions, extracts wisdom, remixes stories without ever mocking or diminishing them
+- **LoreRich AI** — a Groq-powered cultural guardian that speaks with reverence; answers questions, extracts wisdom, remixes stories without ever mocking or diminishing them
 - **Waveform Playback** — WaveSurfer.js audio visualization for oral history recordings
 - **Write Stories** — compose directly in-browser; no file import required
 
@@ -49,16 +49,16 @@ LoreLich started with one thesis: ancestral stories deserve the same permanence 
 ### V1.5 → V2.2 — The Platform
 *"Stories that live forever should also earn."*
 
-After proving the archive, we built the platform around it. V1.5 through V2.2 transformed LoreLich from a personal archive tool into a full cultural IP stack.
+After proving the archive, we built the platform around it. V1.5 through V2.2 transformed LoreRich from a personal archive tool into a full cultural IP stack.
 
 **IP & Monetization:**
 - **On-chain IP Licensing** (`LoreIPModule.sol`) — story owners set programmable license terms: royalty in OG, commercial use flag, exclusive option, jurisdiction note
 - **Story Marketplace** — `/marketplace` lists all licensable stories, filterable by media type and price
 - **License Requests** — filmmakers and researchers request licenses with payment attached; owners approve or reject; royalties flow automatically via pull-pattern withdrawals
-- **Documentary Pitch Portal** — LoreLich AI generates structured film treatment briefs (logline, synopsis, visual approach, comparables, audience) for every licensable story; filmmakers browse at `/pitch`
+- **Documentary Pitch Portal** — LoreRich AI generates structured film treatment briefs (logline, synopsis, visual approach, comparables, audience) for every licensable story; filmmakers browse at `/pitch`
 
 **Discovery & Intelligence:**
-- **Genealogy Tree Builder** — import GEDCOM files, visualize family as an interactive constellation graph; LoreLich AI links vault stories to the right ancestors
+- **Genealogy Tree Builder** — import GEDCOM files, visualize family as an interactive constellation graph; LoreRich AI links vault stories to the right ancestors
 - **Proverb Engine** — extract timeless wisdom from story text; personal proverb library at `/proverbs`
 - **Semantic Search** — natural language search across all public stories; AI relevance scoring 0–100
 - **Audio Transcription** — Groq Whisper large v3 one-click transcription; cached per story
@@ -71,9 +71,35 @@ After proving the archive, we built the platform around it. V1.5 through V2.2 tr
 - **Soulbound NFT Badge** — view ERC5192 token details, ownership, and explorer link per story
 - **Vault Management** — local rename, archive, and story hide controls
 
-**What shipped:** 23 features. 3 deployed smart contracts. 9 API routes. 11 pages. TypeScript exits 0.
+**What shipped (V1.5–V2.2):** 23 features. 3 deployed smart contracts. 9 API routes. 11 pages. TypeScript exits 0.
 
 **V1.5–V2.2 answer to the problem:** *Ownership + monetization.* Stories don't just survive — they generate on-chain IP value that flows directly back to the families who preserved them.
+
+---
+
+### V2.5 — Education & Accessibility
+*"Culture is a birthright. Make it teachable."*
+
+V2.5 brings cultural stories to new audiences through AI-powered educational content and multi-language support.
+
+**Lore Studio** (`/lore`):
+- **AI Comic Generation** — Groq LLM transforms cultural stories into visual 6–8 panel comics with characters, dialogue, and scene descriptions
+- **Educational Comics** — UNICEF-inspired age-appropriate modes: "Young Learners" (5–10) and "Explorers" (8–14) with discussion questions
+- **Collaborative Comics** — merge two comics into crossover narratives; off-chain character claiming via wallet signatures
+- **LoreRich Comic NFT** — `LoreRichComic.sol` (ERC721, symbol `LRCOMIC`) for tradable comic mints
+
+**Public Learning** (`/learn`):
+- Vault owners share stories for public learning via "📚 Learn" button
+- Region and culture filter chips; educational-only toggle
+- Discoverable cultural stories for niche history education
+
+**Internationalization:**
+- Lingo.dev compiler for seamless build-time translations (10 locales: en, es, fr, pt, ar, sw, hi, yo, ig, ha)
+- `LocaleSwitcher` in header for runtime locale switching
+
+**What shipped (V2.5):** 28 total features. 4 new (Lore Studio, Edu Comics, Learn, i18n) + rebrand. 3 new API routes. 2 new pages. 1 new contract.
+
+**V2.5 answer to the problem:** *Education.* Ancestral stories become age-appropriate learning tools that cross language barriers, bringing cultural heritage into classrooms and living rooms worldwide.
 
 ---
 
@@ -114,7 +140,7 @@ Stories need to be found. V3 adds:
 
 **3. AI Voice Synthesis** — `VoiceConsentModule.sol`
 
-LoreLich learns to speak in an ancestor's voice.
+LoreRich learns to speak in an ancestor's voice.
 
 Story owners opt in via an on-chain consent transaction. ElevenLabs clones the voice from the uploaded audio. The model is stored encrypted on 0G. Consent is revocable at any time — one transaction destroys the model. Every AI playback is watermarked: *"This voice was synthesized by AI with the consent of the custodian."*
 
@@ -150,24 +176,24 @@ Community-curated stories get a "Featured" badge. Curators earn $LORE. The best 
 
 #### V3 in Numbers
 
-| Metric | V1 | V2.2 | V3 Target |
-|---|---|---|---|
-| Features | 11 | 23 | 44 |
-| Smart contracts | 2 | 3 | 7 |
-| API routes | 3 | 9 | 16 |
-| Pages | 5 | 11 | 18 |
-| AI response (first token) | ~3s | ~2s | <500ms (streaming) |
-| 0G download speed | ~2s (live) | ~2s (live) | <50ms (cached) |
-| Vault types | Personal only | Personal only | Personal + Collaborative |
-| Languages supported | 1 | 1 | 15 |
-| Governance | None | None | Snapshot DAO + $LORE |
+| Metric | V1 | V2.2 | V2.5 | V3 Target |
+|---|---|---|---|---|
+| Features | 11 | 23 | 28 | 49 |
+| Smart contracts | 2 | 3 | 4 | 7 |
+| API routes | 3 | 9 | 12 | 16 |
+| Pages | 5 | 11 | 13 | 18 |
+| AI response (first token) | ~3s | ~2s | ~2s | <500ms (streaming) |
+| 0G download speed | ~2s (live) | ~2s (live) | ~2s (live) | <50ms (cached) |
+| Vault types | Personal only | Personal only | Personal only | Personal + Collaborative |
+| Languages supported | 1 | 1 | 10 | 15 |
+| Governance | None | None | None | Snapshot DAO + $LORE |
 
 ---
 
 #### V3 Flow
 
 ```
-Family uploads oral history → LoreLich AI transcribes + auto-tags + translates
+Family uploads oral history → LoreRich AI transcribes + auto-tags + translates
                                          ↓
 AI synthesizes ancestor's voice (with on-chain consent)
                                          ↓
@@ -209,7 +235,7 @@ Three things converged at V1. Three more converge at V3.
 5. Diaspora communities are actively seeking Web3-native tools for cultural preservation — no competing product exists at this feature depth
 6. The governance token model is now proven (Nouns DAO, Gitcoin) — earning ownership through contribution, not purchase, is a credible path to decentralization
 
-LoreLich Vault is the only product that combines permanent decentralized storage, on-chain IP licensing, AI cultural intelligence, voice synthesis with on-chain consent, multi-custodian collaborative vaults, and community governance into a single coherent protocol for ancestral story preservation.
+LoreRich Vault is the only product that combines permanent decentralized storage, on-chain IP licensing, AI cultural intelligence, voice synthesis with on-chain consent, multi-custodian collaborative vaults, and community governance into a single coherent protocol for ancestral story preservation.
 
 ---
 

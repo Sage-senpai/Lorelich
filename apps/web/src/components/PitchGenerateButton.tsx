@@ -57,7 +57,7 @@ export function PitchGenerateButton({
             >
               🕯
             </motion.span>
-            LoreLich is weaving the treatment…
+            LoreRich is weaving the treatment…
           </span>
         ) : (
           "Generate Pitch Brief"

@@ -113,7 +113,7 @@ export default function PitchDetailPage() {
       {!brief && (
         <div className="mb-8">
           <p className="text-sm text-smoke font-serif italic mb-4">
-            Let the LoreLich AI weave a documentary treatment brief for this story.
+            Let the LoreRich AI weave a documentary treatment brief for this story.
           </p>
           <PitchGenerateButton
             storyId={storyId.toString()}

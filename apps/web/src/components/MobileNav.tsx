@@ -8,8 +8,10 @@ const NAV_LINKS = [
   { href: "/upload",      label: "Upload"      },
   { href: "/marketplace", label: "Marketplace" },
   { href: "/pitch",       label: "Pitch"       },
+  { href: "/lore",        label: "Lore"        },
   { href: "/tree",        label: "Tree"        },
   { href: "/search",      label: "Search"      },
+  { href: "/learn",       label: "Learn"       },
   { href: "/proverbs",    label: "Proverbs"    },
 ];
 

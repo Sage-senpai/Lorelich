@@ -14,8 +14,8 @@ import type { StoryMetadata, Vault } from "@/types";
 //   - Uploader wallet address
 //   - Timestamp (human-readable + Unix epoch)
 //   - 0G Merkle Root Hash (the on-chain verifiable content identifier)
-//   - Soulbound Story token ID (= story ID on LoreLich)
-//   - LoreLich Vault contract address
+//   - Soulbound Story token ID (= story ID on LoreRich)
+//   - LoreRich Vault contract address
 //   - Verification instructions
 //
 // Print: window.print() triggers the @media print CSS which hides the overlay
@@ -101,7 +101,7 @@ export function CertificateModal({ story, vault, onClose }: CertificateModalProp
             {/* Header ornament */}
             <div className="text-center mb-6">
               <p style={{ fontSize: "0.65rem", letterSpacing: "0.3em", color: "#8B6914", textTransform: "uppercase" }}>
-                LoreLich Vault · Decentralized Ancestral Archive
+                LoreRich Vault · Decentralized Ancestral Archive
               </p>
               <div style={{ borderTop: "1px solid #c5a028", margin: "0.75rem 0", width: "100%" }} />
               <h1 style={{ fontSize: "1.75rem", fontWeight: "bold", color: "#1a1a1a", margin: "0.5rem 0 0" }}>

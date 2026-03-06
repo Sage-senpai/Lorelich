@@ -1,8 +1,8 @@
-# LoreLich Vault
+# LoreRich Vault
 
 > *A sacred digital archive. Ancient stories awakening through AI. Immortal. Verifiable. Decentralized.*
 
-LoreLich Vault is a decentralized platform for preserving ancestral stories — audio, video, and text — with client-side encryption, 0G decentralized storage (upload **and** retrieval), soulbound on-chain ownership, an AI guardian that speaks with wisdom and reverence, on-chain IP licensing, AI-generated documentary pitch briefs, an interactive genealogy constellation builder, a proverb extraction engine, semantic story search, audio transcription via Groq Whisper, story tags backed by the 0G KV Store, shareable story URLs, access grant management, and printable certificates of preservation.
+LoreRich Vault is a decentralized platform for preserving ancestral stories — audio, video, and text — with client-side encryption, 0G decentralized storage (upload **and** retrieval), soulbound on-chain ownership, an AI guardian that speaks with wisdom and reverence, on-chain IP licensing, AI-generated documentary pitch briefs, an interactive genealogy constellation builder, a proverb extraction engine, semantic story search, audio transcription via Groq Whisper, story tags backed by the 0G KV Store, shareable story URLs, access grant management, and printable certificates of preservation.
 
 ---
 
@@ -39,7 +39,7 @@ bun dev
 - **0G Storage Download** — `GET /api/download` retrieves any story by root hash; immutable cache
 - **Story Viewer** — View text, images, and play audio directly in-browser; private stories decrypted client-side
 - **Soulbound Ownership** — ERC5192 non-transferable token minted per story
-- **LoreLich AI** — AI cultural guardian (Groq / llama-3.3-70b) for story querying and remixing
+- **LoreRich AI** — AI cultural guardian (Groq / llama-3.3-70b) for story querying and remixing
 - **Write Stories** — Compose stories directly in-browser; no file import required
 - **Waveform Playback** — WaveSurfer.js audio visualization
 - **Verifiable Proofs** — On-chain 0G merkle roots; `✓ 0G` badge + live retrieval confirms DA
@@ -52,18 +52,18 @@ bun dev
 - **Incoming Requests Panel** — Vault owners see and approve/reject pending license requests
 
 ### Documentary Pitch Portal
-- **AI Film Treatments** — LoreLich generates structured pitch briefs (logline, synopsis, visual approach, comparables, target audience)
+- **AI Film Treatments** — LoreRich generates structured pitch briefs (logline, synopsis, visual approach, comparables, target audience)
 - **Pitch Portal** — Browse commercial stories at `/pitch` with generated treatments
 - **One-Click License** — Sticky "Request License" bar on each pitch page for immediate action
 
 ### Genealogy Tree Builder
 - **GEDCOM Import** — Drag-and-drop `.ged` file parser (no external library, pure client-side)
 - **Constellation Graph** — React Flow interactive star map at `/tree` with brass-colored edges
-- **AI Story Linking** — LoreLich AI suggests which vault stories belong to which ancestor
+- **AI Story Linking** — LoreRich AI suggests which vault stories belong to which ancestor
 - **Persistent Tree** — localStorage-backed with optional 0G backup
 
 ### Proverb Engine
-- **Extract Proverbs** — LoreLich AI extracts wisdom proverbs from story text with cultural context
+- **Extract Proverbs** — LoreRich AI extracts wisdom proverbs from story text with cultural context
 - **Proverb Library** — Personal collection at `/proverbs`; copy, share, delete
 
 ### Semantic Search
@@ -101,9 +101,9 @@ bun dev
 
 ## V3 Roadmap (Planned — 21 New Features)
 
-V3 evolves LoreLich from a personal archive into a community-owned cultural protocol.
+V3 evolves LoreRich from a personal archive into a community-owned cultural protocol.
 
-**Group 1 — Platform Foundations:** Video playback, LoreLich AI streaming (SSE), 0G KV write path, Upstash Redis rate limiting
+**Group 1 — Platform Foundations:** Video playback, LoreRich AI streaming (SSE), 0G KV write path, Upstash Redis rate limiting
 
 **Group 2 — Collaborative Vaults:** Multi-custodian vaults (`CollaborativeVault.sol`), story versioning
 

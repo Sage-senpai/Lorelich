@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import type {
-  Vault, StoryMetadata, UploadState, LoreLichMessage,
+  Vault, StoryMetadata, UploadState, LoreRichMessage,
   LicenseTerms, LicenseRequest, LicensableStory,
   GenealogyTree, AncestorLink, PendingStory,
 } from "@/types";
@@ -115,21 +115,21 @@ export const useUploadStore = create<UploadStore>((set) => ({
 }));
 
 // ─────────────────────────────────────────────────────────────────────────────
-// LoreLich AI Store
+// LoreRich AI Store
 // ─────────────────────────────────────────────────────────────────────────────
 
-interface LoreLichStore {
-  messages:     LoreLichMessage[];
+interface LoreRichStore {
+  messages:     LoreRichMessage[];
   isLoading:    boolean;
   contextStory: StoryMetadata | null;
 
-  addMessage:      (msg: LoreLichMessage) => void;
+  addMessage:      (msg: LoreRichMessage) => void;
   setLoading:      (loading: boolean) => void;
   setContextStory: (story: StoryMetadata | null) => void;
   clearMessages:   () => void;
 }
 
-export const useLoreLichStore = create<LoreLichStore>((set) => ({
+export const useLoreRichStore = create<LoreRichStore>((set) => ({
   messages:     [],
   isLoading:    false,
   contextStory: null,

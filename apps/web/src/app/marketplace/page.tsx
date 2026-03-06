@@ -51,6 +51,22 @@ export default function MarketplacePage() {
         </p>
       </div>
 
+      {/* Education CTA banner */}
+      <div className="vault-glass border border-moss/20 rounded p-5 mb-8 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+        <div className="flex-1">
+          <p className="font-serif text-parchment text-base">
+            Educational Comics for Children
+          </p>
+          <p className="text-smoke/50 text-xs font-mono mt-1">
+            Create age-appropriate comics from cultural stories — designed for young learners
+            ages 5–14. Teach heritage, traditions, and history through storytelling.
+          </p>
+        </div>
+        <a href="/lore" className="btn-brass text-xs px-5 py-2 shrink-0">
+          Create Educational Comic
+        </a>
+      </div>
+
       {/* Filter bar */}
       <div className="flex flex-wrap gap-4 mb-8 pb-5 border-b border-brass/10">
         <FilterGroup

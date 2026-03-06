@@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ConnectKitProvider } from "connectkit";
 import { wagmiConfig } from "@/lib/wagmi";
 import { useEffect, useState } from "react";
-import { useVaultStore, useLoreLichStore, useUploadStore } from "@/store";
+import { useVaultStore, useLoreRichStore, useUploadStore } from "@/store";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Providers — wagmi + ConnectKit + React Query
@@ -35,7 +35,7 @@ const connectKitTheme = {
 function DisconnectGuard() {
   const { isConnected } = useAccount();
   const clearVaultData  = useVaultStore((s) => s.clearVaultData);
-  const clearMessages   = useLoreLichStore((s) => s.clearMessages);
+  const clearMessages   = useLoreRichStore((s) => s.clearMessages);
   const resetUpload     = useUploadStore((s) => s.resetUpload);
 
   useEffect(() => {

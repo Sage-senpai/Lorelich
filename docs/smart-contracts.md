@@ -1,4 +1,4 @@
-# LoreLich Vault — Smart Contract Deployment Guide
+# LoreRich Vault — Smart Contract Deployment Guide
 
 ## Contracts Overview
 

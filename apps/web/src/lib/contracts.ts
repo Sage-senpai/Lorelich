@@ -12,6 +12,9 @@ export const SOULBOUND_ADDRESS =
 export const LORE_IP_MODULE_ADDRESS =
   (process.env.NEXT_PUBLIC_LORE_IP_MODULE_ADDRESS as `0x${string}`) ?? "0x";
 
+export const LORE_COMIC_ADDRESS =
+  (process.env.NEXT_PUBLIC_LORE_COMIC_ADDRESS as `0x${string}`) ?? "0x";
+
 // ─────────────────────────────────────────────────────────────────────────────
 // ABIs — minimal, only what the frontend calls
 // ─────────────────────────────────────────────────────────────────────────────
@@ -391,6 +394,67 @@ export const SOULBOUND_ABI = [
       { name: "to",      type: "address", indexed: true },
       { name: "tokenId", type: "uint256", indexed: true },
       { name: "storyId", type: "uint256", indexed: true },
+    ],
+  },
+] as const;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// LoreComic ABI (V2.5 — ERC721 tradable comic NFTs)
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const LORE_COMIC_ABI = [
+  {
+    name: "mint",
+    type: "function",
+    stateMutability: "nonpayable",
+    inputs: [
+      { name: "to",            type: "address"   },
+      { name: "zgRootHash",    type: "string"    },
+      { name: "uri",           type: "string"    },
+      { name: "collaborators", type: "address[]" },
+    ],
+    outputs: [{ name: "comicId", type: "uint256" }],
+  },
+  {
+    name: "tokenURI",
+    type: "function",
+    stateMutability: "view",
+    inputs:  [{ name: "tokenId", type: "uint256" }],
+    outputs: [{ name: "",        type: "string"  }],
+  },
+  {
+    name: "totalComics",
+    type: "function",
+    stateMutability: "view",
+    inputs:  [],
+    outputs: [{ name: "", type: "uint256" }],
+  },
+  {
+    name: "comics",
+    type: "function",
+    stateMutability: "view",
+    inputs:  [{ name: "tokenId", type: "uint256" }],
+    outputs: [
+      { name: "creator",       type: "address"   },
+      { name: "collaborators", type: "address[]" },
+      { name: "zgRootHash",    type: "string"    },
+      { name: "mintedAt",      type: "uint256"   },
+    ],
+  },
+  {
+    name: "ownerOf",
+    type: "function",
+    stateMutability: "view",
+    inputs:  [{ name: "tokenId", type: "uint256" }],
+    outputs: [{ name: "",        type: "address" }],
+  },
+  {
+    name: "ComicMinted",
+    type: "event",
+    inputs: [
+      { name: "comicId",    type: "uint256", indexed: true  },
+      { name: "creator",    type: "address", indexed: true  },
+      { name: "zgRootHash", type: "string",  indexed: false },
     ],
   },
 ] as const;

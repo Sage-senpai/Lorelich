@@ -2,14 +2,15 @@ import type { Metadata } from "next";
 import { Background } from "@/components/Background";
 import { WalletConnect } from "@/components/WalletConnect";
 import { MobileNav } from "@/components/MobileNav";
+import { LangSwitcher } from "@/components/LangSwitcher";
 import { Providers } from "./providers";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title:       "LoreLich Vault — Ancestral Story Archive",
+  title:       "LoreRich Vault — Ancestral Story Archive",
   description: "A sacred digital archive for ancestral stories. Permanent. Encrypted. Yours.",
   openGraph: {
-    title:       "LoreLich Vault",
+    title:       "LoreRich Vault",
     description: "Preserve ancestral stories forever on decentralized storage.",
     type:        "website",
   },
@@ -30,7 +31,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <a href="/" className="flex items-center gap-2 group">
                 <span className="text-lg animate-candle-flicker" aria-hidden>🕯</span>
                 <span className="font-serif text-parchment text-lg group-hover:text-gold transition-colors duration-300">
-                  LoreLich Vault
+                  LoreRich Vault
                 </span>
               </a>
 
@@ -40,12 +41,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <a href="/upload"      className="hover:text-aged transition-colors">Upload</a>
                 <a href="/marketplace" className="hover:text-aged transition-colors">Marketplace</a>
                 <a href="/pitch"       className="hover:text-aged transition-colors">Pitch</a>
+                <a href="/lore"        className="hover:text-aged transition-colors">Lore</a>
                 <a href="/tree"        className="hover:text-aged transition-colors">Tree</a>
                 <a href="/search"      className="hover:text-aged transition-colors">Search</a>
+                <a href="/learn"       className="hover:text-aged transition-colors">Learn</a>
                 <a href="/proverbs"    className="hover:text-aged transition-colors">Proverbs</a>
               </nav>
 
               <div className="flex items-center gap-3">
+                <LangSwitcher />
                 <WalletConnect />
                 <MobileNav />
               </div>
@@ -60,8 +64,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           {/* Footer */}
           <footer className="border-t border-brass/10 py-6 mt-20">
             <div className="max-w-6xl mx-auto px-4 flex items-center justify-between text-xs text-smoke font-mono">
-              <span>LoreLich Vault — Immortal. Verifiable. Decentralized.</span>
-              <span>0G Storage · Groq AI · ERC5192 · IP Licensing · Pitch Portal · Genealogy · Search · Proverbs · Transcripts · Certificates</span>
+              <span>LoreRich Vault — Immortal. Verifiable. Decentralized.</span>
+              <span>0G Storage · Groq AI · ERC5192 · IP Licensing · Pitch Portal · Lore Comics · Educational Comics · Genealogy · Search · Learn · Proverbs · Transcripts · Certificates</span>
             </div>
           </footer>
         </Providers>
