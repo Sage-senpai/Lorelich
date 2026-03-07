@@ -50,7 +50,7 @@ export async function GET(req: NextRequest) {
     const bytes = await fsPromises.readFile(tmpPath);
 
     // Content-addressed: same rootHash always yields the same bytes → immutable cache
-    return new Response(bytes, {
+    return new Response(new Uint8Array(bytes), {
       headers: {
         "Content-Type":  "application/octet-stream",
         "Content-Length": String(bytes.length),
