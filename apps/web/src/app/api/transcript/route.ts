@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import Groq from "groq-sdk";
 import { toFile } from "groq-sdk/uploads";
-import { Indexer } from "@0glabs/0g-ts-sdk";
 import * as os from "os";
 import * as path from "path";
 import * as fs from "fs";
 import * as fsPromises from "fs/promises";
 import * as crypto from "crypto";
 import { isRateLimited } from "@/lib/rateLimit";
+import { downloadWithFallback, getIndexerUrls } from "@/lib/indexer";
 import type { TranscriptRequest, TranscriptResponse } from "@/types";
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -15,7 +15,7 @@ import type { TranscriptRequest, TranscriptResponse } from "@/types";
 // Transcribes an audio story from 0G Storage using Groq Whisper.
 //
 // Flow:
-//   1. Download audio bytes from 0G Storage via Indexer.download()
+//   1. Download audio bytes from 0G Storage via Indexer.download() (with fallback)
 //   2. Wrap bytes in a toFile() uploadable for the Groq SDK
 //   3. POST to Groq audio.transcriptions.create() → text
 //   4. Return { text, language }
@@ -24,7 +24,6 @@ import type { TranscriptRequest, TranscriptResponse } from "@/types";
 // Rate limit: shared 10 RPM per IP.
 // ─────────────────────────────────────────────────────────────────────────────
 
-const INDEXER_URL = process.env.NEXT_PUBLIC_0G_INDEXER_URL ?? "";
 const ROOT_HASH_RE = /^0x[0-9a-fA-F]{64}$/;
 
 const client = new Groq({ apiKey: process.env.GROQ_API_KEY! });
@@ -54,7 +53,7 @@ export async function POST(req: NextRequest) {
   if (!rootHash || !ROOT_HASH_RE.test(rootHash)) {
     return NextResponse.json({ error: "Invalid rootHash." }, { status: 400 });
   }
-  if (!INDEXER_URL) {
+  if (getIndexerUrls().length === 0) {
     return NextResponse.json(
       { error: "0G indexer not configured on this server." },
       { status: 503 }
@@ -64,10 +63,8 @@ export async function POST(req: NextRequest) {
   const tmpPath = path.join(os.tmpdir(), `lorelich-tx-${crypto.randomUUID()}.mp3`);
 
   try {
-    // Step 1: Download audio from 0G Storage
-    const indexer = new Indexer(INDEXER_URL);
-    const dlErr = await indexer.download(rootHash, tmpPath, false);
-    if (dlErr) throw dlErr;
+    // Step 1: Download audio from 0G Storage (with fallback)
+    await downloadWithFallback(rootHash, tmpPath);
 
     // Check file size before sending to Groq
     const stat = await fsPromises.stat(tmpPath);

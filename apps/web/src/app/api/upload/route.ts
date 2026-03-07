@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { MemData, Indexer } from "@0glabs/0g-ts-sdk";
+import { MemData } from "@0glabs/0g-ts-sdk";
 import { ethers } from "ethers";
+import { uploadWithFallback, getIndexerUrls } from "@/lib/indexer";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // POST /api/upload
@@ -14,7 +15,6 @@ import { ethers } from "ethers";
 // is still valid for on-chain recording; the DA proof just won't be live.
 // ─────────────────────────────────────────────────────────────────────────────
 
-const INDEXER_URL       = process.env.NEXT_PUBLIC_0G_INDEXER_URL ?? "";
 const RPC_URL           = process.env.NEXT_PUBLIC_0G_RPC ?? "";
 const RELAY_PRIVATE_KEY = process.env.RELAY_PRIVATE_KEY ?? "";
 
@@ -61,7 +61,7 @@ export async function POST(req: NextRequest) {
   // ── 3. Attempt 0G storage upload ────────────────────────────────────────────
   // If anything fails here, we return rootHash with empty txHash so the
   // contract call can still proceed (ownership is recorded on-chain).
-  if (!INDEXER_URL || !RPC_URL || !RELAY_PRIVATE_KEY) {
+  if (getIndexerUrls().length === 0 || !RPC_URL || !RELAY_PRIVATE_KEY) {
     console.warn("[Upload API] 0G not fully configured — rootHash only");
     return NextResponse.json({ rootHash, txHash: "" });
   }
@@ -73,12 +73,10 @@ export async function POST(req: NextRequest) {
 
     const provider = new ethers.JsonRpcProvider(RPC_URL);
     const wallet   = new ethers.Wallet(RELAY_PRIVATE_KEY, provider);
-    const indexer  = new Indexer(INDEXER_URL);
 
-    const [result, uploadErr] = await (indexer as any).upload(zgFile2, RPC_URL, wallet);
-    if (uploadErr) throw new Error(String(uploadErr));
+    const result = await uploadWithFallback(zgFile2, RPC_URL, wallet);
 
-    return NextResponse.json({ rootHash, txHash: result?.txHash ?? "" });
+    return NextResponse.json({ rootHash, txHash: result.txHash });
   } catch (err) {
     // 0G upload failed — still return rootHash so the flow can complete
     console.error("[Upload API] 0G upload failed (rootHash returned):", err);

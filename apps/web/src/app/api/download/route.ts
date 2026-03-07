@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { Indexer } from "@0glabs/0g-ts-sdk";
 import * as os from "os";
 import * as path from "path";
 import * as fsPromises from "fs/promises";
 import * as crypto from "crypto";
+import { downloadWithFallback, getIndexerUrls } from "@/lib/indexer";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // GET /api/download?rootHash=0x...
@@ -15,8 +15,6 @@ import * as crypto from "crypto";
 // Private vault stories are stored encrypted — the client handles decryption
 // using its own wallet address (Web Crypto, no key material sent to server).
 // ─────────────────────────────────────────────────────────────────────────────
-
-const INDEXER_URL = process.env.NEXT_PUBLIC_0G_INDEXER_URL ?? "";
 
 // Root hash must be 0x + 64 hex chars (32 bytes)
 const ROOT_HASH_RE = /^0x[0-9a-fA-F]{64}$/;
@@ -30,7 +28,7 @@ export async function GET(req: NextRequest) {
   if (!ROOT_HASH_RE.test(rootHash)) {
     return NextResponse.json({ error: "Invalid rootHash format." }, { status: 400 });
   }
-  if (!INDEXER_URL) {
+  if (getIndexerUrls().length === 0) {
     return NextResponse.json(
       { error: "0G indexer not configured on this server." },
       { status: 503 }
@@ -41,11 +39,7 @@ export async function GET(req: NextRequest) {
   const tmpPath = path.join(os.tmpdir(), `lorelich-dl-${crypto.randomUUID()}`);
 
   try {
-    const indexer = new Indexer(INDEXER_URL);
-
-    // Indexer.download saves the file to tmpPath and returns Error | null
-    const dlErr = await indexer.download(rootHash, tmpPath, false);
-    if (dlErr) throw dlErr;
+    await downloadWithFallback(rootHash, tmpPath);
 
     const bytes = await fsPromises.readFile(tmpPath);
 
