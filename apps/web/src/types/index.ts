@@ -105,6 +105,7 @@ export interface LoreRichQueryRequest {
     mediaType: string;
     duration?: number;
     vaultName: string;
+    storyContent?: string;
   };
   conversationHistory?: Array<{ role: "user" | "assistant"; content: string }>;
 }

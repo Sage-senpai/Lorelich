@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useAccount } from "wagmi";
 import { useVaultStore } from "@/store";
 import { useOwnerVaults, useVaultStories } from "@/hooks/useVault";
+import { fetchStoryContent } from "@/lib/fetchStoryContent";
 import type { StoryProverb } from "@/types";
 import { DEMO_PROVERBS } from "@/lib/demoData";
 import { DemoBadge } from "@/components/DemoBanner";
@@ -119,6 +120,7 @@ export default function ProverbsPage() {
 // ─────────────────────────────────────────────────────────────────────────────
 
 function ExtractorPanel({ onExtracted }: { onExtracted: (p: StoryProverb) => void }) {
+  const { address } = useAccount();
   const { vaultIds } = useOwnerVaults();
   const vaults       = useVaultStore((s) => s.vaults);
   const allStories   = useVaultStore((s) => s.stories);
@@ -128,6 +130,7 @@ function ExtractorPanel({ onExtracted }: { onExtracted: (p: StoryProverb) => voi
   const [selectedStoryId, setSelectedStoryId] = useState<string>("");
   const [storyText,       setStoryText]        = useState("");
   const [isGenerating,    setIsGenerating]     = useState(false);
+  const [isFetching,      setIsFetching]       = useState(false);
   const [error,           setError]            = useState<string | null>(null);
 
   useEffect(() => {
@@ -143,6 +146,24 @@ function ExtractorPanel({ onExtracted }: { onExtracted: (p: StoryProverb) => voi
     : [];
 
   const selectedStory = stories.find((s) => s.id.toString() === selectedStoryId);
+
+  async function fetchContent() {
+    if (!selectedStory || selectedStory.mediaType !== "text") return;
+    setIsFetching(true);
+    setError(null);
+    try {
+      const text = await fetchStoryContent(
+        selectedStory.zgRootHash,
+        selectedStory.isPrivate,
+        address,
+      );
+      setStoryText(text.slice(0, 2000));
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Failed to load story content.");
+    } finally {
+      setIsFetching(false);
+    }
+  }
 
   async function extract() {
     if (!selectedStory || !storyText.trim()) return;
@@ -226,11 +247,24 @@ function ExtractorPanel({ onExtracted }: { onExtracted: (p: StoryProverb) => voi
         </div>
       </div>
 
+      {/* Auto-fetch button */}
+      {selectedStory && selectedStory.mediaType === "text" && !storyText && (
+        <div className="mb-4">
+          <button
+            onClick={fetchContent}
+            disabled={isFetching}
+            className="text-xs font-mono text-moss/70 border border-moss/30 rounded-sm px-3 py-1.5 hover:border-moss/60 hover:text-moss transition-colors disabled:opacity-40"
+          >
+            {isFetching ? "Loading from 0G..." : "Load story content from vault"}
+          </button>
+        </div>
+      )}
+
       {/* Text passage */}
       <div className="mb-4">
         <label className="block text-xs font-mono text-smoke/60 mb-1.5">
           Story passage or excerpt
-          <span className="text-smoke/40 ml-2">(paste text from the story — max 2000 chars)</span>
+          <span className="text-smoke/40 ml-2">(paste or load from vault — max 2000 chars)</span>
         </label>
         <textarea
           value={storyText}

@@ -30,7 +30,7 @@ function sanitizeInput(input: string): string {
 }
 
 export function LoreRichChat() {
-  const { messages, isLoading, contextStory, addMessage, setLoading, clearMessages } =
+  const { messages, isLoading, contextStory, storyContent, addMessage, setLoading, clearMessages } =
     useLoreRichStore();
 
   const [input,   setInput]   = useState("");
@@ -76,6 +76,7 @@ export function LoreRichChat() {
                 mediaType: contextStory.mediaType,
                 duration:  Number(contextStory.duration),
                 vaultName: "Ancestral Vault",
+                storyContent: storyContent ?? undefined,
               }
             : undefined,
           conversationHistory: messages.slice(-10).map((m) => ({

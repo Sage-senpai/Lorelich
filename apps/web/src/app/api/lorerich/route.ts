@@ -123,12 +123,17 @@ export async function POST(req: NextRequest) {
   // Build user message — inject story context if provided
   let userMessage = trimmedQuery;
   if (storyContext) {
+    // Cap story content to avoid blowing the context window (~4000 chars ≈ ~1000 tokens)
+    const contentSnippet = storyContext.storyContent
+      ? storyContext.storyContent.slice(0, 4000)
+      : null;
     const ctx = [
       `[Story Context]`,
       `Title: ${storyContext.title}`,
       `Media: ${storyContext.mediaType}`,
       storyContext.duration ? `Duration: ${storyContext.duration}s` : null,
       `Vault: ${storyContext.vaultName}`,
+      contentSnippet ? `\n[Story Content]\n${contentSnippet}` : null,
       `---`,
       trimmedQuery,
     ]

@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useAccount } from "wagmi";
 import { AnimatePresence, motion } from "framer-motion";
 import { useOwnerVaults, useVaultStories } from "@/hooks/useVault";
 import { useVaultStore } from "@/store";
 import { CharacterBuilder } from "@/components/CharacterBuilder";
 import { LoreComicViewer } from "@/components/LoreComicViewer";
+import { fetchStoryContent } from "@/lib/fetchStoryContent";
 import type {
   LoreCharacter,
   LoreComic,
@@ -127,6 +128,8 @@ function GenerateTab({ address }: { address?: `0x${string}` }) {
   const [sourceMode,   setSourceMode]   = useState<"vault" | "paste">("paste");
   const [selectedStory, setSelectedStory] = useState<string>("");
   const [pastedText,   setPastedText]   = useState("");
+  const [vaultText,    setVaultText]    = useState("");
+  const [vaultFetch,   setVaultFetch]   = useState<"idle" | "loading" | "done" | "error">("idle");
   const [characters,   setCharacters]   = useState<LoreCharacter[]>([]);
   const [genre,        setGenre]        = useState("");
   const [tone,         setTone]         = useState("");
@@ -134,11 +137,44 @@ function GenerateTab({ address }: { address?: `0x${string}` }) {
   const [loading,      setLoading]      = useState(false);
   const [error,        setError]        = useState("");
   const [result,       setResult]       = useState<LoreComic | null>(null);
-  const [viewingComic, setViewingComic] = useState<LoreComic | null>(null);
 
-  const sourceText = sourceMode === "vault"
-    ? (stories.find((s) => s.id.toString() === selectedStory)?.title ?? "")
-    : pastedText;
+  const selectedStoryMeta = stories.find((s) => s.id.toString() === selectedStory);
+
+  // Fetch story content from 0G when a vault story is selected
+  const loadVaultContent = useCallback(async () => {
+    if (!selectedStoryMeta) return;
+    if (selectedStoryMeta.mediaType !== "text") {
+      setVaultText("");
+      setVaultFetch("error");
+      setError("Only text stories can be used as source lore.");
+      return;
+    }
+    setVaultFetch("loading");
+    setError("");
+    try {
+      const text = await fetchStoryContent(
+        selectedStoryMeta.zgRootHash,
+        selectedStoryMeta.isPrivate,
+        address,
+      );
+      setVaultText(text.slice(0, 3000));
+      setVaultFetch("done");
+    } catch (e) {
+      setVaultFetch("error");
+      setError(e instanceof Error ? e.message : "Failed to load story content.");
+    }
+  }, [selectedStoryMeta, address]);
+
+  // Auto-fetch when story selection changes
+  useEffect(() => {
+    if (sourceMode === "vault" && selectedStory) {
+      setVaultText("");
+      setVaultFetch("idle");
+      loadVaultContent();
+    }
+  }, [sourceMode, selectedStory, loadVaultContent]);
+
+  const sourceText = sourceMode === "vault" ? vaultText : pastedText;
 
   async function generate() {
     if (!sourceText.trim() || !genre) return;
@@ -262,6 +298,9 @@ function GenerateTab({ address }: { address?: `0x${string}` }) {
                   onChange={(e) => {
                     const v = vaults.find((v) => v.id.toString() === e.target.value);
                     if (v) selectVault(v.id);
+                    setSelectedStory("");
+                    setVaultText("");
+                    setVaultFetch("idle");
                   }}
                   className="input-dark w-full text-sm"
                 >
@@ -277,10 +316,19 @@ function GenerateTab({ address }: { address?: `0x${string}` }) {
                     className="input-dark w-full text-sm"
                   >
                     <option value="">Select story…</option>
-                    {stories.map((s) => (
+                    {stories.filter((s) => s.mediaType === "text").map((s) => (
                       <option key={s.id.toString()} value={s.id.toString()}>{s.title}</option>
                     ))}
                   </select>
+                )}
+                {vaultFetch === "loading" && (
+                  <p className="text-xs font-mono text-smoke/50 animate-pulse">Loading story content from 0G...</p>
+                )}
+                {vaultFetch === "done" && vaultText && (
+                  <div className="vault-glass border border-moss/20 rounded p-3">
+                    <p className="text-xs font-mono text-moss/60 mb-1">Story content loaded ({vaultText.length} chars)</p>
+                    <p className="text-xs text-smoke/50 font-mono line-clamp-3">{vaultText.slice(0, 200)}...</p>
+                  </div>
                 )}
               </>
             )}

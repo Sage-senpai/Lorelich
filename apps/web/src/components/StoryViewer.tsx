@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAccount } from "wagmi";
 import { decryptBlob, unpackEncryptedBlob } from "@/lib/encryption";
+import { useLoreRichStore } from "@/store";
 import type { StoryMetadata } from "@/types";
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -38,11 +39,13 @@ export function StoryViewer({ story, onClose, contentOverride }: StoryViewerProp
   const { address } = useAccount();
   const [state, setState] = useState<ViewState>({ status: "loading" });
   const blobUrlRef = useRef<string | null>(null);
+  const setContextStory = useLoreRichStore((s) => s.setContextStory);
 
   useEffect(() => {
     // If demo content is provided, skip the 0G download entirely
     if (contentOverride) {
       setState({ status: "ready", content: contentOverride });
+      setContextStory(story, contentOverride.text);
       return;
     }
 
@@ -75,22 +78,27 @@ export function StoryViewer({ story, onClose, contentOverride }: StoryViewerProp
         const mt = story.mediaType;
 
         if (mt === "text") {
-          content = { kind: "text", text: new TextDecoder().decode(bytes) };
+          const decoded = new TextDecoder().decode(bytes);
+          content = { kind: "text", text: decoded };
+          setContextStory(story, decoded);
         } else if (mt === "image") {
           const blob = new Blob([bytes]);
           const url  = URL.createObjectURL(blob);
           blobUrlRef.current = url;
           content = { kind: "image", url };
+          setContextStory(story);
         } else if (mt === "audio") {
           const blob = new Blob([bytes]);
           const url  = URL.createObjectURL(blob);
           blobUrlRef.current = url;
           content = { kind: "audio", url };
+          setContextStory(story);
         } else {
           const blob = new Blob([bytes]);
           const url  = URL.createObjectURL(blob);
           blobUrlRef.current = url;
           content = { kind: "binary", url, sizeKB: Math.ceil(bytes.length / 1024) };
+          setContextStory(story);
         }
 
         setState({ status: "ready", content });

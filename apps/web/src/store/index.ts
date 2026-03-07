@@ -122,10 +122,11 @@ interface LoreRichStore {
   messages:     LoreRichMessage[];
   isLoading:    boolean;
   contextStory: StoryMetadata | null;
+  storyContent: string | null;
 
   addMessage:      (msg: LoreRichMessage) => void;
   setLoading:      (loading: boolean) => void;
-  setContextStory: (story: StoryMetadata | null) => void;
+  setContextStory: (story: StoryMetadata | null, content?: string | null) => void;
   clearMessages:   () => void;
 }
 
@@ -133,10 +134,11 @@ export const useLoreRichStore = create<LoreRichStore>((set) => ({
   messages:     [],
   isLoading:    false,
   contextStory: null,
+  storyContent: null,
 
   addMessage:      (msg)   => set((s) => ({ messages: [...s.messages, msg] })),
   setLoading:      (loading) => set({ isLoading: loading }),
-  setContextStory: (story)   => set({ contextStory: story }),
+  setContextStory: (story, content) => set({ contextStory: story, storyContent: content ?? null }),
   clearMessages:   ()        => set({ messages: [] }),
 }));
 
