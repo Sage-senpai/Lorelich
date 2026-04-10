@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { MemData } from "@0glabs/0g-ts-sdk";
+import { MemData } from "@0gfoundation/0g-ts-sdk";
 import { ethers } from "ethers";
 import { uploadWithFallback, getIndexerUrls } from "@/lib/indexer";
 

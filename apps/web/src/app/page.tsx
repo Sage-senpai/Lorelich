@@ -206,7 +206,7 @@ export default function HomePage() {
         transition={{ delay: 0.4, duration: 0.8 }}
         className="vault-glass rounded-sm p-6 mb-20 overflow-x-auto"
       >
-        <div className="flex items-center gap-2 min-w-max mx-auto justify-center flex-wrap text-xs font-mono text-smoke/70">
+        <div className="flex items-center gap-2 min-w-max mx-auto justify-center flex-wrap text-xs font-mono text-smoke">
           {[
             { step: "Upload",     sub: "to 0G storage",      icon: "⬆" },
             { step: "Mint",       sub: "soulbound NFT",       icon: "🪬" },
@@ -216,12 +216,12 @@ export default function HomePage() {
           ].map((s, i, arr) => (
             <div key={s.step} className="flex items-center gap-2">
               <div className="flex flex-col items-center gap-1">
-                <span className="text-brass/70 text-base">{s.icon}</span>
-                <span className="text-parchment/80 font-semibold text-[11px]">{s.step}</span>
-                <span className="text-smoke/50 text-[9px]">{s.sub}</span>
+                <span className="text-brass text-base">{s.icon}</span>
+                <span className="text-parchment font-semibold text-[11px]">{s.step}</span>
+                <span className="text-smoke/70 text-[9px]">{s.sub}</span>
               </div>
               {i < arr.length - 1 && (
-                <span className="text-brass/25 text-lg mx-1">→</span>
+                <span className="text-brass/40 text-lg mx-1">→</span>
               )}
             </div>
           ))}
@@ -233,7 +233,7 @@ export default function HomePage() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1, duration: 1 }}
-        className="text-center font-serif text-aged/60 italic text-sm"
+        className="text-center font-serif text-aged/80 italic text-sm"
       >
         "The elders die twice — once when they stop breathing,<br />
         and once when their stories are forgotten."
@@ -258,7 +258,7 @@ function Divider() {
 
 function SectionLabel({ label }: { label: string }) {
   return (
-    <p className="font-mono text-xs text-smoke/40 uppercase tracking-widest mb-6 text-center">
+    <p className="font-mono text-xs text-smoke/60 uppercase tracking-widest mb-6 text-center">
       {label}
     </p>
   );

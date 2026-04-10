@@ -186,12 +186,34 @@ export default function VaultPage() {
             {vaultIds.length} {vaultIds.length === 1 ? "vault" : "vaults"}
           </p>
         </div>
-        <button
-          onClick={() => setShowCreateModal(true)}
-          className="btn-brass"
-        >
-          + New Vault
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => {
+              if (!confirm("This will hide all existing vaults and clear local data (tags, transcripts, etc.).\n\nOn-chain data stays safe — nothing is deleted from the blockchain.\n\nProceed?")) return;
+              // Archive all vaults
+              const allIds = new Set(vaults.map((v) => v.id.toString()));
+              setArchivedVaultIds(allIds);
+              localStorage.setItem("lorelich_archived_vaults", JSON.stringify([...allIds]));
+              // Clear local data
+              const keysToRemove = Object.keys(localStorage).filter((k) => k.startsWith("lorelich_"));
+              keysToRemove.forEach((k) => {
+                if (k !== "lorelich_archived_vaults") localStorage.removeItem(k);
+              });
+              selectVault(null);
+              setDemoVaultId(null);
+            }}
+            className="px-3 py-2 rounded-sm font-mono text-xs border border-burgundy/40 text-burgundy
+              hover:border-burgundy hover:bg-burgundy/10 transition-all duration-200"
+          >
+            Start Fresh
+          </button>
+          <button
+            onClick={() => setShowCreateModal(true)}
+            className="btn-brass"
+          >
+            + New Vault
+          </button>
+        </div>
       </div>
 
       <div className="flex gap-6">
@@ -237,7 +259,7 @@ export default function VaultPage() {
 
           {/* Demo vaults — always visible */}
           <div className="pt-3 border-t border-brass/10">
-            <p className="text-[9px] font-mono text-smoke/30 uppercase tracking-widest mb-2 px-1">
+            <p className="text-[9px] font-mono text-smoke/50 uppercase tracking-widest mb-2 px-1">
               Sample Vaults
             </p>
             {DEMO_VAULTS.map((dv) => (
@@ -260,7 +282,7 @@ export default function VaultPage() {
                   <p className="text-xs font-serif truncate">{dv.name}</p>
                   <DemoBadge />
                 </div>
-                <p className="text-[10px] font-mono text-smoke/30 mt-0.5">
+                <p className="text-[10px] font-mono text-smoke/50 mt-0.5">
                   {DEMO_STORY_MAP[dv.id.toString()]?.length ?? 0} stories
                 </p>
               </button>
@@ -416,7 +438,7 @@ export default function VaultPage() {
                   {/* Pending stories — stored on 0G but not yet registered on-chain */}
                   {selectedPending.length > 0 && (
                     <div className="mb-4 space-y-2">
-                      <p className="text-[9px] font-mono text-gold/50 uppercase tracking-widest px-1">
+                      <p className="text-[9px] font-mono text-gold/70 uppercase tracking-widest px-1">
                         Pending On-Chain Registration
                       </p>
                       {selectedPending.map((p) => (
@@ -475,8 +497,8 @@ export default function VaultPage() {
                               {(!isDemoActive || DEMO_STORY_CONTENT[story.id.toString()]) && (
                                 <button
                                   onClick={() => setViewStory(story)}
-                                  className="text-xs font-mono px-2 py-0.5 rounded-sm border border-smoke/25 text-smoke/70
-                                    hover:border-aged/60 hover:text-aged transition-colors"
+                                  className="text-xs font-mono px-2 py-0.5 rounded-sm border border-smoke/30 text-smoke
+                                    hover:border-brass/60 hover:text-aged transition-colors"
                                 >
                                   View
                                 </button>
@@ -485,8 +507,8 @@ export default function VaultPage() {
                               {!isDemoActive && (
                                 <a
                                   href={`/story/${story.id}`}
-                                  className="text-xs font-mono px-2 py-0.5 rounded-sm border border-smoke/20 text-smoke/50
-                                    hover:border-smoke/40 hover:text-aged transition-colors"
+                                  className="text-xs font-mono px-2 py-0.5 rounded-sm border border-smoke/30 text-smoke
+                                    hover:border-smoke/50 hover:text-aged transition-colors"
                                 >
                                   Share
                                 </a>
@@ -495,8 +517,8 @@ export default function VaultPage() {
                               {!isDemoActive && (
                                 <button
                                   onClick={() => setNftStory(story)}
-                                  className="text-xs font-mono px-2 py-0.5 rounded-sm border border-brass/20 text-smoke/50
-                                    hover:border-brass/40 hover:text-aged transition-colors"
+                                  className="text-xs font-mono px-2 py-0.5 rounded-sm border border-brass/30 text-smoke
+                                    hover:border-brass/60 hover:text-aged transition-colors"
                                 >
                                   🪙 NFT
                                 </button>
@@ -524,8 +546,8 @@ export default function VaultPage() {
                               {/* Certificate of Preservation — works for demo too */}
                               <button
                                 onClick={() => setCertStory(story)}
-                                className="text-xs font-mono px-2 py-0.5 rounded-sm border border-smoke/20 text-smoke/40
-                                  hover:border-aged/40 hover:text-aged transition-colors"
+                                className="text-xs font-mono px-2 py-0.5 rounded-sm border border-smoke/30 text-smoke
+                                  hover:border-aged/50 hover:text-aged transition-colors"
                               >
                                 📜 Cert
                               </button>
@@ -544,7 +566,7 @@ export default function VaultPage() {
                                   onClick={() => toggleHideStory(story.id.toString())}
                                   title="Hide story from list (local only)"
                                   className="text-xs font-mono px-2 py-0.5 rounded-sm border border-smoke/10
-                                    text-smoke/25 hover:border-burgundy/30 hover:text-burgundy/60 transition-colors"
+                                    text-smoke/50 hover:border-burgundy/50 hover:text-burgundy transition-colors"
                                 >
                                   {hiddenStoryIds.has(story.id.toString()) ? "Show" : "Hide"}
                                 </button>
@@ -567,7 +589,7 @@ export default function VaultPage() {
                             <TranscriptButton rootHash={story.zgRootHash} />
                           )}
 
-                          <p className="text-xs text-smoke/60 font-mono truncate">
+                          <p className="text-xs text-smoke/70 font-mono truncate">
                             {story.zgRootHash}
                           </p>
                         </div>

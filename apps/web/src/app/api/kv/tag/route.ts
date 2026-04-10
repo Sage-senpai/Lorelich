@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { KvClient } from "@0glabs/0g-ts-sdk";
+import { KvClient } from "@0gfoundation/0g-ts-sdk";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // GET /api/kv/tag?rootHash=0x...

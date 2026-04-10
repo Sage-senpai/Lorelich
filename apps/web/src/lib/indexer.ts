@@ -1,8 +1,11 @@
-import { Indexer } from "@0glabs/0g-ts-sdk";
+import { Indexer } from "@0gfoundation/0g-ts-sdk";
 
 /**
- * 0G Indexer URLs — primary + fallback for resilience.
- * If the primary indexer returns an error (e.g. 503), the fallback is tried.
+ * 0G Storage Indexer — uses the turbo indexer (standard is defunct).
+ *
+ * Environment:
+ *   NEXT_PUBLIC_0G_INDEXER_URL — primary turbo indexer
+ *   NEXT_PUBLIC_0G_INDEXER_FALLBACK_URL — optional second indexer
  */
 const PRIMARY_URL  = process.env.NEXT_PUBLIC_0G_INDEXER_URL ?? "";
 const FALLBACK_URL = process.env.NEXT_PUBLIC_0G_INDEXER_FALLBACK_URL ?? "";
@@ -31,7 +34,7 @@ export async function downloadWithFallback(
   for (const url of urls) {
     try {
       const indexer = new Indexer(url);
-      const err = await indexer.download(rootHash, destPath, false);
+      const err = await indexer.download(rootHash, destPath, true);
       if (err) throw err;
       return; // success
     } catch (e) {
@@ -45,8 +48,11 @@ export async function downloadWithFallback(
 
 /**
  * Uploads a file to 0G Storage with automatic fallback.
- * Tries the primary indexer first, then the fallback if it fails.
  * Returns { txHash, rootHash } from the successful upload.
+ *
+ * The new SDK (v1.2.1) returns either:
+ *   { rootHash, txHash }       — single file (<4GB)
+ *   { rootHashes[], txHashes[] } — fragmented file (>4GB)
  */
 export async function uploadWithFallback(
   zgFile: any,
@@ -61,9 +67,15 @@ export async function uploadWithFallback(
   for (const url of urls) {
     try {
       const indexer = new Indexer(url);
-      const [result, uploadErr] = await (indexer as any).upload(zgFile, rpcUrl, wallet);
+      const [tx, uploadErr] = await indexer.upload(zgFile, rpcUrl, wallet);
       if (uploadErr) throw new Error(String(uploadErr));
-      return { txHash: result?.txHash ?? "", rootHash: result?.rootHash };
+
+      // Handle single vs fragmented response
+      if ("rootHash" in tx) {
+        return { txHash: tx.txHash, rootHash: tx.rootHash };
+      } else {
+        return { txHash: tx.txHashes[0], rootHash: tx.rootHashes[0] };
+      }
     } catch (e) {
       lastError = e instanceof Error ? e : new Error(String(e));
       console.warn(`[0G] Upload via ${url} failed: ${lastError.message}, trying next...`);

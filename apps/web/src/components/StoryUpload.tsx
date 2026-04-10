@@ -115,8 +115,10 @@ function getMediaDuration(file: File): Promise<number> {
   });
 }
 
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://lorerich-vault.vercel.app";
+
 function buildTokenURI(zgRootHash: string): string {
-  return `lorelich:${zgRootHash}`;
+  return `${APP_URL}/api/metadata?rootHash=${zgRootHash}`;
 }
 
 export function StoryUpload({ vaultId, isPrivate, onComplete }: StoryUploadProps) {

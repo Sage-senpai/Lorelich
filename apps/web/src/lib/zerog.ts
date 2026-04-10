@@ -1,6 +1,6 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // 0G Storage — client-side wrapper
-// Calls /api/upload (server-side) which uses @0glabs/0g-ts-sdk.
+// Calls /api/upload (server-side) which uses @0gfoundation/0g-ts-sdk.
 // The SDK is Node-only (uses fs, node:crypto), so it cannot run in-browser.
 // ─────────────────────────────────────────────────────────────────────────────
 

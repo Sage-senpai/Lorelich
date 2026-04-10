@@ -9,18 +9,18 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Dark Academia Palette
+        // Dark Academia Palette — tuned for readability
         crypt:    "#0D0B0E",        // Deepest background
         shadow:   "#1A1520",        // Card backgrounds
         dusk:     "#261E2E",        // Elevated surfaces
-        brass:    "#B8860B",        // Primary accent — candlelight gold
+        brass:    "#C99A2E",        // Primary accent — warmer, more visible gold
         gold:     "#DAA520",        // Hover gold
-        parchment:"#E8D5B0",        // Primary text
-        aged:     "#C4A882",        // Secondary text
-        smoke:    "#6B5D7A",        // Muted text
-        burgundy: "#4A0E0E",        // Danger / warning
-        moss:     "#1A3A2A",        // Success / verified
-        ember:    "#8B4513",        // Warm accent
+        parchment:"#EDE0C8",        // Primary text — slightly brighter
+        aged:     "#D4B896",        // Secondary text — bumped for readability
+        smoke:    "#9A8CAA",        // Muted text — raised from #6B5D7A for contrast
+        burgundy: "#8B3030",        // Danger / warning — visible on dark bg
+        moss:     "#3D9B5A",        // Success / verified — readable green
+        ember:    "#B86A3A",        // Warm accent — brighter
       },
       fontFamily: {
         serif:  ["'Playfair Display'", "Georgia", "serif"],

@@ -29,7 +29,7 @@ const nextConfig = {
       ...config.resolve.alias,
       "@react-native-async-storage/async-storage": false,
       "pino-pretty": false,
-      // Stub `node:` prefixed imports used by @0glabs/0g-ts-sdk (browser builds only)
+      // Stub `node:` prefixed imports used by @0gfoundation/0g-ts-sdk (browser builds only)
       ...(!isServer && {
         "node:crypto": false,
         "node:fs": false,

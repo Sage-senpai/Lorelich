@@ -25,7 +25,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Background />
 
           {/* Navigation */}
-          <header className="fixed top-0 left-0 right-0 z-50 border-b border-brass/10 bg-crypt/70 backdrop-blur-md">
+          <header className="fixed top-0 left-0 right-0 z-50 border-b border-brass/20 bg-crypt/80 backdrop-blur-md">
             <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
               {/* Logo */}
               <a href="/" className="flex items-center gap-2 group">
@@ -43,7 +43,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                     Vaults <span className="text-[9px] opacity-40 group-hover/vaults:opacity-70 transition-opacity">▾</span>
                   </a>
                   <div className="absolute top-full left-0 pt-1 hidden group-hover/vaults:block">
-                    <div className="border border-brass/15 bg-crypt/95 backdrop-blur-md rounded-sm py-1 min-w-[120px] shadow-lg">
+                    <div className="border border-brass/25 bg-crypt/95 backdrop-blur-md rounded-sm py-1 min-w-[120px] shadow-lg">
                       <a href="/vault" className="block px-3 py-1.5 hover:text-aged hover:bg-brass/5 transition-colors">Dashboard</a>
                       <a href="/tree"  className="block px-3 py-1.5 hover:text-aged hover:bg-brass/5 transition-colors">Genealogy</a>
                     </div>
@@ -56,7 +56,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                     Marketplace <span className="text-[9px] opacity-40 group-hover/market:opacity-70 transition-opacity">▾</span>
                   </a>
                   <div className="absolute top-full left-0 pt-1 hidden group-hover/market:block">
-                    <div className="border border-brass/15 bg-crypt/95 backdrop-blur-md rounded-sm py-1 min-w-[120px] shadow-lg">
+                    <div className="border border-brass/25 bg-crypt/95 backdrop-blur-md rounded-sm py-1 min-w-[120px] shadow-lg">
                       <a href="/marketplace" className="block px-3 py-1.5 hover:text-aged hover:bg-brass/5 transition-colors">Browse</a>
                       <a href="/search"      className="block px-3 py-1.5 hover:text-aged hover:bg-brass/5 transition-colors">Search</a>
                       <a href="/lore"        className="block px-3 py-1.5 hover:text-aged hover:bg-brass/5 transition-colors">Lore Studio</a>

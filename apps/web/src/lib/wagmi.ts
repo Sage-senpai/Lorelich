@@ -45,7 +45,7 @@ export const wagmiConfig = createConfig(
       process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID ?? "",
     appName: "LoreRich Vault",
     appDescription: "A sacred digital archive for ancestral stories",
-    appUrl: process.env.NEXT_PUBLIC_APP_URL ?? "https://lorelich.app",
+    appUrl: process.env.NEXT_PUBLIC_APP_URL ?? "https://lorerich.app",
     appIcon: "/icon.png",
   })
 );
